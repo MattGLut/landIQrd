@@ -31,7 +31,32 @@ RSpec.describe WorkOrderPolicy do
     create(:work_order_assignment, work_order: work_order, contractor: contractor)
     work_order.reload
     expect(policy_for(contractor).show?).to be(true)
-    expect(policy_for(contractor).update?).to be(true)
+    expect(policy_for(contractor).update?).to be(false)
+    expect(policy_for(contractor).edit_details?).to be(false)
+  end
+
+  it "allows the creating tenant to edit details and close active requests" do
+    expect(policy_for(tenant).edit_details?).to be(true)
+    expect(policy_for(tenant).close?).to be(true)
+    expect(policy_for(tenant).change_status?).to be(false)
+    expect(policy_for(tenant).destroy?).to be(false)
+  end
+
+  it "allows the landlord to change status and delete" do
+    expect(policy_for(landlord).change_status?).to be(true)
+    expect(policy_for(landlord).destroy?).to be(true)
+    expect(policy_for(landlord).close?).to be(false)
+  end
+
+  it "forbids close once the work order is terminal" do
+    work_order.update!(status: :cancelled)
+    expect(policy_for(tenant).close?).to be(false)
+  end
+
+  it "allows schedule access for landlords and contractors" do
+    expect(described_class.new(landlord, WorkOrder).schedule?).to be(true)
+    expect(described_class.new(contractor, WorkOrder).schedule?).to be(true)
+    expect(described_class.new(tenant, WorkOrder).schedule?).to be(false)
   end
 
   describe "scope" do

@@ -52,7 +52,6 @@ RSpec.describe "File uploads" do
   end
 
   it "downloads a lease document" do
-    lease = create(:lease, unit: unit, tenant: tenant)
     lease.documents.attach(
       io: File.open(Rails.root.join("spec/fixtures/files/sample.pdf")),
       filename: "sample.pdf",

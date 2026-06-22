@@ -7,6 +7,7 @@ class MessagesController < ApplicationController
 
     if @message.save
       @conversation.touch
+      Notifications::Deliver.new_message(@message, actor: current_user)
       respond_to do |format|
         format.turbo_stream
         format.html { redirect_to @conversation }

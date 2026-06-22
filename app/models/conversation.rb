@@ -29,7 +29,12 @@ class Conversation < ApplicationRecord
   def sync_work_order_participants!
     return unless work_order
 
-    desired = [ work_order.created_by, work_order.unit.property.landlord, *work_order.contractors ].compact.uniq
+    desired = [
+      work_order.created_by,
+      work_order.unit.property.landlord,
+      work_order.unit.current_tenant,
+      *work_order.contractors
+    ].compact.uniq
     desired.each { |user| conversation_participants.find_or_create_by!(user: user) }
   end
 
@@ -39,5 +44,17 @@ class Conversation < ApplicationRecord
 
   def latest_message
     messages.order(:created_at).last
+  end
+
+  def unread_for?(user)
+    participant = conversation_participants.find_by(user: user)
+    return false unless participant
+
+    scope = messages.where.not(author_id: user.id)
+    if participant.last_read_at
+      scope.where("created_at > ?", participant.last_read_at).exists?
+    else
+      scope.exists?
+    end
   end
 end

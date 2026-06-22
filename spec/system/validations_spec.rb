@@ -31,6 +31,14 @@ RSpec.describe "Form validations" do
     property = create(:property, landlord: landlord)
     unit = create(:unit, property: property)
     tenant = create(:tenant)
+    create(
+      :lease,
+      unit: create(:unit, property: property),
+      tenant: tenant,
+      status: :ended,
+      start_date: 2.years.ago.to_date,
+      end_date: 1.year.ago.to_date
+    )
 
     visit new_unit_lease_path(unit)
     select tenant.full_name, from: "Tenant"

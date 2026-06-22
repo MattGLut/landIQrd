@@ -8,6 +8,7 @@ class ConversationsController < ApplicationController
   def show
     @conversation = Conversation.find(params[:id])
     authorize @conversation
+    @conversation.conversation_participants.find_by(user: current_user)&.mark_read!
     load_conversations
     load_conversation_thread
     render :index
@@ -34,7 +35,7 @@ class ConversationsController < ApplicationController
 
   def load_conversations
     @conversations = policy_scope(Conversation)
-                       .includes(:participants, :work_order, :messages)
+                       .includes(:participants, :work_order, :messages, :conversation_participants)
                        .order(updated_at: :desc)
   end
 
@@ -45,6 +46,7 @@ class ConversationsController < ApplicationController
   end
 
   def load_conversation_thread
+    @conversation.conversation_participants.find_by(user: current_user)&.mark_read!
     @messages = @conversation.messages.includes(:author).order(:created_at)
     @message = @conversation.messages.new
   end

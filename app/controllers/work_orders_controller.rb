@@ -1,5 +1,5 @@
 class WorkOrdersController < ApplicationController
-  before_action :set_work_order, only: %i[show edit update destroy]
+  before_action :set_work_order, only: %i[show edit update destroy close]
   before_action :load_units, only: %i[new create]
 
   def index
@@ -8,9 +8,15 @@ class WorkOrdersController < ApplicationController
     @status_filter = params[:status]
   end
 
+  def schedule
+    authorize WorkOrder, :schedule?
+    @assignments = scheduled_assignments
+  end
+
   def show
     authorize @work_order
     @contractors = User.contractor.order(:last_name, :first_name) if policy(@work_order).assign?
+    @events = @work_order.work_order_events.includes(:user).chronological
   end
 
   def new
@@ -29,6 +35,7 @@ class WorkOrdersController < ApplicationController
       @work_order.errors.add(:unit_id, "is not available to you")
       render :new, status: :unprocessable_entity
     elsif @work_order.save
+      Notifications::Deliver.work_order_created(@work_order, actor: current_user)
       redirect_to @work_order, notice: "Work request submitted."
     else
       render :new, status: :unprocessable_entity
@@ -41,11 +48,22 @@ class WorkOrdersController < ApplicationController
 
   def update
     authorize @work_order
-    if @work_order.update(update_params)
-      redirect_to @work_order, notice: "Work order updated."
+
+    if update_status_param.present? && policy(@work_order).change_status?
+      apply_status_transition
+    elsif policy(@work_order).edit_details?
+      apply_detail_update
     else
-      render :edit, status: :unprocessable_entity
+      redirect_to @work_order, alert: "You are not allowed to update this work order."
     end
+  end
+
+  def close
+    authorize @work_order, :close?
+    WorkOrders::Closer.call(@work_order, user: current_user, closure_reason: params[:closure_reason])
+    redirect_to @work_order, notice: "Work request closed."
+  rescue WorkOrders::Closer::Error => e
+    redirect_to @work_order, alert: e.message
   end
 
   def destroy
@@ -72,11 +90,48 @@ class WorkOrdersController < ApplicationController
   end
 
   def create_params
-    params.require(:work_order).permit(:title, :description, :priority, :unit_id, :lease_id, photos: [])
+    params.require(:work_order).permit(:title, :description, :priority, :category, :unit_id, :lease_id, photos: [])
   end
 
   def update_params
-    params.require(:work_order).permit(:title, :description, :priority, :status, :lease_id, photos: [])
+    params.require(:work_order).permit(:title, :description, :priority, :category, :status, :lease_id, photos: [])
+  end
+
+  def update_status_param
+    update_params[:status]
+  end
+
+  def apply_status_transition
+    WorkOrders::TransitionStatus.call(
+      work_order: @work_order,
+      to: update_status_param,
+      user: current_user,
+      closure_reason: params.dig(:work_order, :closure_reason)
+    )
+    redirect_to @work_order, notice: "Work order updated."
+  rescue WorkOrders::TransitionStatus::InvalidTransition => e
+    redirect_to edit_work_order_path(@work_order), alert: e.message
+  end
+
+  def apply_detail_update
+    tracked = @work_order.attributes.slice("title", "description", "priority", "category")
+    if @work_order.update(update_params.except(:status))
+      changes = tracked.each_with_object({}) do |(field, old_value), memo|
+        new_value = @work_order.public_send(field)
+        memo[field] = [ old_value, new_value ] if old_value != new_value
+      end
+      if changes.any?
+        WorkOrders::RecordEvent.call(
+          work_order: @work_order,
+          user: current_user,
+          action: "updated",
+          metadata: { "changes" => changes }
+        )
+      end
+      redirect_to @work_order, notice: "Work order updated."
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 
   def filtered_work_orders
@@ -88,6 +143,19 @@ class WorkOrdersController < ApplicationController
       scope.where(status: :completed)
     when "cancelled"
       scope.where(status: :cancelled)
+    else
+      scope
+    end
+  end
+
+  def scheduled_assignments
+    scope = WorkOrderAssignment.includes(work_order: { unit: :property }, contractor: [])
+                               .where.not(scheduled_at: nil)
+                               .order(:scheduled_at)
+    if current_user.contractor?
+      scope.where(contractor_id: current_user.id)
+    elsif current_user.landlord?
+      scope.joins(work_order: { unit: :property }).where(properties: { landlord_id: current_user.id })
     else
       scope
     end

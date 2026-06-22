@@ -2,15 +2,26 @@ class WorkOrder < ApplicationRecord
   belongs_to :unit
   belongs_to :lease, optional: true
   belongs_to :created_by, class_name: "User", inverse_of: :created_work_orders
+  belongs_to :closed_by, class_name: "User", optional: true
 
   has_many :work_order_assignments, dependent: :destroy
   has_many :contractors, through: :work_order_assignments, source: :contractor
+  has_many :work_order_events, dependent: :destroy
   has_one :conversation, dependent: :nullify
 
   has_many_attached :photos
 
   enum :priority, { low: 0, medium: 1, high: 2, urgent: 3 }, prefix: true
   enum :status, { open: 0, in_progress: 1, on_hold: 2, completed: 3, cancelled: 4 }, prefix: true
+  enum :category, {
+    plumbing: "plumbing",
+    electrical: "electrical",
+    hvac: "hvac",
+    appliance: "appliance",
+    pest: "pest",
+    general: "general",
+    other: "other"
+  }, prefix: true
 
   validates :title, presence: true
 
@@ -29,8 +40,14 @@ class WorkOrder < ApplicationRecord
     where(created_by_id: user.id).or(where(unit_id: leased_unit_ids))
   }
 
+  after_create :log_created_event
+
   delegate :property, to: :unit
   delegate :landlord, to: :unit
+
+  def active?
+    !status_completed? && !status_cancelled?
+  end
 
   def status_color
     {
@@ -49,5 +66,11 @@ class WorkOrder < ApplicationRecord
       "high" => :yellow,
       "urgent" => :red
     }.fetch(priority, :gray)
+  end
+
+  private
+
+  def log_created_event
+    WorkOrders::RecordEvent.call(work_order: self, user: created_by, action: "created")
   end
 end

@@ -19,6 +19,25 @@ RSpec.describe "Dashboard" do
     expect(page).to have_link("Manage properties")
   end
 
+  it "shows expiring leases for landlords" do
+    landlord = create(:landlord)
+    property = create(:property, landlord: landlord, name: "Sunset Apts")
+    unit = create(:unit, property: property, label: "3C")
+    tenant = create(:tenant)
+    create(
+      :lease,
+      unit: unit,
+      tenant: tenant,
+      status: :active,
+      end_date: 3.weeks.from_now.to_date
+    )
+
+    sign_in_and_visit(landlord)
+
+    expect(page).to have_content("Leases expiring soon")
+    expect(page).to have_content("Sunset Apts · 3C")
+  end
+
   it "shows tenant leases and new work request CTA" do
     tenant = create(:tenant)
     landlord = create(:landlord)
@@ -32,6 +51,24 @@ RSpec.describe "Dashboard" do
     expect(page).to have_content("Your leases")
     expect(page).to have_content("Oak Apartments · 2B")
     expect(page).to have_link("New work request")
+  end
+
+  it "warns tenants when a lease is ending soon" do
+    tenant = create(:tenant)
+    property = create(:property, name: "Pine Place")
+    unit = create(:unit, property: property, label: "1A")
+    create(
+      :lease,
+      unit: unit,
+      tenant: tenant,
+      status: :active,
+      end_date: 3.weeks.from_now.to_date
+    )
+
+    sign_in_and_visit(tenant)
+
+    expect(page).to have_content("Lease ending soon")
+    expect(page).to have_content("Pine Place · 1A")
   end
 
   it "shows contractor assigned work count" do

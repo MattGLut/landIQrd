@@ -14,7 +14,10 @@
   </div>
 
   <div class="flex items-center gap-4 text-sm">
-    <span class="hidden text-muted sm:inline"><%= current_user.display_name %></span>
+    <%= link_to edit_account_path, class: "flex items-center gap-2 text-muted hover:text-primary" do %>
+      <%= render "shared/user_avatar", user: current_user, size: :sm %>
+      <span class="hidden text-muted sm:inline"><%= current_user.display_name %></span>
+    <% end %>
     <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "text-muted hover:text-primary" %>
   </div>
 </header>

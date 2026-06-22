@@ -19,9 +19,9 @@ class ApplicationController < ActionController::Base
 
   private
 
-  # Devise controllers and personal pages (the dashboard) don't go through Pundit.
+  # Devise controllers and personal pages don't go through Pundit.
   def pundit_exempt?
-    devise_controller?
+    devise_controller? || controller_name == "accounts" || controller_name == "dashboard"
   end
 
   def verify_index_scope?

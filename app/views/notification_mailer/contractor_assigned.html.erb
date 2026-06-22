@@ -1,0 +1,5 @@
+Hi <%= @assignment.contractor.greeting_name %>,
+
+You have been assigned to "<%= @work_order.title %>" at <%= @work_order.unit.property.name %>.
+
+<%= link_to "View work order", work_order_url(@work_order) %>

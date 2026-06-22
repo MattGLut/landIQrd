@@ -136,7 +136,7 @@ RSpec.describe "Work orders" do
   end
 
   describe "deleting a work order", js: true do
-    it "confirms deletion via turbo dialog" do
+    it "lets a landlord confirm deletion via turbo dialog" do
       sign_in_and_visit(landlord)
       work_order = create(:work_order, unit: unit, created_by: tenant, title: "Remove me")
 
@@ -147,6 +147,22 @@ RSpec.describe "Work orders" do
 
       expect(page).to have_content("Work order deleted.")
       expect(page).not_to have_content("Remove me")
+    end
+  end
+
+  describe "closing a work order as tenant" do
+    it "closes the request with a reason instead of deleting" do
+      sign_in_and_visit(tenant)
+      work_order = create(:work_order, unit: unit, created_by: tenant, title: "Close me")
+
+      visit work_order_path(work_order)
+      expect(page).not_to have_button("Delete")
+      fill_in "Reason for closing", with: "Fixed it myself"
+      click_button "Close request"
+
+      expect(page).to have_content("Work request closed.")
+      expect(page).to have_content("Fixed it myself")
+      expect(page).to have_content("Cancelled")
     end
   end
 end

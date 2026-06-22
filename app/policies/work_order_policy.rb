@@ -14,11 +14,33 @@ class WorkOrderPolicy < ApplicationPolicy
   end
 
   def update?
-    user.admin? || landlord_owner? || creator? || assigned_contractor?
+    edit_details? || change_status?
+  end
+
+  def edit?
+    edit_details? || change_status?
+  end
+
+  def edit_details?
+    return false unless record.active?
+
+    user.admin? || landlord_owner? || creator?
+  end
+
+  def change_status?
+    user.admin? || landlord_owner?
   end
 
   def destroy?
-    user.admin? || landlord_owner? || creator?
+    user.admin? || landlord_owner?
+  end
+
+  def close?
+    creator? && record.active?
+  end
+
+  def schedule?
+    user.landlord? || user.contractor? || user.admin?
   end
 
   # Only landlords/admins manage contractor assignments.

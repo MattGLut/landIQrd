@@ -2,8 +2,17 @@
 
 <h2 class="mb-6 text-2xl font-bold text-primary">Create your account</h2>
 
+<% if @invitation %>
+  <p class="mb-4 rounded-lg border border-accent/30 bg-accent/10 p-4 text-sm text-primary">
+    You've been invited to join <%= @invitation.unit.property.name %> · <%= @invitation.unit.label %>.
+  </p>
+<% end %>
+
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "space-y-4 rounded-lg border border-border-default bg-surface p-6" }) do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>
+  <% if params[:invite_token].present? %>
+    <%= hidden_field_tag :invite_token, params[:invite_token] %>
+  <% end %>
 
   <div class="grid grid-cols-2 gap-4">
     <div>
@@ -16,10 +25,12 @@
     </div>
   </div>
 
+  <% unless @invitation %>
   <div>
     <%= f.label :role, "I am a", class: "block text-sm font-medium text-muted" %>
     <%= f.select :role, options_for_select(%w[tenant landlord contractor].map { |r| [ r.titleize, r ] }, resource.role), {}, class: "input-dark" %>
   </div>
+  <% end %>
 
   <div>
     <%= f.label :company_name, "Company (optional)", class: "block text-sm font-medium text-muted" %>

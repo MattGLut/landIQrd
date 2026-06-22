@@ -1,0 +1,45 @@
+<% content_for :title, "Invite tenant" %>
+
+<%= property_breadcrumbs(
+  { label: @unit.property.name, path: property_path(@unit.property) },
+  { label: @unit.label, path: unit_path(@unit) },
+  { label: "Invite tenant", path: new_unit_lease_invitation_path(@unit) }
+) %>
+
+<%= render "shared/page_header", title: "Invite tenant", subtitle: "#{@unit.property.name} · #{@unit.label}" %>
+
+<%= form_with model: @invitation, url: unit_lease_invitations_path(@unit), class: "space-y-4 rounded-lg border border-border-default bg-surface p-6" do |f| %>
+  <%= render "shared/form_errors", resource: @invitation %>
+
+  <div>
+    <%= f.label :email, class: "block text-sm font-medium text-muted" %>
+    <%= f.email_field :email, class: "input-dark", placeholder: "tenant@example.com" %>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <%= f.label :start_date, class: "block text-sm font-medium text-muted" %>
+      <%= f.date_field :start_date, class: "input-dark" %>
+    </div>
+    <div>
+      <%= f.label :end_date, class: "block text-sm font-medium text-muted" %>
+      <%= f.date_field :end_date, class: "input-dark" %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <%= f.label :rent_amount, "Monthly rent", class: "block text-sm font-medium text-muted" %>
+      <%= f.number_field :rent_amount, step: 0.01, class: "input-dark" %>
+    </div>
+    <div>
+      <%= f.label :deposit_amount, "Security deposit", class: "block text-sm font-medium text-muted" %>
+      <%= f.number_field :deposit_amount, step: 0.01, class: "input-dark" %>
+    </div>
+  </div>
+
+  <div class="flex gap-2">
+    <%= f.submit "Send invitation", class: button_classes(:primary) %>
+    <%= render "shared/button", label: "Cancel", url: unit_path(@unit), variant: :secondary %>
+  </div>
+<% end %>

@@ -14,7 +14,12 @@
 
 <div class="mb-3 flex items-center justify-between">
   <h2 class="text-lg font-semibold text-primary">Leases</h2>
-  <%= render "shared/button", label: "New lease", url: new_unit_lease_path(@unit), variant: :ghost, size: :sm %>
+  <div class="flex gap-2">
+    <% if policy(@unit).update? %>
+      <%= render "shared/button", label: "Invite tenant", url: new_unit_lease_invitation_path(@unit), variant: :ghost, size: :sm %>
+    <% end %>
+    <%= render "shared/button", label: "New lease", url: new_unit_lease_path(@unit), variant: :ghost, size: :sm %>
+  </div>
 </div>
 
 <% if @unit.leases.any? %>

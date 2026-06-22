@@ -25,4 +25,23 @@ RSpec.describe "Registrations", type: :request do
     post user_registration_path, params: params
     expect(User.last.role).to eq("tenant")
   end
+
+  it "accepts a lease invitation during signup" do
+    landlord = create(:landlord)
+    property = create(:property, landlord: landlord)
+    unit = create(:unit, property: property)
+    invitation = create(:lease_invitation, unit: unit, invited_by: landlord, email: "invited@example.com")
+
+    params = base_params.deep_merge(
+      user: { email: "invited@example.com", role: "tenant" }
+    )
+
+    expect {
+      post user_registration_path, params: params.merge(invite_token: invitation.token)
+    }.to change(User, :count).by(1)
+      .and change(Lease, :count).by(1)
+
+    expect(User.last.role).to eq("tenant")
+    expect(invitation.reload).to be_status_accepted
+  end
 end

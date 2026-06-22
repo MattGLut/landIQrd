@@ -8,6 +8,14 @@ RSpec.describe "Leases" do
 
   before do
     tenant
+    create(
+      :lease,
+      unit: create(:unit, property: property),
+      tenant: tenant,
+      status: :ended,
+      start_date: 2.years.ago.to_date,
+      end_date: 1.year.ago.to_date
+    )
     sign_in_and_visit(landlord, unit_path(unit))
   end
 

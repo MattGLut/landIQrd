@@ -1,0 +1,5 @@
+New message from <%= @message.author.display_name %>
+
+<%= @message.body %>
+
+Reply: <%= conversation_url(@conversation) %>
