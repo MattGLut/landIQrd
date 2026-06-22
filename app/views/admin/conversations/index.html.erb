@@ -6,8 +6,8 @@
 <div class="space-y-2">
   <% @conversations.each do |conversation| %>
     <%= link_to admin_conversation_path(conversation), class: "block rounded-lg border border-border-default bg-surface p-4 transition-colors hover:border-accent/50" do %>
-      <div class="flex items-center justify-between">
-        <p class="font-medium text-primary"><%= conversation.title %></p>
+      <div class="flex items-center gap-2">
+        <p class="min-w-0 flex-1 truncate font-medium text-primary"><%= conversation.title %></p>
         <% if conversation.work_order %><%= status_badge "Work order", :indigo %><% end %>
       </div>
       <p class="mt-1 text-xs text-muted"><%= conversation.participants.map(&:display_name).join(", ") %></p>

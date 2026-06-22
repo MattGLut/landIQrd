@@ -1,13 +1,13 @@
 <% content_for :title, @user.full_name %>
 
-<%= render "shared/page_header", title: @user.full_name, subtitle: @user.email, action: capture do %>
-  <div class="flex gap-2">
-    <%= render "shared/button", label: "Edit", url: edit_admin_user_path(@user), variant: :secondary %>
-    <% unless @user == current_user %>
-      <%= render "shared/button", label: "Delete", url: admin_user_path(@user), variant: :danger, method: :delete, form: { data: { turbo_confirm: "Delete this user?" } } %>
-    <% end %>
-  </div>
+<% header_actions = capture do %>
+  <%= render "shared/button", label: "Edit", url: edit_admin_user_path(@user), variant: :secondary, size: :sm %>
+  <% unless @user == current_user %>
+    <%= render "shared/button", label: "Delete", url: admin_user_path(@user), variant: :danger_link, size: :sm, method: :delete, form: { data: { turbo_confirm: "Delete this user?" }, class: "inline" } %>
+  <% end %>
 <% end %>
+
+<%= render "shared/page_header", title: @user.full_name, subtitle: @user.email, action: header_actions %>
 
 <div class="mb-2"><%= status_badge @user.role.titleize, :gray %></div>
 

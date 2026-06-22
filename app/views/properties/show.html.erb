@@ -1,9 +1,11 @@
 <% content_for :title, @property.name %>
 
-<%= render "shared/page_header", title: @property.name, subtitle: @property.full_address.presence || "No address on file", action: safe_join([
-  render("shared/button", label: "Edit", url: edit_property_path(@property), variant: :secondary),
-  render("shared/button", label: "Delete", url: property_path(@property), variant: :danger, method: :delete, form: { data: { turbo_confirm: "Delete this property and all its units?" } })
-]) %>
+<% header_actions = capture do %>
+  <%= render "shared/button", label: "Edit", url: edit_property_path(@property), variant: :secondary, size: :sm %>
+  <%= render "shared/button", label: "Delete", url: property_path(@property), variant: :danger_link, size: :sm, method: :delete, form: { data: { turbo_confirm: "Delete this property and all its units?" }, class: "inline" } %>
+<% end %>
+
+<%= render "shared/page_header", title: @property.name, subtitle: @property.full_address.presence || "No address on file", action: header_actions %>
 
 <div class="mb-3 flex items-center justify-between">
   <h2 class="text-lg font-semibold text-primary">Units</h2>
@@ -13,15 +15,17 @@
 <% if @property.units.any? %>
   <div class="space-y-2">
     <% @property.units.order(:label).each do |unit| %>
-      <div class="flex items-center justify-between rounded-lg border border-border-default bg-surface p-4">
-        <div>
-          <%= link_to unit.label, unit_path(unit), class: "font-medium text-accent hover:text-accent-hover" %>
-          <p class="text-sm text-muted">
-            <%= [ unit.bedrooms && "#{unit.bedrooms} bd", unit.bathrooms && "#{unit.bathrooms} ba", unit.square_feet && "#{unit.square_feet} sqft" ].compact.join(" \u00b7 ") %>
-          </p>
+      <%= link_to unit_path(unit), class: "block rounded-lg border border-border-default bg-surface p-4 transition-colors hover:border-accent/50" do %>
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="font-medium text-primary"><%= unit.label %></p>
+            <p class="text-sm text-muted">
+              <%= [ unit.bedrooms && "#{unit.bedrooms} bd", unit.bathrooms && "#{unit.bathrooms} ba", unit.square_feet && "#{unit.square_feet} sqft" ].compact.join(" \u00b7 ") %>
+            </p>
+          </div>
+          <span class="text-sm text-muted"><%= pluralize(unit.leases.size, "lease") %></span>
         </div>
-        <span class="text-sm text-muted"><%= pluralize(unit.leases.size, "lease") %></span>
-      </div>
+      <% end %>
     <% end %>
   </div>
 <% else %>

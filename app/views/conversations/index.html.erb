@@ -8,8 +8,8 @@
         <% @conversations.each do |conversation| %>
           <% active = @conversation&.id == conversation.id %>
           <%= link_to conversation_path(conversation), class: "block rounded-lg border p-3 transition-colors #{active ? 'border-accent/50 bg-accent/10' : 'border-border-default bg-surface hover:border-accent/30'}" do %>
-            <div class="flex items-center justify-between">
-              <p class="truncate font-medium text-primary"><%= conversation.title %></p>
+            <div class="flex items-center gap-2">
+              <p class="min-w-0 flex-1 truncate font-medium text-primary"><%= conversation.title %></p>
               <% if conversation.work_order %>
                 <%= status_badge "Work order", :indigo %>
               <% end %>

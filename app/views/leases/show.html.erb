@@ -6,19 +6,19 @@
   { label: "Lease", path: lease_path(@lease) }
 ) %>
 
-<%= render "shared/page_header", title: "#{@lease.unit.property.name} · #{@lease.unit.label}", subtitle: @lease.unit.property.full_address, action: capture do %>
-  <div class="flex flex-wrap gap-2">
-    <% if current_user.tenant? %>
-      <%= button_to "Message landlord", conversations_path, params: { recipient_id: @lease.unit.property.landlord_id }, method: :post, class: button_classes(:secondary) %>
-    <% elsif policy(@lease).update? %>
-      <%= button_to "Message tenant", conversations_path, params: { recipient_id: @lease.tenant_id }, method: :post, class: button_classes(:secondary) %>
-    <% end %>
-    <% if policy(@lease).update? %>
-      <%= render "shared/button", label: "Edit", url: edit_lease_path(@lease), variant: :secondary %>
-      <%= render "shared/button", label: "Delete", url: lease_path(@lease), variant: :danger, method: :delete, form: { data: { turbo_confirm: "Delete this lease?" } } %>
-    <% end %>
-  </div>
+<% header_actions = capture do %>
+  <% if current_user.tenant? %>
+    <%= button_to "Message landlord", conversations_path, params: { recipient_id: @lease.unit.property.landlord_id }, method: :post, class: button_classes(:secondary, size: :sm), form: { class: "inline" } %>
+  <% elsif policy(@lease).update? %>
+    <%= button_to "Message tenant", conversations_path, params: { recipient_id: @lease.tenant_id }, method: :post, class: button_classes(:secondary, size: :sm), form: { class: "inline" } %>
+  <% end %>
+  <% if policy(@lease).update? %>
+    <%= render "shared/button", label: "Edit", url: edit_lease_path(@lease), variant: :secondary, size: :sm %>
+    <%= render "shared/button", label: "Delete", url: lease_path(@lease), variant: :danger_link, size: :sm, method: :delete, form: { data: { turbo_confirm: "Delete this lease?" }, class: "inline" } %>
+  <% end %>
 <% end %>
+
+<%= render "shared/page_header", title: "#{@lease.unit.property.name} · #{@lease.unit.label}", subtitle: @lease.unit.property.full_address, action: header_actions %>
 
 <dl class="grid grid-cols-2 gap-4 rounded-lg border border-border-default bg-surface p-6 sm:grid-cols-4">
   <div>
