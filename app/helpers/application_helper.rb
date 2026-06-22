@@ -1,6 +1,6 @@
 module ApplicationHelper
-  def sidebar_link(path, label, icon: nil, badge: nil)
-    classes = sidebar_link_classes(path)
+  def sidebar_link(path, label, icon: nil, badge: nil, exclude_paths: [])
+    classes = sidebar_link_classes(path, exclude_paths:)
     link_to path, class: classes do
       safe_join([
         icon_svg(icon),
@@ -10,17 +10,26 @@ module ApplicationHelper
     end
   end
 
-  def sidebar_link_classes(path)
-    active = if path == authenticated_root_path
-      current_page?(path)
-    else
-      request.path == path.to_s || request.path.start_with?("#{path}/")
-    end
+  def sidebar_link_classes(path, exclude_paths: [])
+    active = sidebar_link_active?(path, exclude_paths:)
     base = "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors"
     if active
       "#{base} bg-accent/10 text-accent border-l-2 border-accent"
     else
       "#{base} text-muted hover:bg-elevated hover:text-primary border-l-2 border-transparent"
+    end
+  end
+
+  def sidebar_link_active?(path, exclude_paths: [])
+    excluded_paths = Array(exclude_paths)
+    if path == authenticated_root_path
+      current_page?(path)
+    elsif request.path == path.to_s
+      true
+    elsif excluded_paths.any? { |excluded| request.path == excluded.to_s || request.path.start_with?("#{excluded}/") }
+      false
+    else
+      request.path.start_with?("#{path}/")
     end
   end
 

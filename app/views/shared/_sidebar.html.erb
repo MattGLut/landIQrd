@@ -10,7 +10,7 @@
     <% if current_user.landlord? %>
       <%= sidebar_link properties_path, "Properties", icon: :building %>
     <% end %>
-    <%= sidebar_link work_orders_path, work_orders_nav_label, icon: :wrench %>
+    <%= sidebar_link work_orders_path, work_orders_nav_label, icon: :wrench, exclude_paths: schedule_work_orders_path %>
     <% if current_user.landlord? || current_user.contractor? %>
       <%= sidebar_link schedule_work_orders_path, "Schedule", icon: :calendar %>
     <% end %>
