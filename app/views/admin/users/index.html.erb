@@ -1,0 +1,34 @@
+<% content_for :title, "Admin - Users" %>
+
+<h1 class="mb-6 text-2xl font-bold">Admin console</h1>
+<%= render "admin/shared/nav" %>
+
+<div class="mb-4 flex items-center justify-between">
+  <h2 class="text-lg font-semibold">Users</h2>
+  <%= link_to "New user", new_admin_user_path, class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500" %>
+</div>
+
+<div class="overflow-hidden rounded-lg border border-gray-200 bg-white">
+  <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <thead class="bg-gray-50 text-left text-gray-500">
+      <tr>
+        <th class="px-4 py-2">Name</th>
+        <th class="px-4 py-2">Email</th>
+        <th class="px-4 py-2">Role</th>
+        <th class="px-4 py-2"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      <% @users.each do |user| %>
+        <tr>
+          <td class="px-4 py-2 font-medium"><%= user.full_name %></td>
+          <td class="px-4 py-2 text-gray-600"><%= user.email %></td>
+          <td class="px-4 py-2"><%= status_badge user.role.titleize, :gray %></td>
+          <td class="px-4 py-2 text-right">
+            <%= link_to "View", admin_user_path(user), class: "text-indigo-600 hover:text-indigo-500" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

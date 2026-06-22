@@ -1,0 +1,24 @@
+<% content_for :title, @property.name %>
+
+<h1 class="mb-6 text-2xl font-bold">Admin console</h1>
+<%= render "admin/shared/nav" %>
+
+<div class="rounded-lg border border-gray-200 bg-white p-6">
+  <h2 class="text-xl font-bold"><%= @property.name %></h2>
+  <p class="text-gray-500"><%= @property.full_address %></p>
+  <p class="mt-2 text-sm text-gray-500">Landlord: <%= @property.landlord.display_name %> (<%= @property.landlord.email %>)</p>
+
+  <h3 class="mt-4 mb-2 font-semibold">Units</h3>
+  <ul class="space-y-1 text-sm">
+    <% @property.units.each do |unit| %>
+      <li class="flex justify-between">
+        <span><%= unit.label %></span>
+        <span class="text-gray-500"><%= pluralize(unit.leases.size, "lease") %></span>
+      </li>
+    <% end %>
+  </ul>
+</div>
+
+<p class="mt-4">
+  <%= link_to "Back to properties", admin_properties_path, class: "text-sm text-indigo-600 hover:text-indigo-500" %>
+</p>

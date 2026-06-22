@@ -1,0 +1,27 @@
+<% content_for :title, "Admin - Properties" %>
+
+<h1 class="mb-6 text-2xl font-bold">Admin console</h1>
+<%= render "admin/shared/nav" %>
+
+<div class="overflow-hidden rounded-lg border border-gray-200 bg-white">
+  <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <thead class="bg-gray-50 text-left text-gray-500">
+      <tr>
+        <th class="px-4 py-2">Property</th>
+        <th class="px-4 py-2">Landlord</th>
+        <th class="px-4 py-2">Units</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      <% @properties.each do |property| %>
+        <tr>
+          <td class="px-4 py-2">
+            <%= link_to property.name, admin_property_path(property), class: "font-medium text-indigo-600 hover:text-indigo-500" %>
+          </td>
+          <td class="px-4 py-2 text-gray-600"><%= property.landlord.display_name %></td>
+          <td class="px-4 py-2"><%= property.units.size %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

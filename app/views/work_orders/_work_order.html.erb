@@ -1,0 +1,10 @@
+<%= link_to work_order_path(work_order), class: "flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 hover:border-indigo-300" do %>
+  <div>
+    <p class="font-medium"><%= work_order.title %></p>
+    <p class="text-sm text-gray-500"><%= work_order.unit.property.name %> &middot; <%= work_order.unit.label %></p>
+  </div>
+  <div class="flex items-center gap-2">
+    <%= status_badge work_order.priority.titleize, work_order.priority_color %>
+    <%= status_badge work_order.status.titleize.gsub("_", " "), work_order.status_color %>
+  </div>
+<% end %>

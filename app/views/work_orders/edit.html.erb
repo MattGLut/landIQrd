@@ -1,0 +1,6 @@
+<% content_for :title, "Edit work order" %>
+
+<div class="mx-auto max-w-2xl">
+  <h1 class="mb-6 text-2xl font-bold">Edit work order</h1>
+  <%= render "form", work_order: @work_order, units: [], form_url: work_order_path(@work_order), cancel_url: work_order_path(@work_order) %>
+</div>

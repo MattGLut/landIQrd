@@ -1,0 +1,21 @@
+<% content_for :title, @conversation.title %>
+
+<h1 class="mb-6 text-2xl font-bold">Admin console</h1>
+<%= render "admin/shared/nav" %>
+
+<div class="mb-4">
+  <h2 class="text-xl font-bold"><%= @conversation.title %></h2>
+  <p class="text-sm text-gray-500"><%= @conversation.participants.map(&:display_name).join(", ") %></p>
+</div>
+
+<div class="space-y-3 rounded-lg border border-gray-200 bg-white p-4">
+  <% if @messages.any? %>
+    <%= render @messages %>
+  <% else %>
+    <p class="text-sm text-gray-500">No messages.</p>
+  <% end %>
+</div>
+
+<p class="mt-4">
+  <%= link_to "Back to conversations", admin_conversations_path, class: "text-sm text-indigo-600 hover:text-indigo-500" %>
+</p>
