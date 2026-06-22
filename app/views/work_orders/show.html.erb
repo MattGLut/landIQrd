@@ -10,12 +10,22 @@
   <% end %>
 <% end %>
 
-<%= render "shared/page_header", title: @work_order.title, subtitle: "#{@work_order.unit.property.name} · #{@work_order.unit.label}", action: header_actions %>
+<div class="mb-6 flex flex-wrap items-start justify-between gap-4">
+  <div class="min-w-0">
+    <div class="flex flex-wrap items-center gap-3">
+      <h1 class="text-2xl font-bold text-primary"><%= @work_order.title %></h1>
+      <%= render "work_orders/status_control", work_order: @work_order %>
+    </div>
+    <p class="mt-1 text-sm text-muted"><%= @work_order.unit.property.name %> · <%= @work_order.unit.label %></p>
+  </div>
+  <% if header_actions.present? %>
+    <div class="flex shrink-0 flex-wrap items-center justify-end gap-2"><%= header_actions %></div>
+  <% end %>
+</div>
 
-<div class="mb-2 flex flex-wrap gap-2">
+<div class="mb-2 flex flex-wrap items-center gap-2">
   <%= status_badge @work_order.category.titleize, :indigo %>
   <%= status_badge @work_order.priority.titleize, @work_order.priority_color %>
-  <%= status_badge @work_order.status.titleize.gsub("_", " "), @work_order.status_color %>
 </div>
 
 <div class="rounded-lg border border-border-default bg-surface p-6">
@@ -26,25 +36,13 @@
   </p>
   <% if @work_order.status_cancelled? && @work_order.closure_reason.present? %>
     <div class="mt-4 rounded-md border border-border-default bg-elevated p-3">
-      <p class="text-sm font-medium text-muted">Closed by <%= @work_order.closed_by&.display_name || "Unknown" %></p>
+      <p class="text-sm font-medium text-muted">
+        <%= work_order_status_label("cancelled", creator: @work_order.created_by) %> by <%= @work_order.closed_by&.display_name || "Unknown" %>
+      </p>
       <p class="mt-1 text-sm text-primary"><%= @work_order.closure_reason %></p>
     </div>
   <% end %>
 </div>
-
-<% if policy(@work_order).close? %>
-  <div class="mt-6 rounded-lg border border-border-default bg-surface p-6">
-    <h2 class="mb-3 text-lg font-semibold text-primary">Close request</h2>
-    <p class="mb-4 text-sm text-muted">If this issue is resolved or no longer needed, close it with a brief reason.</p>
-    <%= form_with url: close_work_order_path(@work_order), method: :post, class: "space-y-4" do |f| %>
-      <div>
-        <%= f.label :closure_reason, "Reason for closing", class: "block text-sm font-medium text-muted" %>
-        <%= f.text_area :closure_reason, rows: 3, required: true, class: "input-dark", placeholder: "e.g. Fixed it myself, no longer an issue..." %>
-      </div>
-      <%= f.submit "Close request", class: button_classes(:secondary) %>
-    <% end %>
-  </div>
-<% end %>
 
 <% if @work_order.photos.attached? %>
   <div class="mt-6">

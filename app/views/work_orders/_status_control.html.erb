@@ -1,0 +1,110 @@
+<% if work_order_status_manageable?(policy(work_order)) %>
+  <% status_options = work_order_status_options(work_order, policy(work_order)) %>
+  <% if status_options.any? %>
+    <% current_label = work_order_status_label(work_order.status, creator: work_order.created_by) %>
+    <div data-controller="work-order-status"
+         data-work-order-status-current-status-value="<%= work_order.status %>"
+         data-work-order-status-close-only-value="<%= policy(work_order).close? && !policy(work_order).change_status? %>"
+         data-action="keydown@window->work-order-status#handleKeydown">
+      <div class="relative inline-flex shrink-0">
+        <button type="button"
+              aria-label="Change status"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+              data-work-order-status-target="trigger"
+              data-action="work-order-status#toggleMenu"
+              class="<%= work_order_status_pill_classes(work_order.status_color) %>">
+        <span data-work-order-status-target="label"><%= current_label %></span>
+        <svg data-work-order-status-target="chevron"
+             class="h-3.5 w-3.5 shrink-0 opacity-70 transition-transform"
+             xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 20 20"
+             fill="currentColor"
+             aria-hidden="true">
+          <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd" />
+        </svg>
+      </button>
+
+      <ul role="listbox"
+          aria-label="Status options"
+          data-work-order-status-target="menu"
+          class="absolute left-0 top-full z-30 mt-1.5 hidden min-w-44 overflow-hidden rounded-lg border border-border-default bg-surface py-1 shadow-xl">
+        <% status_options.each do |label, value| %>
+          <li role="presentation">
+            <button type="button"
+                    role="option"
+                    data-status="<%= value %>"
+                    data-action="work-order-status#chooseOption"
+                    class="block w-full px-3 py-2 text-left text-sm transition-colors hover:bg-elevated <%= value == "cancelled" ? "text-danger hover:bg-danger/10" : "text-primary" %>">
+              <%= label %>
+            </button>
+          </li>
+        <% end %>
+      </ul>
+
+      <%= form_with model: work_order,
+                    url: work_order_path(work_order),
+                    method: :patch,
+                    data: { work_order_status_target: "statusForm" },
+                    class: "hidden" do |f| %>
+        <%= f.hidden_field :status, data: { work_order_status_target: "statusField" } %>
+        <%= f.hidden_field :closure_reason, data: { work_order_status_target: "closureField" } %>
+      <% end %>
+
+      <% if policy(work_order).close? %>
+        <%= form_with url: close_work_order_path(work_order),
+                      method: :post,
+                      data: { work_order_status_target: "closeForm" },
+                      class: "hidden" do %>
+          <input type="hidden" name="closure_reason" data-work-order-status-target="closeReasonField">
+        <% end %>
+      <% end %>
+      </div>
+
+      <dialog data-work-order-status-target="dialog"
+              class="fixed top-1/2 left-1/2 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border-default bg-surface p-0 text-primary shadow-xl backdrop:bg-black/60 open:animate-none">
+        <div class="p-6">
+          <h2 class="text-lg font-semibold text-primary">
+            <%= policy(work_order).close? && !policy(work_order).change_status? ? "Close request" : "Cancel work order" %>
+          </h2>
+          <p class="mt-2 text-sm text-muted">
+            <% if policy(work_order).close? && !policy(work_order).change_status? %>
+              Tell us why you're closing this request.
+            <% else %>
+              Optionally share why this work order is being cancelled.
+            <% end %>
+          </p>
+          <div class="mt-4">
+            <label for="work_order_closure_reason_<%= work_order.id %>" class="block text-sm font-medium text-muted">
+              Reason
+            </label>
+            <textarea id="work_order_closure_reason_<%= work_order.id %>"
+                      data-work-order-status-target="reason"
+                      rows="3"
+                      class="input-dark"
+                      placeholder="e.g. Fixed it myself, no longer an issue..."
+                      <%= "required" if policy(work_order).close? && !policy(work_order).change_status? %>></textarea>
+          </div>
+          <div class="mt-6 flex justify-end gap-2">
+            <button type="button"
+                    data-action="work-order-status#cancel"
+                    class="<%= button_classes(:secondary, size: :sm) %>">
+              Cancel
+            </button>
+            <button type="button"
+                    data-action="work-order-status#confirm"
+                    class="<%= button_classes(:primary, size: :sm) %>">
+              Update status
+            </button>
+          </div>
+        </div>
+      </dialog>
+    </div>
+  <% else %>
+    <%= status_badge work_order_status_label(work_order.status, creator: work_order.created_by),
+                      work_order.status_color %>
+  <% end %>
+<% else %>
+  <%= status_badge work_order_status_label(work_order.status, creator: work_order.created_by),
+                    work_order.status_color %>
+<% end %>

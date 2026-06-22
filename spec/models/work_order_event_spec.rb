@@ -20,10 +20,10 @@ RSpec.describe WorkOrderEvent, type: :model do
         work_order: work_order,
         user: user,
         action: "status_changed",
-        metadata: { "from" => "open", "to" => "in_progress" }
+        metadata: { "from" => "open", "to" => "pending_management" }
       )
       expect(event.description).to include("Open")
-      expect(event.description).to include("In progress")
+      expect(event.description).to include("Pending management")
     end
 
     it "describes tenant closure with reason" do

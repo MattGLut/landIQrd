@@ -60,9 +60,9 @@ class WorkOrdersController < ApplicationController
 
   def close
     authorize @work_order, :close?
-    WorkOrders::Closer.call(@work_order, user: current_user, closure_reason: params[:closure_reason])
+    @work_order.close_with_reason!(user: current_user, closure_reason: params[:closure_reason])
     redirect_to @work_order, notice: "Work request closed."
-  rescue WorkOrders::Closer::Error => e
+  rescue WorkOrder::InvalidTransition => e
     redirect_to @work_order, alert: e.message
   end
 
@@ -102,14 +102,13 @@ class WorkOrdersController < ApplicationController
   end
 
   def apply_status_transition
-    WorkOrders::TransitionStatus.call(
-      work_order: @work_order,
-      to: update_status_param,
+    @work_order.transition_to!(
+      update_status_param,
       user: current_user,
       closure_reason: params.dig(:work_order, :closure_reason)
     )
     redirect_to @work_order, notice: "Work order updated."
-  rescue WorkOrders::TransitionStatus::InvalidTransition => e
+  rescue WorkOrder::InvalidTransition => e
     redirect_to edit_work_order_path(@work_order), alert: e.message
   end
 

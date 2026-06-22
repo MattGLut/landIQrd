@@ -1,11 +1,15 @@
 require "rails_helper"
 
 RSpec.describe "WorkOrders", type: :request do
+  include ActiveJob::TestHelper
+
   let(:landlord) { create(:landlord) }
   let(:property) { create(:property, landlord: landlord) }
   let(:unit) { create(:unit, property: property) }
   let(:tenant) { create(:tenant) }
   let!(:lease) { create(:lease, unit: unit, tenant: tenant) }
+
+  after { clear_enqueued_jobs }
 
   describe "GET /work_orders" do
     it "shows a contractor only their assigned work orders" do
@@ -44,16 +48,31 @@ RSpec.describe "WorkOrders", type: :request do
     it "lets the landlord change the status" do
       work_order = create(:work_order, unit: unit, created_by: tenant)
       sign_in landlord
-      patch work_order_path(work_order), params: { work_order: { status: "in_progress" } }
-      expect(work_order.reload).to be_status_in_progress
+      patch work_order_path(work_order), params: { work_order: { status: "pending_management" } }
+      expect(work_order.reload).to be_status_pending_management
     end
 
-    it "rejects invalid status transitions" do
+    it "rejects invalid transitions" do
       work_order = create(:work_order, unit: unit, created_by: tenant, status: :completed)
       sign_in landlord
-      patch work_order_path(work_order), params: { work_order: { status: "open" } }
+
+      expect {
+        patch work_order_path(work_order), params: { work_order: { status: "open" } }
+      }.not_to have_enqueued_mail(NotificationMailer, :work_order_status_changed)
+
       expect(work_order.reload).to be_status_completed
       expect(response).to redirect_to(edit_work_order_path(work_order))
+    end
+
+    it "enqueues status change notifications for valid landlord transitions" do
+      work_order = create(:work_order, unit: unit, created_by: tenant)
+      sign_in landlord
+
+      expect {
+        patch work_order_path(work_order), params: { work_order: { status: "pending_management" } }
+      }.to have_enqueued_mail(NotificationMailer, :work_order_status_changed)
+
+      expect(work_order.reload).to be_status_pending_management
     end
 
     it "logs detail updates as work order events" do
@@ -68,9 +87,16 @@ RSpec.describe "WorkOrders", type: :request do
     it "lets the creating tenant close with a reason" do
       work_order = create(:work_order, unit: unit, created_by: tenant)
       sign_in tenant
-      post close_work_order_path(work_order), params: { closure_reason: "No longer needed" }
-      expect(work_order.reload).to be_status_cancelled
+
+      expect {
+        post close_work_order_path(work_order), params: { closure_reason: "No longer needed" }
+      }.to have_enqueued_mail(NotificationMailer, :work_order_status_changed)
+
+      work_order.reload
+      expect(work_order).to be_status_cancelled
       expect(work_order.closure_reason).to eq("No longer needed")
+      expect(work_order.closed_by).to eq(tenant)
+      expect(work_order.work_order_events.last.action).to eq("closed")
       expect(response).to redirect_to(work_order_path(work_order))
     end
 
