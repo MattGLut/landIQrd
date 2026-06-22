@@ -1,8 +1,9 @@
 <% content_for :title, "Admin - Conversations" %>
 
-<%= render "shared/page_header", title: "Admin console" %>
+<%= render "shared/page_header", title: "Conversations" %>
 <%= render "admin/shared/nav" %>
 
+<% if @conversations.any? %>
 <div class="space-y-2">
   <% @conversations.each do |conversation| %>
     <%= link_to admin_conversation_path(conversation), class: "block rounded-lg border border-border-default bg-surface p-4 transition-colors hover:border-accent/50" do %>
@@ -14,3 +15,6 @@
     <% end %>
   <% end %>
 </div>
+<% else %>
+  <%= render "shared/empty_state", message: "No conversations yet." %>
+<% end %>

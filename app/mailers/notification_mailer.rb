@@ -37,6 +37,6 @@ class NotificationMailer < ApplicationMailer
   def lease_expiring(lease, recipient)
     @lease = lease
     @recipient = recipient
-    mail(to: recipient.email, subject: "Lease expiring soon: #{lease.unit.full_label}")
+    mail(to: recipient.email, subject: "Lease ended: #{lease.unit.full_label}")
   end
 end

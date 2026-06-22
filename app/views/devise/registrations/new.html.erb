@@ -60,7 +60,7 @@
     <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "input-dark" %>
   </div>
 
-  <%= f.submit "Sign up", class: "w-full #{button_classes(:primary)}" %>
+  <%= f.submit "Sign up", class: "w-full #{button_classes(:primary)}", data: { turbo_submits_with: "Signing up…" } %>
 <% end %>
 
 <div class="mt-4 text-center text-sm text-muted">

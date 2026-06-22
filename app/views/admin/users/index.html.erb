@@ -1,6 +1,6 @@
 <% content_for :title, "Admin - Users" %>
 
-<%= render "shared/page_header", title: "Admin console" %>
+<%= render "shared/page_header", title: "Users" %>
 <%= render "admin/shared/nav" %>
 
 <div class="mb-4 flex items-center justify-between">
@@ -8,6 +8,7 @@
   <%= render "shared/button", label: "New user", url: new_admin_user_path, variant: :primary %>
 </div>
 
+<% if @users.any? %>
 <div class="overflow-hidden rounded-lg border border-border-default bg-surface">
   <table class="table-dark">
     <thead>
@@ -32,3 +33,6 @@
     </tbody>
   </table>
 </div>
+<% else %>
+  <%= render "shared/empty_state", message: "No users yet.", action: render("shared/button", label: "New user", url: new_admin_user_path, variant: :primary) %>
+<% end %>

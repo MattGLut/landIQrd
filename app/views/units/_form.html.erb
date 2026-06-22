@@ -6,7 +6,7 @@
     <%= f.text_field :label, placeholder: "e.g. Apt 2B", class: "input-dark" %>
   </div>
 
-  <div class="grid grid-cols-3 gap-4">
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
     <div>
       <%= f.label :bedrooms, class: "block text-sm font-medium text-muted" %>
       <%= f.number_field :bedrooms, class: "input-dark" %>
@@ -22,7 +22,7 @@
   </div>
 
   <div class="flex gap-2">
-    <%= f.submit "Save", class: button_classes(:primary) %>
+    <%= f.submit "Save", class: button_classes(:primary), data: { turbo_submits_with: "Saving…" } %>
     <%= render "shared/button", label: "Cancel", url: cancel_url, variant: :secondary %>
   </div>
 <% end %>

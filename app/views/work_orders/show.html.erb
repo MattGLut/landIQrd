@@ -69,7 +69,7 @@
 
   <% if @work_order.work_order_assignments.any? %>
     <div class="space-y-2">
-      <% @work_order.work_order_assignments.includes(:contractor).each do |assignment| %>
+      <% @work_order.work_order_assignments.each do |assignment| %>
         <div class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border-default bg-surface p-4">
           <div>
             <p class="font-medium text-primary"><%= assignment.contractor.display_name %></p>
@@ -83,12 +83,12 @@
             <% if assignment.contractor_id == current_user.id %>
               <%= form_with model: [ @work_order, assignment ], method: :patch, class: "flex items-center gap-2" do |f| %>
                 <%= f.select :status, WorkOrderAssignment.statuses.keys.map { |s| [ s.titleize, s ] }, {}, class: "input-dark py-1" %>
-                <%= f.submit "Update", class: button_classes(:primary, size: :sm) %>
+                <%= f.submit "Update", class: button_classes(:primary, size: :sm), data: { turbo_submits_with: "Updating…" } %>
               <% end %>
             <% end %>
 
             <% if policy(@work_order).assign? %>
-              <%= button_to "Remove", work_order_work_order_assignment_path(@work_order, assignment), method: :delete, class: "text-sm text-danger hover:text-danger/80" %>
+              <%= button_to "Remove", work_order_work_order_assignment_path(@work_order, assignment), method: :delete, class: "text-sm text-danger hover:text-danger/80", form: { data: { turbo_confirm: "Remove this contractor assignment?" } } %>
             <% end %>
           </div>
         </div>
@@ -110,7 +110,7 @@
           <%= f.label :scheduled_at, "Scheduled", class: "block text-xs text-muted" %>
           <%= f.datetime_field :scheduled_at, class: "input-dark py-2" %>
         </div>
-        <%= f.submit "Assign", class: button_classes(:primary) %>
+        <%= f.submit "Assign", class: button_classes(:primary), data: { turbo_submits_with: "Assigning…" } %>
       <% end %>
     </div>
   <% end %>

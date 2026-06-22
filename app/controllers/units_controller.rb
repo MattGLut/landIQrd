@@ -48,7 +48,7 @@ class UnitsController < ApplicationController
   end
 
   def set_unit
-    @unit = Unit.find(params[:id])
+    @unit = Unit.includes(:property, leases: :tenant).find(params[:id])
   end
 
   def unit_params

@@ -27,6 +27,19 @@ RSpec.describe "File uploads" do
     expect(page).to have_css("img[alt='sample.png']")
   end
 
+  it "shows existing photos on the work order edit form" do
+    work_order = create(:work_order, unit: unit, created_by: tenant, title: "Broken window")
+    work_order.photos.attach(
+      io: File.open(upload_path("sample.png")),
+      filename: "sample.png",
+      content_type: "image/png"
+    )
+
+    sign_in_and_visit(tenant, edit_work_order_path(work_order))
+
+    expect(page).to have_css("img[alt='sample.png']")
+  end
+
   it "uploads lease documents" do
     sign_in_and_visit(landlord, new_unit_lease_path(unit))
 
