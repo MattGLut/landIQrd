@@ -93,6 +93,25 @@ RSpec.describe WorkOrder, type: :model do
       expect(work_order.closure_reason).to eq("Duplicate request")
       expect(work_order.work_order_events.last.action).to eq("cancelled")
     end
+
+    it "reopens a completed work order to pending management" do
+      work_order.update!(status: :completed)
+
+      work_order.transition_to!(:pending_management, user: landlord)
+
+      expect(work_order.reload).to be_status_pending_management
+      expect(work_order.work_order_events.last.action).to eq("status_changed")
+      expect(work_order.work_order_events.last.metadata).to include("from" => "completed", "to" => "pending_management")
+    end
+
+    it "lets a tenant reopen their completed work order" do
+      work_order.update!(status: :completed)
+
+      work_order.transition_to!(:pending_management, user: tenant)
+
+      expect(work_order.reload).to be_status_pending_management
+      expect(work_order.work_order_events.last.action).to eq("status_changed")
+    end
   end
 
   describe "#close_with_reason!" do

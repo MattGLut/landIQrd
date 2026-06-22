@@ -59,6 +59,32 @@ RSpec.describe WorkOrderPolicy do
     expect(policy_for(tenant).close?).to be(false)
   end
 
+  describe "reopen?" do
+    before { work_order.update!(status: :completed) }
+
+    it "allows the creating tenant, landlord, and admin to reopen completed work orders" do
+      expect(policy_for(tenant).reopen?).to be(true)
+      expect(policy_for(landlord).reopen?).to be(true)
+      expect(policy_for(create(:admin)).reopen?).to be(true)
+    end
+
+    it "forbids contractors and non-creator tenants from reopening" do
+      other_unit = create(:unit, property: property)
+      other_tenant = create(:tenant)
+      create(:lease, unit: other_unit, tenant: other_tenant)
+      create(:work_order_assignment, work_order: work_order, contractor: contractor)
+      work_order.reload
+
+      expect(policy_for(contractor).reopen?).to be(false)
+      expect(policy_for(other_tenant).reopen?).to be(false)
+    end
+
+    it "forbids reopen once the work order is no longer completed" do
+      work_order.update!(status: :open)
+      expect(policy_for(tenant).reopen?).to be(false)
+    end
+  end
+
   it "allows schedule access for landlords and contractors" do
     expect(described_class.new(landlord, WorkOrder).schedule?).to be(true)
     expect(described_class.new(contractor, WorkOrder).schedule?).to be(true)

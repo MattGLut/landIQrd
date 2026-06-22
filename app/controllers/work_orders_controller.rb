@@ -49,7 +49,7 @@ class WorkOrdersController < ApplicationController
   def update
     authorize @work_order
 
-    if update_status_param.present? && policy(@work_order).change_status?
+    if update_status_param.present? && (policy(@work_order).change_status? || policy(@work_order).reopen?)
       apply_status_transition
     elsif policy(@work_order).edit_details?
       apply_detail_update
@@ -103,12 +103,18 @@ class WorkOrdersController < ApplicationController
   end
 
   def apply_status_transition
+    previous_status = @work_order.status
     @work_order.transition_to!(
       update_status_param,
       user: current_user,
       closure_reason: params.dig(:work_order, :closure_reason)
     )
-    redirect_to @work_order, notice: "Work order updated."
+    notice = if update_status_param == "pending_management" && previous_status == "completed"
+      current_user.tenant? ? "Work request reopened." : "Work order reopened."
+    else
+      "Work order updated."
+    end
+    redirect_to @work_order, notice: notice
   rescue WorkOrder::InvalidTransition => e
     redirect_to edit_work_order_path(@work_order), alert: e.message
   end

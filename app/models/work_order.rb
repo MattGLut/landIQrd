@@ -82,6 +82,11 @@ class WorkOrder < ApplicationRecord
       after { log_status_transition! }
     end
 
+    event :reopen do
+      transitions from: :completed, to: :pending_management
+      after { log_status_transition! }
+    end
+
     event :cancel do
       transitions from: %i[open pending_tenant pending_management on_hold], to: :cancelled
       before { apply_cancellation_fields!(required_reason: false) }
