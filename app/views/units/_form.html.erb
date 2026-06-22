@@ -1,0 +1,28 @@
+<%= form_with model: unit, url: form_url, class: "space-y-4 rounded-lg border border-gray-200 bg-white p-6" do |f| %>
+  <%= render "shared/form_errors", resource: unit %>
+
+  <div>
+    <%= f.label :label, "Unit label", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.text_field :label, placeholder: "e.g. Apt 2B", class: "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+  </div>
+
+  <div class="grid grid-cols-3 gap-4">
+    <div>
+      <%= f.label :bedrooms, class: "block text-sm font-medium text-gray-700" %>
+      <%= f.number_field :bedrooms, class: "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+    </div>
+    <div>
+      <%= f.label :bathrooms, class: "block text-sm font-medium text-gray-700" %>
+      <%= f.number_field :bathrooms, step: 0.5, class: "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+    </div>
+    <div>
+      <%= f.label :square_feet, "Sq ft", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.number_field :square_feet, class: "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+    </div>
+  </div>
+
+  <div class="flex gap-2">
+    <%= f.submit class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500" %>
+    <%= link_to "Cancel", cancel_url, class: "rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+  </div>
+<% end %>

@@ -1,0 +1,5 @@
+<%= link_to property_path(property), class: "block rounded-lg border border-gray-200 bg-white p-5 hover:border-indigo-300" do %>
+  <p class="font-medium"><%= property.name %></p>
+  <p class="text-sm text-gray-500"><%= property.full_address.presence || "No address on file" %></p>
+  <p class="mt-2 text-xs text-gray-400"><%= pluralize(property.units.size, "unit") %></p>
+<% end %>

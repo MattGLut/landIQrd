@@ -1,0 +1,95 @@
+<% content_for :title, @work_order.title %>
+
+<div class="mb-6 flex items-start justify-between">
+  <div>
+    <h1 class="text-2xl font-bold"><%= @work_order.title %></h1>
+    <p class="text-gray-500"><%= @work_order.unit.property.name %> &middot; <%= @work_order.unit.label %></p>
+    <div class="mt-2 flex gap-2">
+      <%= status_badge @work_order.priority.titleize, @work_order.priority_color %>
+      <%= status_badge @work_order.status.titleize.gsub("_", " "), @work_order.status_color %>
+    </div>
+  </div>
+  <div class="flex gap-2">
+    <%= button_to "Open conversation", conversations_path, params: { work_order_id: @work_order.id }, method: :post, class: "rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+    <% if policy(@work_order).update? %>
+      <%= link_to "Edit", edit_work_order_path(@work_order), class: "rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+    <% end %>
+    <% if policy(@work_order).destroy? %>
+      <%= button_to "Delete", work_order_path(@work_order), method: :delete, class: "rounded-md border border-red-200 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50", form: { data: { turbo_confirm: "Delete this work order?" } } %>
+    <% end %>
+  </div>
+</div>
+
+<div class="rounded-lg border border-gray-200 bg-white p-6">
+  <h2 class="text-sm font-medium text-gray-500">Description</h2>
+  <p class="mt-1 whitespace-pre-line"><%= @work_order.description.presence || "No description provided." %></p>
+
+  <p class="mt-4 text-xs text-gray-400">
+    Reported by <%= @work_order.created_by.full_name %> on <%= @work_order.created_at.to_fs(:long) %>
+  </p>
+</div>
+
+<% if @work_order.photos.attached? %>
+  <div class="mt-6">
+    <h2 class="mb-3 text-lg font-semibold">Photos</h2>
+    <div class="grid grid-cols-3 gap-3 sm:grid-cols-4">
+      <% @work_order.photos.each do |photo| %>
+        <%= link_to rails_blob_path(photo, disposition: "inline"), class: "block overflow-hidden rounded-lg border border-gray-200" do %>
+          <%= image_tag photo.variable? ? photo.variant(resize_to_limit: [ 300, 300 ]) : photo, class: "h-32 w-full object-cover" %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<div class="mt-6">
+  <h2 class="mb-3 text-lg font-semibold">Contractor assignments</h2>
+
+  <% if @work_order.work_order_assignments.any? %>
+    <div class="space-y-2">
+      <% @work_order.work_order_assignments.includes(:contractor).each do |assignment| %>
+        <div class="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4">
+          <div>
+            <p class="font-medium"><%= assignment.contractor.display_name %></p>
+            <p class="text-sm text-gray-500">
+              <%= assignment.scheduled_at ? "Scheduled #{assignment.scheduled_at.to_fs(:long)}" : "Not scheduled" %>
+            </p>
+          </div>
+          <div class="flex items-center gap-3">
+            <%= status_badge assignment.status.titleize, assignment.status_completed? ? :green : :gray %>
+
+            <% if assignment.contractor_id == current_user.id %>
+              <%= form_with model: [ @work_order, assignment ], method: :patch, class: "flex items-center gap-2" do |f| %>
+                <%= f.select :status, WorkOrderAssignment.statuses.keys.map { |s| [ s.titleize, s ] }, {}, class: "rounded-md border border-gray-300 px-2 py-1 text-sm" %>
+                <%= f.submit "Update", class: "rounded-md bg-indigo-600 px-3 py-1 text-sm font-medium text-white hover:bg-indigo-500" %>
+              <% end %>
+            <% end %>
+
+            <% if policy(@work_order).assign? %>
+              <%= button_to "Remove", work_order_work_order_assignment_path(@work_order, assignment), method: :delete, class: "text-sm text-red-600 hover:text-red-500" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-sm text-gray-500">No contractors assigned yet.</p>
+  <% end %>
+
+  <% if policy(@work_order).assign? %>
+    <div class="mt-4 rounded-lg border border-gray-200 bg-white p-4">
+      <h3 class="mb-2 text-sm font-medium text-gray-700">Assign a contractor</h3>
+      <%= form_with url: work_order_work_order_assignments_path(@work_order), scope: :work_order_assignment, method: :post, class: "flex flex-wrap items-end gap-3" do |f| %>
+        <div>
+          <%= f.label :contractor_id, "Contractor", class: "block text-xs text-gray-500" %>
+          <%= f.collection_select :contractor_id, @contractors, :id, :display_name, { include_blank: "Select" }, class: "rounded-md border border-gray-300 px-3 py-2 text-sm" %>
+        </div>
+        <div>
+          <%= f.label :scheduled_at, "Scheduled", class: "block text-xs text-gray-500" %>
+          <%= f.datetime_field :scheduled_at, class: "rounded-md border border-gray-300 px-3 py-2 text-sm" %>
+        </div>
+        <%= f.submit "Assign", class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

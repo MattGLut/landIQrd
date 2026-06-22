@@ -1,0 +1,18 @@
+<div class="grid gap-4 sm:grid-cols-3">
+  <%= link_to admin_users_path, class: "rounded-lg border border-gray-200 bg-white p-5 hover:border-indigo-300" do %>
+    <p class="text-sm text-gray-500">Users</p>
+    <p class="mt-1 text-2xl font-semibold"><%= @users_count %></p>
+  <% end %>
+  <%= link_to admin_properties_path, class: "rounded-lg border border-gray-200 bg-white p-5 hover:border-indigo-300" do %>
+    <p class="text-sm text-gray-500">Properties</p>
+    <p class="mt-1 text-2xl font-semibold"><%= @properties_count %></p>
+  <% end %>
+  <%= link_to admin_work_orders_path, class: "rounded-lg border border-gray-200 bg-white p-5 hover:border-indigo-300" do %>
+    <p class="text-sm text-gray-500">Work orders</p>
+    <p class="mt-1 text-2xl font-semibold"><%= @work_orders_count %></p>
+  <% end %>
+</div>
+
+<div class="mt-6">
+  <%= link_to "Open admin console", admin_dashboard_path, class: "inline-flex rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500" %>
+</div>

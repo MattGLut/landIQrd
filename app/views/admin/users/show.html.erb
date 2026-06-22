@@ -1,0 +1,34 @@
+<% content_for :title, @user.full_name %>
+
+<div class="mb-6 flex items-start justify-between">
+  <div>
+    <h1 class="text-2xl font-bold"><%= @user.full_name %></h1>
+    <p class="text-gray-500"><%= @user.email %></p>
+    <div class="mt-2"><%= status_badge @user.role.titleize, :gray %></div>
+  </div>
+  <div class="flex gap-2">
+    <%= link_to "Edit", edit_admin_user_path(@user), class: "rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+    <% unless @user == current_user %>
+      <%= button_to "Delete", admin_user_path(@user), method: :delete, class: "rounded-md border border-red-200 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50", form: { data: { turbo_confirm: "Delete this user?" } } %>
+    <% end %>
+  </div>
+</div>
+
+<dl class="grid grid-cols-2 gap-4 rounded-lg border border-gray-200 bg-white p-6">
+  <div>
+    <dt class="text-sm text-gray-500">Phone</dt>
+    <dd class="mt-1"><%= @user.phone.presence || "-" %></dd>
+  </div>
+  <div>
+    <dt class="text-sm text-gray-500">Company</dt>
+    <dd class="mt-1"><%= @user.company_name.presence || "-" %></dd>
+  </div>
+  <div>
+    <dt class="text-sm text-gray-500">Joined</dt>
+    <dd class="mt-1"><%= @user.created_at.to_fs(:long) %></dd>
+  </div>
+</dl>
+
+<p class="mt-4">
+  <%= link_to "Back to users", admin_users_path, class: "text-sm text-indigo-600 hover:text-indigo-500" %>
+</p>

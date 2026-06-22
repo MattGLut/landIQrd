@@ -1,0 +1,8 @@
+<%# The new message itself is appended to #messages via the model broadcast. %>
+<%= turbo_stream.remove "empty-thread" %>
+
+<%= turbo_stream.replace "new_message" do %>
+  <div id="new_message" class="mt-4">
+    <%= render "messages/form", conversation: @conversation, message: @conversation.messages.new %>
+  </div>
+<% end %>

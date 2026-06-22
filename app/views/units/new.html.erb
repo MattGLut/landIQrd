@@ -1,0 +1,6 @@
+<% content_for :title, "New unit" %>
+
+<div class="mx-auto max-w-2xl">
+  <h1 class="mb-6 text-2xl font-bold">Add unit to <%= @property.name %></h1>
+  <%= render "form", unit: @unit, form_url: property_units_path(@property), cancel_url: property_path(@property) %>
+</div>

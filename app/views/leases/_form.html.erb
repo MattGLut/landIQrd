@@ -1,0 +1,52 @@
+<%= form_with model: lease, url: form_url, class: "space-y-4 rounded-lg border border-gray-200 bg-white p-6" do |f| %>
+  <%= render "shared/form_errors", resource: lease %>
+
+  <div>
+    <%= f.label :tenant_id, "Tenant", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.collection_select :tenant_id, tenants, :id, :full_name, { include_blank: "Select a tenant" }, class: "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <%= f.label :start_date, class: "block text-sm font-medium text-gray-700" %>
+      <%= f.date_field :start_date, class: "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+    </div>
+    <div>
+      <%= f.label :end_date, class: "block text-sm font-medium text-gray-700" %>
+      <%= f.date_field :end_date, class: "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <%= f.label :rent_amount, "Monthly rent", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.number_field :rent_amount, step: 0.01, class: "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+    </div>
+    <div>
+      <%= f.label :deposit_amount, "Security deposit", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.number_field :deposit_amount, step: 0.01, class: "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :status, class: "block text-sm font-medium text-gray-700" %>
+    <%= f.select :status, Lease.statuses.keys.map { |s| [ s.titleize, s ] }, {}, class: "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+  </div>
+
+  <div>
+    <%= f.label :documents, "Lease documents", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.file_field :documents, multiple: true, class: "mt-1 block w-full text-sm text-gray-500" %>
+    <% if lease.documents.attached? %>
+      <ul class="mt-2 space-y-1 text-sm text-gray-500">
+        <% lease.documents.each do |doc| %>
+          <li><%= doc.filename %></li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+
+  <div class="flex gap-2">
+    <%= f.submit class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500" %>
+    <%= link_to "Cancel", cancel_url, class: "rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+  </div>
+<% end %>
