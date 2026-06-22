@@ -14,11 +14,11 @@ class WorkOrderPolicy < ApplicationPolicy
   end
 
   def update?
-    edit_details? || change_status?
+    edit_details? || change_status? || reopen?
   end
 
   def edit?
-    edit_details? || change_status?
+    edit_details? || change_status? || reopen?
   end
 
   def edit_details?
@@ -37,6 +37,10 @@ class WorkOrderPolicy < ApplicationPolicy
 
   def close?
     record.active? && (creator? || landlord_owner? || user.admin?)
+  end
+
+  def reopen?
+    record.status_completed? && (user.admin? || landlord_owner? || creator?)
   end
 
   def schedule?

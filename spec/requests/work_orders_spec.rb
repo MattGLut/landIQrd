@@ -81,6 +81,55 @@ RSpec.describe "WorkOrders", type: :request do
       patch work_order_path(work_order), params: { work_order: { title: "New title" } }
       expect(work_order.work_order_events.last.action).to eq("updated")
     end
+
+    it "lets the landlord reopen a completed work order" do
+      work_order = create(:work_order, unit: unit, created_by: tenant, status: :completed)
+      sign_in landlord
+
+      expect {
+        patch work_order_path(work_order), params: { work_order: { status: "pending_management" } }
+      }.to have_enqueued_mail(NotificationMailer, :work_order_status_changed)
+
+      work_order.reload
+      expect(work_order).to be_status_pending_management
+      expect(work_order.work_order_events.last.metadata).to include("from" => "completed", "to" => "pending_management")
+      expect(response).to redirect_to(work_order_path(work_order))
+      follow_redirect!
+      expect(response.body).to include("Work order reopened.")
+    end
+
+    it "lets the creating tenant reopen their completed work order" do
+      work_order = create(:work_order, unit: unit, created_by: tenant, status: :completed)
+      sign_in tenant
+
+      patch work_order_path(work_order), params: { work_order: { status: "pending_management" } }
+
+      expect(work_order.reload).to be_status_pending_management
+      follow_redirect!
+      expect(response.body).to include("Work request reopened.")
+    end
+
+    it "forbids a non-creator tenant from reopening a completed work order" do
+      other_unit = create(:unit, property: property)
+      other_tenant = create(:tenant)
+      create(:lease, unit: other_unit, tenant: other_tenant)
+      work_order = create(:work_order, unit: unit, created_by: tenant, status: :completed)
+      sign_in other_tenant
+
+      patch work_order_path(work_order), params: { work_order: { status: "pending_management" } }
+
+      expect(work_order.reload).to be_status_completed
+    end
+
+    it "rejects tenant status changes other than reopen on completed work orders" do
+      work_order = create(:work_order, unit: unit, created_by: tenant, status: :completed)
+      sign_in tenant
+
+      patch work_order_path(work_order), params: { work_order: { status: "open" } }
+
+      expect(work_order.reload).to be_status_completed
+      expect(response).to redirect_to(edit_work_order_path(work_order))
+    end
   end
 
   describe "POST /work_orders/:id/close" do

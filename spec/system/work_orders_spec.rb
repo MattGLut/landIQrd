@@ -130,6 +130,17 @@ RSpec.describe "Work orders" do
       expect(page).to have_content("Tenant fixed it")
       expect(page).not_to have_css("[aria-label='Change status']")
     end
+
+    it "reopens a completed work order", js: true do
+      work_order = create(:work_order, unit: unit, created_by: tenant, title: "Still broken", status: :completed)
+
+      visit work_order_path(work_order)
+      find("[aria-label='Change status']").click
+      click_on "Reopen"
+
+      expect(page).to have_content("Work order reopened.")
+      expect(find("[aria-label='Change status']")).to have_content("Pending Management")
+    end
   end
 
   describe "as a contractor" do
@@ -200,6 +211,20 @@ RSpec.describe "Work orders" do
       expect(page).to have_content("Work request closed.")
       expect(page).to have_content("Fixed it myself")
       expect(page).not_to have_css("[aria-label='Change status']")
+    end
+  end
+
+  describe "reopening a completed work order as tenant", js: true do
+    it "reopens the request when the fix did not hold" do
+      sign_in_and_visit(tenant)
+      work_order = create(:work_order, unit: unit, created_by: tenant, title: "Still leaking", status: :completed)
+
+      visit work_order_path(work_order)
+      find("[aria-label='Change status']").click
+      click_on "Reopen"
+
+      expect(page).to have_content("Work request reopened.")
+      expect(find("[aria-label='Change status']")).to have_content("Pending Management")
     end
   end
 end

@@ -17,6 +17,10 @@ module WorkOrdersHelper
   end
 
   def work_order_status_options(work_order, policy)
+    if work_order.status_completed? && policy.reopen?
+      return [ [ "Reopen", "pending_management" ] ]
+    end
+
     if policy.change_status?
       options = work_order.aasm.permitted_transitions
         .reject { |transition| transition[:event] == :close }
@@ -38,7 +42,7 @@ module WorkOrdersHelper
   end
 
   def work_order_status_manageable?(policy)
-    policy.change_status? || policy.close?
+    policy.change_status? || policy.close? || policy.reopen?
   end
 
   def work_order_status_option_attrs(value, policy)
