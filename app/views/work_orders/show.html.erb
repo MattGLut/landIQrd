@@ -1,16 +1,16 @@
 <% content_for :title, @work_order.title %>
 
-<%= render "shared/page_header", title: @work_order.title, subtitle: "#{@work_order.unit.property.name} · #{@work_order.unit.label}", action: capture do %>
-  <div class="flex flex-wrap gap-2">
-    <%= button_to "Open conversation", conversations_path, params: { work_order_id: @work_order.id }, method: :post, class: button_classes(:secondary) %>
-    <% if policy(@work_order).update? %>
-      <%= render "shared/button", label: "Edit", url: edit_work_order_path(@work_order), variant: :secondary %>
-    <% end %>
-    <% if policy(@work_order).destroy? %>
-      <%= render "shared/button", label: "Delete", url: work_order_path(@work_order), variant: :danger, method: :delete, form: { data: { turbo_confirm: "Delete this work order?" } } %>
-    <% end %>
-  </div>
+<% header_actions = capture do %>
+  <%= button_to "Open conversation", conversations_path, params: { work_order_id: @work_order.id }, method: :post, class: button_classes(:secondary, size: :sm), form: { class: "inline" } %>
+  <% if policy(@work_order).update? %>
+    <%= render "shared/button", label: "Edit", url: edit_work_order_path(@work_order), variant: :secondary, size: :sm %>
+  <% end %>
+  <% if policy(@work_order).destroy? %>
+    <%= render "shared/button", label: "Delete", url: work_order_path(@work_order), variant: :danger_link, size: :sm, method: :delete, form: { data: { turbo_confirm: "Delete this work order?" }, class: "inline" } %>
+  <% end %>
 <% end %>
+
+<%= render "shared/page_header", title: @work_order.title, subtitle: "#{@work_order.unit.property.name} · #{@work_order.unit.label}", action: header_actions %>
 
 <div class="mb-2 flex gap-2">
   <%= status_badge @work_order.priority.titleize, @work_order.priority_color %>

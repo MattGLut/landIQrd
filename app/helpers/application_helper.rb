@@ -32,7 +32,7 @@ module ApplicationHelper
       blue: "bg-blue-500/15 text-blue-400",
       indigo: "bg-purple-500/15 text-purple-400"
     }
-    tag.span text, class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium #{palette.fetch(color, palette[:gray])}"
+    tag.span text, class: "inline-flex shrink-0 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium #{palette.fetch(color, palette[:gray])}"
   end
 
   def button_classes(variant = :primary, size: :md)
@@ -42,6 +42,7 @@ module ApplicationHelper
       primary: "bg-accent text-base hover:bg-accent-hover",
       secondary: "border border-border-default bg-surface text-primary hover:bg-elevated",
       danger: "border border-danger/30 bg-danger/10 text-danger hover:bg-danger/20",
+      danger_link: "text-danger hover:text-danger/80",
       ghost: "text-muted hover:bg-elevated hover:text-primary"
     }
     "#{base} #{sizes.fetch(size)} #{variants.fetch(variant)}"

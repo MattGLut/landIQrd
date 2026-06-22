@@ -35,7 +35,7 @@
 
   <div>
     <%= f.label :documents, "Lease documents", class: "block text-sm font-medium text-muted" %>
-    <%= f.file_field :documents, multiple: true, class: "mt-1 block w-full text-sm text-muted" %>
+    <%= f.file_field :documents, multiple: true, class: "file-input-dark mt-1 block w-full" %>
     <% if lease.documents.attached? %>
       <ul class="mt-2 space-y-1 text-sm text-muted">
         <% lease.documents.each do |doc| %>

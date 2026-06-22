@@ -1,9 +1,11 @@
 <% content_for :title, @property.name %>
 
-<%= render "shared/page_header", title: @property.name, subtitle: @property.full_address.presence || "No address on file", action: safe_join([
-  render("shared/button", label: "Edit", url: edit_property_path(@property), variant: :secondary),
-  render("shared/button", label: "Delete", url: property_path(@property), variant: :danger, method: :delete, form: { data: { turbo_confirm: "Delete this property and all its units?" } })
-]) %>
+<% header_actions = capture do %>
+  <%= render "shared/button", label: "Edit", url: edit_property_path(@property), variant: :secondary, size: :sm %>
+  <%= render "shared/button", label: "Delete", url: property_path(@property), variant: :danger_link, size: :sm, method: :delete, form: { data: { turbo_confirm: "Delete this property and all its units?" }, class: "inline" } %>
+<% end %>
+
+<%= render "shared/page_header", title: @property.name, subtitle: @property.full_address.presence || "No address on file", action: header_actions %>
 
 <div class="mb-3 flex items-center justify-between">
   <h2 class="text-lg font-semibold text-primary">Units</h2>

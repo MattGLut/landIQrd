@@ -5,10 +5,12 @@
   { label: @unit.label, path: unit_path(@unit) }
 ) %>
 
-<%= render "shared/page_header", title: @unit.label, subtitle: [ @unit.bedrooms && "#{@unit.bedrooms} bd", @unit.bathrooms && "#{@unit.bathrooms} ba", @unit.square_feet && "#{@unit.square_feet} sqft" ].compact.join(" \u00b7 "), action: safe_join([
-  render("shared/button", label: "Edit", url: edit_unit_path(@unit), variant: :secondary),
-  render("shared/button", label: "Delete", url: unit_path(@unit), variant: :danger, method: :delete, form: { data: { turbo_confirm: "Delete this unit?" } })
-]) %>
+<% header_actions = capture do %>
+  <%= render "shared/button", label: "Edit", url: edit_unit_path(@unit), variant: :secondary, size: :sm %>
+  <%= render "shared/button", label: "Delete", url: unit_path(@unit), variant: :danger_link, size: :sm, method: :delete, form: { data: { turbo_confirm: "Delete this unit?" }, class: "inline" } %>
+<% end %>
+
+<%= render "shared/page_header", title: @unit.label, subtitle: [ @unit.bedrooms && "#{@unit.bedrooms} bd", @unit.bathrooms && "#{@unit.bathrooms} ba", @unit.square_feet && "#{@unit.square_feet} sqft" ].compact.join(" \u00b7 "), action: header_actions %>
 
 <div class="mb-3 flex items-center justify-between">
   <h2 class="text-lg font-semibold text-primary">Leases</h2>

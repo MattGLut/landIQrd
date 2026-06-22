@@ -14,10 +14,7 @@
   </div>
 
   <div class="flex items-center gap-4 text-sm">
-    <span class="hidden text-muted sm:inline">
-      <%= current_user.display_name %>
-      <span class="ml-1 rounded-full bg-elevated px-2 py-0.5 text-xs font-medium text-muted"><%= current_user.role.titleize %></span>
-    </span>
+    <span class="hidden text-muted sm:inline"><%= current_user.display_name %></span>
     <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "text-muted hover:text-primary" %>
   </div>
 </header>
