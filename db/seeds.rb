@@ -1,6 +1,13 @@
 # Idempotent demo/dev seed data. Safe to run repeatedly.
 # Default password for every seeded account is "password123".
 
+# Never seed the test database; specs rely on a clean slate (db:prepare would
+# otherwise seed a freshly created CI database).
+if Rails.env.test?
+  puts "Skipping seeds in the test environment."
+  return
+end
+
 def upsert_user(email, role:, **attrs)
   User.find_or_create_by!(email: email) do |user|
     user.role = role
