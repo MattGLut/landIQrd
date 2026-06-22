@@ -1,24 +1,24 @@
 <% content_for :title, @property.name %>
 
-<h1 class="mb-6 text-2xl font-bold">Admin console</h1>
+<%= render "shared/page_header", title: "Admin console" %>
 <%= render "admin/shared/nav" %>
 
-<div class="rounded-lg border border-gray-200 bg-white p-6">
-  <h2 class="text-xl font-bold"><%= @property.name %></h2>
-  <p class="text-gray-500"><%= @property.full_address %></p>
-  <p class="mt-2 text-sm text-gray-500">Landlord: <%= @property.landlord.display_name %> (<%= @property.landlord.email %>)</p>
+<div class="rounded-lg border border-border-default bg-surface p-6">
+  <h2 class="text-xl font-bold text-primary"><%= @property.name %></h2>
+  <p class="text-muted"><%= @property.full_address %></p>
+  <p class="mt-2 text-sm text-muted">Landlord: <%= @property.landlord.display_name %> (<%= @property.landlord.email %>)</p>
 
-  <h3 class="mt-4 mb-2 font-semibold">Units</h3>
+  <h3 class="mt-4 mb-2 font-semibold text-primary">Units</h3>
   <ul class="space-y-1 text-sm">
     <% @property.units.each do |unit| %>
-      <li class="flex justify-between">
+      <li class="flex justify-between text-primary">
         <span><%= unit.label %></span>
-        <span class="text-gray-500"><%= pluralize(unit.leases.size, "lease") %></span>
+        <span class="text-muted"><%= pluralize(unit.leases.size, "lease") %></span>
       </li>
     <% end %>
   </ul>
 </div>
 
 <p class="mt-4">
-  <%= link_to "Back to properties", admin_properties_path, class: "text-sm text-indigo-600 hover:text-indigo-500" %>
+  <%= link_to "Back to properties", admin_properties_path, class: "text-sm text-accent hover:text-accent-hover" %>
 </p>

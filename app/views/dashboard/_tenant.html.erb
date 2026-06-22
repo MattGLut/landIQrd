@@ -1,30 +1,30 @@
 <div class="grid gap-4 sm:grid-cols-3">
-  <div class="rounded-lg border border-gray-200 bg-white p-5">
-    <p class="text-sm text-gray-500">Active leases</p>
-    <p class="mt-1 text-2xl font-semibold"><%= @leases&.count.to_i %></p>
+  <div class="rounded-lg border border-border-default bg-surface p-5">
+    <p class="text-sm text-muted">Active leases</p>
+    <p class="mt-1 text-3xl font-bold text-primary"><%= @leases&.count.to_i %></p>
   </div>
-  <%= link_to work_orders_path, class: "rounded-lg border border-gray-200 bg-white p-5 hover:border-indigo-300" do %>
-    <p class="text-sm text-gray-500">My work requests</p>
-    <p class="mt-1 text-2xl font-semibold"><%= @open_work_orders_count %></p>
+  <%= link_to work_orders_path(status: "active"), class: "rounded-lg border border-border-default bg-surface p-5 transition-colors hover:border-accent/50" do %>
+    <p class="text-sm text-muted">My work requests</p>
+    <p class="mt-1 text-3xl font-bold text-accent"><%= @open_work_orders_count %></p>
   <% end %>
-  <%= link_to conversations_path, class: "rounded-lg border border-gray-200 bg-white p-5 hover:border-indigo-300" do %>
-    <p class="text-sm text-gray-500">Conversations</p>
-    <p class="mt-1 text-2xl font-semibold"><%= @conversations_count %></p>
+  <%= link_to conversations_path, class: "rounded-lg border border-border-default bg-surface p-5 transition-colors hover:border-accent/50" do %>
+    <p class="text-sm text-muted">Conversations</p>
+    <p class="mt-1 text-3xl font-bold text-primary"><%= @conversations_count %></p>
   <% end %>
 </div>
 
 <% if @leases.present? %>
   <div class="mt-6 space-y-3">
-    <h2 class="text-lg font-semibold">Your leases</h2>
+    <h2 class="text-lg font-semibold text-primary">Your leases</h2>
     <% @leases.each do |lease| %>
-      <%= link_to lease_path(lease), class: "block rounded-lg border border-gray-200 bg-white p-4 hover:border-indigo-300" do %>
-        <p class="font-medium"><%= lease.unit.property.name %> &middot; <%= lease.unit.label %></p>
-        <p class="text-sm text-gray-500"><%= lease.term_description %></p>
+      <%= link_to lease_path(lease), class: "block rounded-lg border border-border-default bg-surface p-4 transition-colors hover:border-accent/50" do %>
+        <p class="font-medium text-primary"><%= lease.unit.property.name %> · <%= lease.unit.label %></p>
+        <p class="text-sm text-muted"><%= lease.term_description %></p>
       <% end %>
     <% end %>
   </div>
 <% end %>
 
 <div class="mt-6">
-  <%= link_to "New work request", new_work_order_path, class: "inline-flex rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500" %>
+  <%= render "shared/button", label: "New work request", url: new_work_order_path, variant: :primary %>
 </div>

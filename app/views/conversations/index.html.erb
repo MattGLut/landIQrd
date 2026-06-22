@@ -1,28 +1,40 @@
 <% content_for :title, "Messages" %>
 
-<h1 class="mb-6 text-2xl font-bold">Messages</h1>
-
-<% if @conversations.any? %>
-  <div class="space-y-2">
-    <% @conversations.each do |conversation| %>
-      <%= link_to conversation_path(conversation), class: "block rounded-lg border border-gray-200 bg-white p-4 hover:border-indigo-300" do %>
-        <div class="flex items-center justify-between">
-          <p class="font-medium"><%= conversation.title %></p>
-          <% if conversation.work_order %>
-            <%= status_badge "Work order", :indigo %>
+<div class="flex h-[calc(100vh-8rem)] flex-col lg:flex-row lg:gap-4">
+  <div class="<%= @conversation ? 'hidden lg:flex' : 'flex' %> w-full flex-col border-border-default lg:w-80 lg:shrink-0 lg:border-r lg:pr-4">
+    <h1 class="mb-4 text-xl font-bold text-primary lg:hidden">Messages</h1>
+    <% if @conversations.any? %>
+      <div class="flex-1 space-y-1 overflow-y-auto">
+        <% @conversations.each do |conversation| %>
+          <% active = @conversation&.id == conversation.id %>
+          <%= link_to conversation_path(conversation), class: "block rounded-lg border p-3 transition-colors #{active ? 'border-accent/50 bg-accent/10' : 'border-border-default bg-surface hover:border-accent/30'}" do %>
+            <div class="flex items-center justify-between">
+              <p class="truncate font-medium text-primary"><%= conversation.title %></p>
+              <% if conversation.work_order %>
+                <%= status_badge "Work order", :indigo %>
+              <% end %>
+            </div>
+            <p class="mt-1 truncate text-sm text-muted">
+              <%= conversation.latest_message&.body.presence || "No messages yet" %>
+            </p>
           <% end %>
-        </div>
-        <p class="mt-1 truncate text-sm text-gray-500">
-          <%= conversation.latest_message&.body.presence || "No messages yet" %>
-        </p>
-        <p class="mt-1 text-xs text-gray-400">
-          <%= conversation.participants.map(&:display_name).join(", ") %>
-        </p>
-      <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <%= render "shared/empty_state", message: "No conversations yet." %>
     <% end %>
   </div>
-<% else %>
-  <div class="rounded-lg border border-dashed border-gray-300 bg-white p-10 text-center text-gray-500">
-    No conversations yet.
+
+  <div class="<%= @conversation ? 'flex' : 'hidden lg:flex' %> min-h-0 flex-1 flex-col">
+    <% if @conversation %>
+      <div class="mb-4 lg:hidden">
+        <%= link_to "← Back to messages", conversations_path, class: "text-sm text-accent hover:text-accent-hover" %>
+      </div>
+      <%= render "conversations/thread", conversation: @conversation, messages: @messages, message: @message %>
+    <% else %>
+      <div class="flex flex-1 items-center justify-center rounded-lg border border-dashed border-border-default bg-surface">
+        <p class="text-muted">Select a conversation to view messages</p>
+      </div>
+    <% end %>
   </div>
-<% end %>
+</div>

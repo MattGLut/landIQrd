@@ -1,1 +1,52 @@
 @import "tailwindcss";
+
+@theme {
+  --color-base: #000000;
+  --color-surface: #161616;
+  --color-elevated: #1e1e1e;
+  --color-border-default: #2d2d2d;
+  --color-primary: #ffffff;
+  --color-muted: #9b9b9b;
+  --color-accent: #00c805;
+  --color-accent-hover: #00a804;
+  --color-danger: #ff5000;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--font-sans);
+}
+
+@layer components {
+  .input-dark {
+    @apply mt-1 block w-full rounded-md border border-border-default bg-elevated px-3 py-2 text-sm text-primary shadow-sm placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent;
+  }
+
+  .table-dark {
+    @apply min-w-full divide-y divide-border-default text-sm;
+  }
+
+  .table-dark thead {
+    @apply bg-surface text-left text-muted;
+  }
+
+  .table-dark th {
+    @apply px-4 py-2 font-medium;
+  }
+
+  .table-dark tbody {
+    @apply divide-y divide-border-default;
+  }
+
+  .table-dark tr:hover {
+    @apply bg-elevated;
+  }
+
+  .table-dark td {
+    @apply px-4 py-2;
+  }
+}

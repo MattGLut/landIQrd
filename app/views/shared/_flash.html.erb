@@ -1,7 +1,7 @@
 <% flash.each do |type, message| %>
   <% next if message.blank? %>
-  <% style = type.to_sym == :alert ? "bg-red-50 text-red-800 border-red-200" : "bg-green-50 text-green-800 border-green-200" %>
-  <div class="mb-4 rounded-md border px-4 py-3 text-sm <%= style %>" role="alert">
+  <% style = type.to_sym == :alert ? "border-danger/30 bg-danger/10 text-danger" : "border-accent/30 bg-accent/10 text-accent" %>
+  <div class="mb-4 rounded-lg border px-4 py-3 text-sm <%= style %>" role="alert">
     <%= message %>
   </div>
 <% end %>

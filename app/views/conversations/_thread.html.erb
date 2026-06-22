@@ -1,0 +1,23 @@
+<%= turbo_stream_from conversation %>
+
+<div class="flex h-full flex-col">
+  <div class="mb-4 border-b border-border-default pb-4">
+    <h2 class="text-lg font-bold text-primary"><%= conversation.title %></h2>
+    <p class="text-sm text-muted"><%= conversation.participants.map(&:display_name).join(", ") %></p>
+    <% if conversation.work_order %>
+      <%= link_to "View work order", work_order_path(conversation.work_order), class: "mt-1 inline-block text-sm font-medium text-accent hover:text-accent-hover" %>
+    <% end %>
+  </div>
+
+  <div id="messages" class="flex-1 space-y-3 overflow-y-auto rounded-lg border border-border-default bg-surface p-4">
+    <% if messages.any? %>
+      <%= render messages %>
+    <% else %>
+      <p class="text-sm text-muted" id="empty-thread">No messages yet. Say hello.</p>
+    <% end %>
+  </div>
+
+  <div id="new_message" class="mt-4">
+    <%= render "messages/form", conversation: conversation, message: message %>
+  </div>
+</div>

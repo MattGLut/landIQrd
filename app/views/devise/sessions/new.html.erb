@@ -1,30 +1,28 @@
 <% content_for :title, "Log in" %>
 
-<div class="mx-auto max-w-md">
-  <h2 class="mb-6 text-2xl font-bold">Log in to Prop Man</h2>
+<h2 class="mb-6 text-2xl font-bold text-primary">Log in to LandIQrd</h2>
 
-  <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-4 rounded-lg border border-gray-200 bg-white p-6" }) do |f| %>
-    <div>
-      <%= f.label :email, class: "block text-sm font-medium text-gray-700" %>
-      <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
-    </div>
+<%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-4 rounded-lg border border-border-default bg-surface p-6" }) do |f| %>
+  <div>
+    <%= f.label :email, class: "block text-sm font-medium text-muted" %>
+    <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "input-dark" %>
+  </div>
 
-    <div>
-      <%= f.label :password, class: "block text-sm font-medium text-gray-700" %>
-      <%= f.password_field :password, autocomplete: "current-password", class: "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
-    </div>
+  <div>
+    <%= f.label :password, class: "block text-sm font-medium text-muted" %>
+    <%= f.password_field :password, autocomplete: "current-password", class: "input-dark" %>
+  </div>
 
-    <% if devise_mapping.rememberable? %>
-      <label class="flex items-center gap-2 text-sm text-gray-600">
-        <%= f.check_box :remember_me, class: "rounded border-gray-300" %>
-        <%= f.label :remember_me, "Remember me", class: "!mb-0" %>
-      </label>
-    <% end %>
-
-    <%= f.submit "Log in", class: "w-full rounded-md bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-500" %>
+  <% if devise_mapping.rememberable? %>
+    <label class="flex items-center gap-2 text-sm text-muted">
+      <%= f.check_box :remember_me, class: "rounded border-border-default bg-elevated text-accent focus:ring-accent" %>
+      Remember me
+    </label>
   <% end %>
 
-  <div class="mt-4 text-center text-sm text-gray-500">
-    <%= render "devise/shared/links" %>
-  </div>
+  <%= f.submit "Log in", class: "w-full #{button_classes(:primary)}" %>
+<% end %>
+
+<div class="mt-4 text-center text-sm text-muted">
+  <%= render "devise/shared/links" %>
 </div>
