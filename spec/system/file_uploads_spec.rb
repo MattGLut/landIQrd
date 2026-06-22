@@ -22,6 +22,9 @@ RSpec.describe "File uploads" do
     expect(page).to have_content("Work request submitted.")
     expect(page).to have_content("Photos")
     expect(WorkOrder.last.photos).to be_attached
+
+    visit work_order_path(WorkOrder.last)
+    expect(page).to have_css("img[alt='sample.png']")
   end
 
   it "uploads lease documents" do

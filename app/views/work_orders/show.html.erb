@@ -57,7 +57,7 @@
     <div class="grid grid-cols-3 gap-3 sm:grid-cols-4">
       <% @work_order.photos.each do |photo| %>
         <%= link_to rails_blob_path(photo, disposition: "inline"), class: "block overflow-hidden rounded-lg border border-border-default" do %>
-          <%= image_tag photo.variable? ? photo.variant(resize_to_limit: [ 300, 300 ]) : photo, class: "h-32 w-full object-cover" %>
+          <%= work_order_photo_thumbnail(photo) %>
         <% end %>
       <% end %>
     </div>
