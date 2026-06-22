@@ -10,6 +10,13 @@ RSpec.describe "Work orders" do
   describe "as a tenant" do
     before { sign_in_and_visit(tenant) }
 
+    it "shows empty state with new work request action" do
+      visit work_orders_path
+
+      expect(page).to have_content("No work orders yet.")
+      expect(page).to have_link("New work request")
+    end
+
     it "shows my requests and submits a new work request" do
       expect(page).to have_content("My Requests")
       expect(page).to have_link("New work request")
@@ -60,13 +67,15 @@ RSpec.describe "Work orders" do
       expect(page).not_to have_content("Active job")
     end
 
-    it "removes a contractor assignment" do
+    it "removes a contractor assignment", js: true do
       contractor = create(:contractor, company_name: "FixIt Co")
       work_order = create(:work_order, unit: unit, created_by: tenant, title: "Remove assignment")
       create(:work_order_assignment, work_order: work_order, contractor: contractor)
 
       visit work_order_path(work_order)
-      click_button "Remove"
+      accept_confirm("Remove this contractor assignment?") do
+        click_button "Remove"
+      end
 
       expect(page).to have_content("Assignment removed.")
       expect(page).to have_content("No contractors assigned yet.")

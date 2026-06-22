@@ -8,6 +8,16 @@ RSpec.describe "Units" do
     sign_in_and_visit(landlord, property_path(property))
   end
 
+  it "shows empty state with lease actions on unit show" do
+    unit = create(:unit, property: property, label: "Apt Empty")
+
+    visit unit_path(unit)
+
+    expect(page).to have_content("No leases on this unit yet.")
+    expect(page).to have_link("Invite tenant")
+    expect(page).to have_link("New lease")
+  end
+
   it "adds a unit from the property page" do
     click_link "Add unit"
 

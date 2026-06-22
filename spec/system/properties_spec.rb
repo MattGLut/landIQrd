@@ -10,6 +10,15 @@ RSpec.describe "Properties" do
     expect(page).to have_link("Add property")
   end
 
+  it "shows empty state with add unit action on property show" do
+    property = create(:property, landlord: landlord, name: "Empty Building")
+
+    visit property_path(property)
+
+    expect(page).to have_content("No units yet.")
+    expect(page).to have_link("Add unit")
+  end
+
   it "creates, views, edits, and deletes a property" do
     click_link "New property"
 

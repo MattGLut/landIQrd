@@ -48,10 +48,12 @@ RSpec.describe NotificationMailer, type: :mailer do
     expect(mail.to).to eq([ landlord.email ])
   end
 
-  it "sends lease expiring mail" do
+  it "sends lease ended mail" do
     lease = create(:lease, unit: unit, tenant: tenant, end_date: 2.weeks.from_now.to_date)
     mail = described_class.lease_expiring(lease, tenant)
     expect(mail.to).to eq([ tenant.email ])
+    expect(mail.subject).to include("Lease ended")
+    expect(mail.body.encoded).to include("ended on")
     expect(mail.body.encoded).to include(lease.end_date.to_fs(:long))
   end
 end
