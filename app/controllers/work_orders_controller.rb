@@ -61,7 +61,8 @@ class WorkOrdersController < ApplicationController
   def close
     authorize @work_order, :close?
     @work_order.close_with_reason!(user: current_user, closure_reason: params[:closure_reason])
-    redirect_to @work_order, notice: "Work request closed."
+    notice = current_user.tenant? ? "Work request closed." : "Work order closed."
+    redirect_to @work_order, notice: notice
   rescue WorkOrder::InvalidTransition => e
     redirect_to @work_order, alert: e.message
   end

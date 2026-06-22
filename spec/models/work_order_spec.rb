@@ -116,5 +116,17 @@ RSpec.describe WorkOrder, type: :model do
         work_order.close_with_reason!(user: tenant, closure_reason: "")
       }.to raise_error(WorkOrder::InvalidTransition, "Closure reason is required")
     end
+
+    it "lets a landlord close with a reason" do
+      property_landlord = work_order.unit.property.landlord
+      expect {
+        work_order.close_with_reason!(user: property_landlord, closure_reason: "Resolved offline")
+      }.to have_enqueued_mail(NotificationMailer, :work_order_status_changed)
+
+      work_order.reload
+      expect(work_order).to be_status_cancelled
+      expect(work_order.closed_by).to eq(property_landlord)
+      expect(work_order.work_order_events.last.action).to eq("closed")
+    end
   end
 end

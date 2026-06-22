@@ -100,21 +100,37 @@ RSpec.describe "WorkOrders", type: :request do
       expect(response).to redirect_to(work_order_path(work_order))
     end
 
-    it "forbids landlords from using the tenant close action" do
+    it "lets the landlord close with a reason" do
       work_order = create(:work_order, unit: unit, created_by: tenant)
       sign_in landlord
-      post close_work_order_path(work_order), params: { closure_reason: "Done" }
-      expect(work_order.reload).to be_status_open
+
+      expect {
+        post close_work_order_path(work_order), params: { closure_reason: "Resolved offline" }
+      }.to have_enqueued_mail(NotificationMailer, :work_order_status_changed)
+
+      work_order.reload
+      expect(work_order).to be_status_cancelled
+      expect(work_order.closure_reason).to eq("Resolved offline")
+      expect(work_order.closed_by).to eq(landlord)
+      expect(work_order.work_order_events.last.action).to eq("closed")
+      expect(response).to redirect_to(work_order_path(work_order))
     end
   end
 
   describe "DELETE /work_orders/:id" do
-    it "lets the landlord delete a work order" do
+    it "lets an admin delete a work order" do
       work_order = create(:work_order, unit: unit, created_by: tenant)
-      sign_in landlord
+      sign_in create(:admin)
       expect {
         delete work_order_path(work_order)
       }.to change(WorkOrder, :count).by(-1)
+    end
+
+    it "forbids the landlord from deleting" do
+      work_order = create(:work_order, unit: unit, created_by: tenant)
+      sign_in landlord
+      delete work_order_path(work_order)
+      expect(WorkOrder.exists?(work_order.id)).to be(true)
     end
 
     it "forbids the creating tenant from deleting" do

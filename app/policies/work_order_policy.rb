@@ -32,11 +32,11 @@ class WorkOrderPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.admin? || landlord_owner?
+    user.admin?
   end
 
   def close?
-    creator? && record.active?
+    record.active? && (creator? || landlord_owner? || user.admin?)
   end
 
   def schedule?

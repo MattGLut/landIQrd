@@ -42,10 +42,16 @@ RSpec.describe WorkOrderPolicy do
     expect(policy_for(tenant).destroy?).to be(false)
   end
 
-  it "allows the landlord to change status and delete" do
+  it "allows the landlord to change status and close" do
     expect(policy_for(landlord).change_status?).to be(true)
-    expect(policy_for(landlord).destroy?).to be(true)
-    expect(policy_for(landlord).close?).to be(false)
+    expect(policy_for(landlord).close?).to be(true)
+    expect(policy_for(landlord).destroy?).to be(false)
+  end
+
+  it "allows admins to delete and close work orders" do
+    admin = create(:admin)
+    expect(policy_for(admin).destroy?).to be(true)
+    expect(policy_for(admin).close?).to be(true)
   end
 
   it "forbids close once the work order is terminal" do

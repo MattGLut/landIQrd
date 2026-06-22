@@ -95,6 +95,41 @@ RSpec.describe "Work orders" do
       expect(page).to have_content("Work order updated.")
       expect(find("[aria-label='Change status']")).to have_content("Pending Management")
     end
+
+    it "does not show a delete button", js: true do
+      work_order = create(:work_order, unit: unit, created_by: tenant, title: "Keep me")
+
+      visit work_order_path(work_order)
+      expect(page).not_to have_button("Delete")
+    end
+
+    it "cancels a work order with an optional reason", js: true do
+      work_order = create(:work_order, unit: unit, created_by: tenant, title: "Cancel me")
+
+      visit work_order_path(work_order)
+      find("[aria-label='Change status']").click
+      click_on "Cancelled"
+      fill_in "Reason", with: "Duplicate request"
+      click_button "Update status"
+
+      expect(page).to have_content("Work order updated.")
+      expect(page).to have_content("Duplicate request")
+      expect(page).not_to have_css("[aria-label='Change status']")
+    end
+
+    it "closes a work order with a required reason", js: true do
+      work_order = create(:work_order, unit: unit, created_by: tenant, title: "Close me")
+
+      visit work_order_path(work_order)
+      find("[aria-label='Change status']").click
+      click_on "Closed"
+      fill_in "Reason", with: "Tenant fixed it"
+      click_button "Update status"
+
+      expect(page).to have_content("Work order closed.")
+      expect(page).to have_content("Tenant fixed it")
+      expect(page).not_to have_css("[aria-label='Change status']")
+    end
   end
 
   describe "as a contractor" do
@@ -135,8 +170,9 @@ RSpec.describe "Work orders" do
   end
 
   describe "deleting a work order", js: true do
-    it "lets a landlord confirm deletion via turbo dialog" do
-      sign_in_and_visit(landlord)
+    it "lets an admin confirm deletion via turbo dialog" do
+      admin = create(:admin)
+      sign_in_and_visit(admin)
       work_order = create(:work_order, unit: unit, created_by: tenant, title: "Remove me")
 
       visit work_order_path(work_order)
