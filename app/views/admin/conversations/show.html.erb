@@ -10,7 +10,7 @@
 
 <div class="space-y-3 rounded-lg border border-border-default bg-surface p-4">
   <% if @messages.any? %>
-    <%= render @messages %>
+    <%= render partial: "messages/message", collection: @messages %>
   <% else %>
     <p class="text-sm text-muted">No messages.</p>
   <% end %>

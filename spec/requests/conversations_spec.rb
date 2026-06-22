@@ -50,6 +50,21 @@ RSpec.describe "Conversations", type: :request do
     end
   end
 
+  describe "POST /conversations" do
+    it "starts a direct thread between two users" do
+      sign_in tenant
+      post conversations_path, params: { recipient_id: landlord.id }
+      expect(response).to redirect_to(Conversation.last)
+    end
+
+    it "redirects when no recipient or work order is provided" do
+      sign_in tenant
+      post conversations_path
+      expect(response).to redirect_to(conversations_path)
+      expect(flash[:alert]).to eq("Could not start that conversation.")
+    end
+  end
+
   describe "POST /conversations/:id/messages" do
     it "lets a participant post a message" do
       conversation = Conversation.direct_between!(tenant, landlord)
