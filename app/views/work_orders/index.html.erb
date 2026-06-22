@@ -19,5 +19,6 @@
     <%= render @work_orders %>
   </div>
 <% else %>
-  <%= render "shared/empty_state", message: "No work orders yet." %>
+  <% empty_action = (current_user.tenant? || current_user.landlord?) ? render("shared/button", label: "New work request", url: new_work_order_path, variant: :primary) : nil %>
+  <%= render "shared/empty_state", message: "No work orders yet.", action: empty_action %>
 <% end %>

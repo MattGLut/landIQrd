@@ -76,7 +76,12 @@ class WorkOrdersController < ApplicationController
   private
 
   def set_work_order
-    @work_order = WorkOrder.find(params[:id])
+    @work_order = WorkOrder.includes(
+      :created_by,
+      :closed_by,
+      unit: :property,
+      work_order_assignments: :contractor
+    ).find(params[:id])
   end
 
   def load_units

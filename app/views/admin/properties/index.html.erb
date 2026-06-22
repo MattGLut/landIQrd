@@ -1,8 +1,9 @@
 <% content_for :title, "Admin - Properties" %>
 
-<%= render "shared/page_header", title: "Admin console" %>
+<%= render "shared/page_header", title: "Properties" %>
 <%= render "admin/shared/nav" %>
 
+<% if @properties.any? %>
 <div class="overflow-hidden rounded-lg border border-border-default bg-surface">
   <table class="table-dark">
     <thead>
@@ -25,3 +26,6 @@
     </tbody>
   </table>
 </div>
+<% else %>
+  <%= render "shared/empty_state", message: "No properties yet." %>
+<% end %>

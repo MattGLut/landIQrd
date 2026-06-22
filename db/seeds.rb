@@ -1,6 +1,11 @@
 # Idempotent demo/dev seed data. Safe to run repeatedly.
 # Default password for every seeded account is "password123".
 
+if Rails.env.production?
+  puts "Skipping seeds in production."
+  return
+end
+
 # Never seed the test database; specs rely on a clean slate (db:prepare would
 # otherwise seed a freshly created CI database).
 if Rails.env.test?

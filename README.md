@@ -1,4 +1,4 @@
-# Prop Man
+# LandIQrd
 
 A property management app for small (1-15 unit) landlords. Tenants, landlords,
 contractors, and admins collaborate around leases, work requests, and messaging.
@@ -51,7 +51,7 @@ with `ACTIVE_STORAGE_SERVICE=local`).
 
 ### Required S3 / IAM setup
 
-1. Create a private S3 bucket (e.g. `prop-man-production`).
+1. Create a private S3 bucket (e.g. `landiqrd-production`).
 2. Create an IAM user (or, preferably, an instance role on the EC2 host) scoped
    to that bucket:
 
@@ -63,8 +63,8 @@ with `ACTIVE_STORAGE_SERVICE=local`).
       "Effect": "Allow",
       "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject", "s3:ListBucket"],
       "Resource": [
-        "arn:aws:s3:::prop-man-production",
-        "arn:aws:s3:::prop-man-production/*"
+        "arn:aws:s3:::landiqrd-production",
+        "arn:aws:s3:::landiqrd-production/*"
       ]
     }
   ]

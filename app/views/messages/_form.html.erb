@@ -3,6 +3,6 @@
   <%= f.text_area :body, rows: 3, placeholder: "Write a message...", class: "input-dark" %>
   <div class="flex items-center justify-between">
     <%= f.file_field :files, multiple: true, class: "file-input-dark" %>
-    <%= f.submit "Send", class: button_classes(:primary) %>
+    <%= f.submit "Send", class: button_classes(:primary), data: { turbo_submits_with: "Sending…" } %>
   </div>
 <% end %>

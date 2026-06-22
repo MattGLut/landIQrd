@@ -46,7 +46,7 @@
   </div>
 
   <div class="flex gap-2">
-    <%= f.submit "Save", class: button_classes(:primary) %>
+    <%= f.submit "Save", class: button_classes(:primary), data: { turbo_submits_with: "Saving…" } %>
     <%= render "shared/button", label: "Cancel", url: admin_users_path, variant: :secondary %>
   </div>
 <% end %>

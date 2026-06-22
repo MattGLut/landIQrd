@@ -16,7 +16,7 @@
     <%= f.email_field :email, class: "input-dark", placeholder: "tenant@example.com" %>
   </div>
 
-  <div class="grid grid-cols-2 gap-4">
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
       <%= f.label :start_date, class: "block text-sm font-medium text-muted" %>
       <%= f.date_field :start_date, class: "input-dark" %>
@@ -27,7 +27,7 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-2 gap-4">
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
       <%= f.label :rent_amount, "Monthly rent", class: "block text-sm font-medium text-muted" %>
       <%= f.number_field :rent_amount, step: 0.01, class: "input-dark" %>
@@ -39,7 +39,7 @@
   </div>
 
   <div class="flex gap-2">
-    <%= f.submit "Send invitation", class: button_classes(:primary) %>
+    <%= f.submit "Send invitation", class: button_classes(:primary), data: { turbo_submits_with: "Sending…" } %>
     <%= render "shared/button", label: "Cancel", url: unit_path(@unit), variant: :secondary %>
   </div>
 <% end %>

@@ -16,7 +16,7 @@
     <%= f.text_field :address_line2, class: "input-dark" %>
   </div>
 
-  <div class="grid grid-cols-3 gap-4">
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
     <div>
       <%= f.label :city, class: "block text-sm font-medium text-muted" %>
       <%= f.text_field :city, class: "input-dark" %>
@@ -32,7 +32,7 @@
   </div>
 
   <div class="flex gap-2">
-    <%= f.submit "Save", class: button_classes(:primary) %>
+    <%= f.submit "Save", class: button_classes(:primary), data: { turbo_submits_with: "Saving…" } %>
     <%= render "shared/button", label: "Cancel", url: properties_path, variant: :secondary %>
   </div>
 <% end %>

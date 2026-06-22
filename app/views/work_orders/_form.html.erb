@@ -18,7 +18,7 @@
     <%= f.text_area :description, rows: 4, class: "input-dark" %>
   </div>
 
-  <div class="grid grid-cols-2 gap-4">
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
       <%= f.label :category, class: "block text-sm font-medium text-muted" %>
       <%= f.select :category, WorkOrder.categories.keys.map { |c| [ c.titleize, c ] }, {}, class: "input-dark" %>
@@ -31,11 +31,20 @@
 
   <div>
     <%= f.label :photos, class: "block text-sm font-medium text-muted" %>
+    <% if work_order.photos.attached? %>
+      <div class="mb-3 grid grid-cols-3 gap-3 sm:grid-cols-4">
+        <% work_order.photos.each do |photo| %>
+          <%= link_to rails_blob_path(photo, disposition: "inline"), class: "block overflow-hidden rounded-lg border border-border-default" do %>
+            <%= work_order_photo_thumbnail(photo) %>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
     <%= f.file_field :photos, multiple: true, accept: "image/*", class: "file-input-dark mt-1 block w-full" %>
   </div>
 
   <div class="flex gap-2">
-    <%= f.submit "Save", class: button_classes(:primary) %>
+    <%= f.submit "Save", class: button_classes(:primary), data: { turbo_submits_with: "Saving…" } %>
     <%= render "shared/button", label: "Cancel", url: cancel_url, variant: :secondary %>
   </div>
 <% end %>

@@ -1,8 +1,9 @@
 <% content_for :title, "Admin - Work orders" %>
 
-<%= render "shared/page_header", title: "Admin console" %>
+<%= render "shared/page_header", title: "Work orders" %>
 <%= render "admin/shared/nav" %>
 
+<% if @work_orders.any? %>
 <div class="overflow-hidden rounded-lg border border-border-default bg-surface">
   <table class="table-dark">
     <thead>
@@ -27,3 +28,6 @@
     </tbody>
   </table>
 </div>
+<% else %>
+  <%= render "shared/empty_state", message: "No work orders yet." %>
+<% end %>

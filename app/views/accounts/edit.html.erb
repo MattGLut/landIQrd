@@ -7,7 +7,6 @@
     <nav class="space-y-1">
       <%= link_to "Profile", edit_account_path, class: "block rounded-lg bg-accent/10 px-3 py-2 text-sm font-medium text-accent" %>
       <%= link_to "Email & security", edit_user_registration_path, class: "block rounded-lg px-3 py-2 text-sm text-muted hover:bg-elevated hover:text-primary" %>
-      <span class="block rounded-lg px-3 py-2 text-sm text-muted/60">Notifications (coming soon)</span>
     </nav>
 
     <div class="rounded-lg border border-border-default bg-surface p-6">
@@ -41,7 +40,7 @@
           <p class="font-medium text-primary"><%= @user.email %></p>
         </div>
 
-        <%= f.submit "Save profile", class: button_classes(:primary) %>
+        <%= f.submit "Save profile", class: button_classes(:primary), data: { turbo_submits_with: "Saving…" } %>
       <% end %>
     </div>
   </div>

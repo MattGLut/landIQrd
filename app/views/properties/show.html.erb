@@ -9,7 +9,9 @@
 
 <div class="mb-3 flex items-center justify-between">
   <h2 class="text-lg font-semibold text-primary">Units</h2>
-  <%= render "shared/button", label: "Add unit", url: new_property_unit_path(@property), variant: :ghost, size: :sm %>
+  <% if @property.units.any? %>
+    <%= render "shared/button", label: "Add unit", url: new_property_unit_path(@property), variant: :ghost, size: :sm %>
+  <% end %>
 </div>
 
 <% if @property.units.any? %>
@@ -29,5 +31,7 @@
     <% end %>
   </div>
 <% else %>
-  <p class="text-sm text-muted">No units yet.</p>
+  <%= render "shared/empty_state",
+    message: "No units yet.",
+    action: render("shared/button", label: "Add unit", url: new_property_unit_path(@property), variant: :primary) %>
 <% end %>

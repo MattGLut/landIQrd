@@ -31,6 +31,6 @@
       <%= f.password_field :current_password, autocomplete: "current-password", class: "input-dark" %>
     </div>
 
-    <%= f.submit "Update credentials", class: button_classes(:primary) %>
+    <%= f.submit "Update credentials", class: button_classes(:primary), data: { turbo_submits_with: "Saving…" } %>
   <% end %>
 </div>

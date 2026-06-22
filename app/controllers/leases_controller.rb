@@ -49,7 +49,7 @@ class LeasesController < ApplicationController
   end
 
   def set_lease
-    @lease = Lease.find(params[:id])
+    @lease = Lease.includes(:tenant, unit: :property).find(params[:id])
   end
 
   def load_tenants

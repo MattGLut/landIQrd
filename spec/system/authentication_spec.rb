@@ -102,7 +102,7 @@ RSpec.describe "Authentication" do
     visit new_user_session_path
     click_link "Forgot your password?"
     fill_in "Email", with: "resetme@example.com"
-    click_button "Send me password reset instructions"
+    click_button "Send reset instructions"
 
     expect(page).to have_current_path(new_user_session_path)
   end

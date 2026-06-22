@@ -20,7 +20,7 @@
     </label>
   <% end %>
 
-  <%= f.submit "Log in", class: "w-full #{button_classes(:primary)}" %>
+  <%= f.submit "Log in", class: "w-full #{button_classes(:primary)}", data: { turbo_submits_with: "Logging in…" } %>
 <% end %>
 
 <div class="mt-4 text-center text-sm text-muted">
