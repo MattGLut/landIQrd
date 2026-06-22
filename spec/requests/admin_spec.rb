@@ -35,6 +35,20 @@ RSpec.describe "Admin", type: :request do
       }.to change(User, :count).by(1)
       expect(User.find_by(email: "newadmin@example.com").role).to eq("admin")
     end
+
+    it "updates a user" do
+      user = create(:landlord, first_name: "Before")
+      patch admin_user_path(user), params: { user: { first_name: "After", role: "landlord" } }
+      expect(user.reload.first_name).to eq("After")
+    end
+
+    it "deletes another user" do
+      user = create(:tenant)
+      expect {
+        delete admin_user_path(user)
+      }.to change(User, :count).by(-1)
+      expect(response).to redirect_to(admin_users_path)
+    end
   end
 
   describe "self-deletion guard" do

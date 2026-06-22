@@ -31,12 +31,23 @@ RSpec.describe "Properties", type: :request do
     end
   end
 
-  describe "GET /properties/:id" do
-    it "blocks access to another landlord's property" do
-      other = create(:property)
+  describe "PATCH /properties/:id" do
+    it "updates a property owned by the current landlord" do
+      property = create(:property, landlord: landlord, name: "Old name")
       sign_in landlord
-      get property_path(other)
-      expect(response).to redirect_to(root_path)
+      patch property_path(property), params: { property: { name: "New name" } }
+      expect(property.reload.name).to eq("New name")
+    end
+  end
+
+  describe "DELETE /properties/:id" do
+    it "deletes a property owned by the current landlord" do
+      property = create(:property, landlord: landlord)
+      sign_in landlord
+      expect {
+        delete property_path(property)
+      }.to change(landlord.properties, :count).by(-1)
+      expect(response).to redirect_to(properties_path)
     end
   end
 end

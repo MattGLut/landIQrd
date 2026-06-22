@@ -50,6 +50,21 @@ RSpec.describe "Conversations", type: :request do
     end
   end
 
+  describe "POST /conversations" do
+    it "starts a direct thread between two users" do
+      sign_in tenant
+      post conversations_path, params: { recipient_id: landlord.id }
+      expect(response).to redirect_to(Conversation.last)
+    end
+
+    it "redirects when no recipient or work order is provided" do
+      sign_in tenant
+      post conversations_path
+      expect(response).to redirect_to(conversations_path)
+      expect(flash[:alert]).to eq("Could not start that conversation.")
+    end
+  end
+
   describe "POST /conversations/:id/messages" do
     it "lets a participant post a message" do
       conversation = Conversation.direct_between!(tenant, landlord)
@@ -63,6 +78,14 @@ RSpec.describe "Conversations", type: :request do
       conversation = Conversation.direct_between!(tenant, landlord)
       sign_in contractor
       post conversation_messages_path(conversation), params: { message: { body: "Sneaky" } }
+      expect(conversation.messages.count).to eq(0)
+    end
+
+    it "rejects an empty message without attachments" do
+      conversation = Conversation.direct_between!(tenant, landlord)
+      sign_in tenant
+      post conversation_messages_path(conversation), params: { message: { body: "" } }
+      expect(response).to have_http_status(:unprocessable_content)
       expect(conversation.messages.count).to eq(0)
     end
   end
