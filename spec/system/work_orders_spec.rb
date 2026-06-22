@@ -44,7 +44,7 @@ RSpec.describe "Work orders" do
       expect(page).to have_content("Done job")
       expect(page).not_to have_content("Open job")
 
-      click_link "Open"
+      click_link "Active"
 
       expect(page).to have_content("Open job")
     end
@@ -85,16 +85,15 @@ RSpec.describe "Work orders" do
       expect(page).to have_content("FixIt Co")
     end
 
-    it "updates work order status" do
+    it "updates work order status from the show page dropdown", js: true do
       work_order = create(:work_order, unit: unit, created_by: tenant, title: "Broken window")
 
       visit work_order_path(work_order)
-      click_link "Edit"
-      select "In Progress", from: "Status"
-      click_button "Save"
+      find("[aria-label='Change status']").click
+      click_on "Pending Management"
 
       expect(page).to have_content("Work order updated.")
-      expect(page).to have_content("In Progress")
+      expect(find("[aria-label='Change status']")).to have_content("Pending Management")
     end
   end
 
@@ -150,19 +149,21 @@ RSpec.describe "Work orders" do
     end
   end
 
-  describe "closing a work order as tenant" do
+  describe "closing a work order as tenant", js: true do
     it "closes the request with a reason instead of deleting" do
       sign_in_and_visit(tenant)
       work_order = create(:work_order, unit: unit, created_by: tenant, title: "Close me")
 
       visit work_order_path(work_order)
       expect(page).not_to have_button("Delete")
-      fill_in "Reason for closing", with: "Fixed it myself"
-      click_button "Close request"
+      find("[aria-label='Change status']").click
+      click_on "Closed"
+      fill_in "Reason", with: "Fixed it myself"
+      click_button "Update status"
 
       expect(page).to have_content("Work request closed.")
       expect(page).to have_content("Fixed it myself")
-      expect(page).to have_content("Cancelled")
+      expect(page).not_to have_css("[aria-label='Change status']")
     end
   end
 end

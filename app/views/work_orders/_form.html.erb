@@ -29,13 +29,6 @@
     </div>
   </div>
 
-  <% if work_order.persisted? && policy(work_order).change_status? %>
-    <div>
-      <%= f.label :status, class: "block text-sm font-medium text-muted" %>
-      <%= f.select :status, WorkOrder.statuses.keys.map { |s| [ s.titleize.gsub("_", " "), s ] }, {}, class: "input-dark" %>
-    </div>
-  <% end %>
-
   <div>
     <%= f.label :photos, class: "block text-sm font-medium text-muted" %>
     <%= f.file_field :photos, multiple: true, accept: "image/*", class: "file-input-dark mt-1 block w-full" %>
