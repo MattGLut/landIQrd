@@ -7,6 +7,8 @@ export default class extends Controller {
     "chevron",
     "label",
     "dialog",
+    "dialogTitle",
+    "dialogDescription",
     "reason",
     "statusForm",
     "statusField",
@@ -22,6 +24,7 @@ export default class extends Controller {
 
   connect() {
     this.closeMenu = this.closeMenu.bind(this)
+    this.submitMode = null
   }
 
   disconnect() {
@@ -66,13 +69,16 @@ export default class extends Controller {
 
   chooseOption(event) {
     event.preventDefault()
-    const value = event.currentTarget.dataset.status
+    const button = event.currentTarget
+    const value = button.dataset.status
 
     this.closeMenuPanel()
 
     if (value === this.currentStatusValue) return
 
-    if (value === "cancelled") {
+    if (value === "cancelled" || value === "closed") {
+      this.submitMode = button.dataset.submitMode || (this.closeOnlyValue ? "close" : "patch-cancel")
+      this.updateDialog(button)
       this.reasonTarget.value = ""
       this.dialogTarget.showModal()
       return
@@ -81,16 +87,32 @@ export default class extends Controller {
     this.submitStatus(value)
   }
 
+  updateDialog(button) {
+    if (button.dataset.dialogTitle && this.hasDialogTitleTarget) {
+      this.dialogTitleTarget.textContent = button.dataset.dialogTitle
+    }
+
+    if (button.dataset.dialogDescription && this.hasDialogDescriptionTarget) {
+      this.dialogDescriptionTarget.textContent = button.dataset.dialogDescription
+    }
+
+    const reasonRequired = button.dataset.reasonRequired === "true" || this.closeOnlyValue
+    this.reasonTarget.required = reasonRequired
+  }
+
   confirm(event) {
     event.preventDefault()
 
     const reason = this.reasonTarget.value.trim()
-    if (this.closeOnlyValue && reason === "") {
+    const mode = this.submitMode || (this.closeOnlyValue ? "close" : "patch-cancel")
+    const reasonRequired = mode === "close" || this.reasonTarget.required
+
+    if (reasonRequired && reason === "") {
       this.reasonTarget.focus()
       return
     }
 
-    if (this.closeOnlyValue) {
+    if (mode === "close") {
       this.closeReasonFieldTarget.value = reason
       this.closeFormTarget.requestSubmit()
     } else {
@@ -100,11 +122,13 @@ export default class extends Controller {
     }
 
     this.dialogTarget.close()
+    this.submitMode = null
   }
 
   cancel(event) {
     event.preventDefault()
     this.dialogTarget.close()
+    this.submitMode = null
   }
 
   submitStatus(status) {

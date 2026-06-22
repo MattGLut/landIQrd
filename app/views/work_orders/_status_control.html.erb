@@ -2,9 +2,11 @@
   <% status_options = work_order_status_options(work_order, policy(work_order)) %>
   <% if status_options.any? %>
     <% current_label = work_order_status_label(work_order.status, creator: work_order.created_by) %>
+    <% wo_policy = policy(work_order) %>
+    <% tenant_close_only = wo_policy.close? && !wo_policy.change_status? %>
     <div data-controller="work-order-status"
          data-work-order-status-current-status-value="<%= work_order.status %>"
-         data-work-order-status-close-only-value="<%= policy(work_order).close? && !policy(work_order).change_status? %>"
+         data-work-order-status-close-only-value="<%= tenant_close_only %>"
          data-action="keydown@window->work-order-status#handleKeydown">
       <div class="relative inline-flex shrink-0">
         <button type="button"
@@ -30,12 +32,19 @@
           data-work-order-status-target="menu"
           class="absolute left-0 top-full z-30 mt-1.5 hidden min-w-44 overflow-hidden rounded-lg border border-border-default bg-surface py-1 shadow-xl">
         <% status_options.each do |label, value| %>
+          <% option_attrs = work_order_status_option_attrs(value, wo_policy) %>
           <li role="presentation">
             <button type="button"
                     role="option"
                     data-status="<%= value %>"
                     data-action="work-order-status#chooseOption"
-                    class="block w-full px-3 py-2 text-left text-sm transition-colors hover:bg-elevated <%= value == "cancelled" ? "text-danger hover:bg-danger/10" : "text-primary" %>">
+                    <% if option_attrs[:submit_mode].present? %>
+                      data-dialog-title="<%= option_attrs[:dialog_title] %>"
+                      data-dialog-description="<%= option_attrs[:dialog_description] %>"
+                      data-reason-required="<%= option_attrs[:reason_required] %>"
+                      data-submit-mode="<%= option_attrs[:submit_mode] %>"
+                    <% end %>
+                    class="block w-full px-3 py-2 text-left text-sm transition-colors hover:bg-elevated <%= value.in?(%w[cancelled closed]) ? "text-danger hover:bg-danger/10" : "text-primary" %>">
               <%= label %>
             </button>
           </li>
@@ -51,7 +60,7 @@
         <%= f.hidden_field :closure_reason, data: { work_order_status_target: "closureField" } %>
       <% end %>
 
-      <% if policy(work_order).close? %>
+      <% if wo_policy.close? %>
         <%= form_with url: close_work_order_path(work_order),
                       method: :post,
                       data: { work_order_status_target: "closeForm" },
@@ -64,11 +73,11 @@
       <dialog data-work-order-status-target="dialog"
               class="fixed top-1/2 left-1/2 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border-default bg-surface p-0 text-primary shadow-xl backdrop:bg-black/60 open:animate-none">
         <div class="p-6">
-          <h2 class="text-lg font-semibold text-primary">
-            <%= policy(work_order).close? && !policy(work_order).change_status? ? "Close request" : "Cancel work order" %>
+          <h2 data-work-order-status-target="dialogTitle" class="text-lg font-semibold text-primary">
+            <%= tenant_close_only ? "Close request" : "Cancel work order" %>
           </h2>
-          <p class="mt-2 text-sm text-muted">
-            <% if policy(work_order).close? && !policy(work_order).change_status? %>
+          <p data-work-order-status-target="dialogDescription" class="mt-2 text-sm text-muted">
+            <% if tenant_close_only %>
               Tell us why you're closing this request.
             <% else %>
               Optionally share why this work order is being cancelled.
@@ -83,7 +92,7 @@
                       rows="3"
                       class="input-dark"
                       placeholder="e.g. Fixed it myself, no longer an issue..."
-                      <%= "required" if policy(work_order).close? && !policy(work_order).change_status? %>></textarea>
+                      <%= "required" if tenant_close_only %>></textarea>
           </div>
           <div class="mt-6 flex justify-end gap-2">
             <button type="button"

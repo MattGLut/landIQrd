@@ -18,12 +18,18 @@ module WorkOrdersHelper
 
   def work_order_status_options(work_order, policy)
     if policy.change_status?
-      work_order.aasm.permitted_transitions
+      options = work_order.aasm.permitted_transitions
         .reject { |transition| transition[:event] == :close }
         .map do |transition|
           status = transition[:state].to_s
           [ work_order_status_label(status), status ]
         end
+
+      if work_order.active? && policy.close?
+        options << [ "Closed", "closed" ]
+      end
+
+      options
     elsif policy.close?
       [ [ "Closed", "cancelled" ] ]
     else
@@ -33,6 +39,36 @@ module WorkOrdersHelper
 
   def work_order_status_manageable?(policy)
     policy.change_status? || policy.close?
+  end
+
+  def work_order_status_option_attrs(value, policy)
+    case value.to_s
+    when "closed"
+      {
+        dialog_title: "Close work order",
+        dialog_description: "Tell us why you're closing this work order.",
+        reason_required: true,
+        submit_mode: "close"
+      }
+    when "cancelled"
+      if policy.close? && !policy.change_status?
+        {
+          dialog_title: "Close request",
+          dialog_description: "Tell us why you're closing this request.",
+          reason_required: true,
+          submit_mode: "close"
+        }
+      else
+        {
+          dialog_title: "Cancel work order",
+          dialog_description: "Optionally share why this work order is being cancelled.",
+          reason_required: false,
+          submit_mode: "patch-cancel"
+        }
+      end
+    else
+      {}
+    end
   end
 
   def work_order_status_pill_classes(color)
