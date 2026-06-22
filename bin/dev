@@ -1,2 +1,14 @@
-#!/usr/bin/env ruby
-exec "./bin/rails", "server", *ARGV
+#!/usr/bin/env bash
+# Boot the Rails server together with the Tailwind CSS watcher for development.
+# Uses foreman + Procfile.dev when available; otherwise falls back to running the
+# watcher in the background so styles rebuild on file changes.
+
+if command -v foreman >/dev/null 2>&1; then
+  exec foreman start -f Procfile.dev "$@"
+fi
+
+bin/rails tailwindcss:watch &
+TAILWIND_PID=$!
+trap 'kill "$TAILWIND_PID" 2>/dev/null' EXIT INT TERM
+
+bin/rails server "$@"
