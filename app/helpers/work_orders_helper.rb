@@ -79,4 +79,20 @@ module WorkOrdersHelper
     palette = STATUS_PILL_COLORS.fetch(color.to_sym, STATUS_PILL_COLORS[:gray])
     "inline-flex items-center gap-1 rounded-full border py-1 pl-3 pr-2 text-xs font-semibold shadow-sm transition-shadow hover:shadow focus:outline-none focus:ring-2 focus:ring-accent/30 #{palette}"
   end
+
+  def work_order_photo_thumbnail(photo)
+    image_tag(
+      work_order_photo_source(photo),
+      class: "h-32 w-full object-cover",
+      alt: photo.filename.to_s
+    )
+  end
+
+  def work_order_photo_source(photo)
+    return photo unless photo.variable?
+
+    photo.variant(resize_to_limit: [ 300, 300 ]).processed
+  rescue LoadError, StandardError
+    photo
+  end
 end
