@@ -28,20 +28,27 @@
   <%= status_badge @work_order.priority.titleize, @work_order.priority_color %>
 </div>
 
+<% show_closure = @work_order.status_cancelled? && @work_order.closure_reason.present? %>
+
 <div class="rounded-lg border border-border-default bg-surface p-6">
-  <h2 class="text-sm font-medium text-muted">Description</h2>
-  <p class="mt-1 whitespace-pre-line text-primary"><%= @work_order.description.presence || "No description provided." %></p>
-  <p class="mt-4 text-xs text-muted">
-    Reported by <%= @work_order.created_by.display_name %> on <%= @work_order.created_at.to_fs(:long) %>
-  </p>
-  <% if @work_order.status_cancelled? && @work_order.closure_reason.present? %>
-    <div class="mt-4 rounded-md border border-border-default bg-elevated p-3">
-      <p class="text-sm font-medium text-muted">
-        <%= work_order_status_label("cancelled", creator: @work_order.created_by) %> by <%= @work_order.closed_by&.display_name || "Unknown" %>
+  <div class="<%= show_closure ? "grid gap-6 md:grid-cols-2 md:items-start" : "" %>">
+    <div>
+      <h2 class="text-sm font-medium text-muted">Description</h2>
+      <p class="mt-1 whitespace-pre-line text-primary"><%= @work_order.description.presence || "No description provided." %></p>
+      <p class="mt-4 text-xs text-muted">
+        Reported by <%= @work_order.created_by.display_name %> on <%= @work_order.created_at.to_fs(:long) %>
       </p>
-      <p class="mt-1 text-sm text-primary"><%= @work_order.closure_reason %></p>
     </div>
-  <% end %>
+
+    <% if show_closure %>
+      <div>
+        <p class="text-sm font-medium text-muted">
+          <%= work_order_status_label("cancelled", creator: @work_order.created_by) %> by <%= @work_order.closed_by&.display_name || "Unknown" %>
+        </p>
+        <p class="mt-1 text-sm text-primary"><%= @work_order.closure_reason %></p>
+      </div>
+    <% end %>
+  </div>
 </div>
 
 <% if @work_order.photos.attached? %>
@@ -111,14 +118,26 @@
 
 <% if @events.any? %>
   <div class="mt-6">
-    <h2 class="mb-3 text-lg font-semibold text-primary">Activity</h2>
-    <div class="space-y-2">
-      <% @events.each do |event| %>
-        <div class="rounded-lg border border-border-default bg-surface p-4">
-          <p class="text-sm text-primary"><%= event.description %></p>
-          <p class="mt-1 text-xs text-muted"><%= event.created_at.to_fs(:long) %></p>
-        </div>
-      <% end %>
-    </div>
+    <details class="group" open>
+      <summary class="mb-3 flex cursor-pointer list-none items-center gap-2 text-lg font-semibold text-primary [&::-webkit-details-marker]:hidden">
+        Activity
+        <span class="text-sm font-normal text-muted">(<%= @events.size %>)</span>
+        <svg class="ml-auto h-5 w-5 shrink-0 text-muted transition-transform group-open:rotate-180"
+             xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 20 20"
+             fill="currentColor"
+             aria-hidden="true">
+          <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd" />
+        </svg>
+      </summary>
+      <div class="space-y-2">
+        <% @events.each do |event| %>
+          <div class="rounded-lg border border-border-default bg-surface p-4">
+            <p class="text-sm text-primary"><%= event.description %></p>
+            <p class="mt-1 text-xs text-muted"><%= event.created_at.to_fs(:long) %></p>
+          </div>
+        <% end %>
+      </div>
+    </details>
   </div>
 <% end %>
