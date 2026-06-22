@@ -1,7 +1,7 @@
-<%= form_with model: [ conversation, message ], class: "space-y-3 rounded-lg border border-gray-200 bg-white p-4" do |f| %>
-  <%= f.text_area :body, rows: 3, placeholder: "Write a message...", class: "block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+<%= form_with model: [ conversation, message ], class: "space-y-3 rounded-lg border border-border-default bg-surface p-4" do |f| %>
+  <%= f.text_area :body, rows: 3, placeholder: "Write a message...", class: "input-dark" %>
   <div class="flex items-center justify-between">
-    <%= f.file_field :files, multiple: true, class: "text-sm text-gray-500" %>
-    <%= f.submit "Send", class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500" %>
+    <%= f.file_field :files, multiple: true, class: "text-sm text-muted" %>
+    <%= f.submit "Send", class: button_classes(:primary) %>
   </div>
 <% end %>

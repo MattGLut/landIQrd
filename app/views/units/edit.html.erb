@@ -1,6 +1,6 @@
 <% content_for :title, "Edit unit" %>
 
 <div class="mx-auto max-w-2xl">
-  <h1 class="mb-6 text-2xl font-bold">Edit <%= @unit.label %></h1>
+  <%= render "shared/page_header", title: "Edit #{@unit.label}" %>
   <%= render "form", unit: @unit, form_url: unit_path(@unit), cancel_url: unit_path(@unit) %>
 </div>

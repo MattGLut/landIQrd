@@ -1,0 +1,26 @@
+<aside data-sidebar-target="panel"
+       class="fixed inset-y-0 left-0 z-40 flex w-60 flex-col border-r border-border-default bg-surface transition-transform duration-200 -translate-x-full lg:static lg:translate-x-0">
+  <div class="flex h-14 items-center border-b border-border-default px-4">
+    <%= link_to authenticated_root_path, class: "text-lg font-bold text-accent tracking-tight" do %>
+      LandIQrd
+    <% end %>
+  </div>
+
+  <nav class="flex-1 space-y-1 overflow-y-auto p-3">
+    <% if current_user.landlord? %>
+      <%= sidebar_link properties_path, "Properties", icon: :building %>
+    <% end %>
+    <%= sidebar_link work_orders_path, work_orders_nav_label, icon: :wrench %>
+    <%= sidebar_link conversations_path, "Messages", icon: :chat %>
+  </nav>
+
+  <% if current_user.admin? %>
+    <div class="border-t border-border-default p-3">
+      <%= sidebar_link admin_dashboard_path, "Admin", icon: :shield %>
+    </div>
+  <% end %>
+</aside>
+
+<div data-sidebar-target="overlay"
+     data-action="click->sidebar#close"
+     class="fixed inset-0 z-30 hidden bg-black/60 lg:hidden"></div>

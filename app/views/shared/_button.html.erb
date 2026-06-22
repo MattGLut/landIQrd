@@ -1,0 +1,8 @@
+<% variant = local_assigns.fetch(:variant, :primary) %>
+<% size = local_assigns.fetch(:size, :md) %>
+<% html_options = local_assigns.fetch(:html_options, {}) %>
+<% if local_assigns[:method] %>
+  <%= button_to label, url, method: local_assigns[:method], params: local_assigns[:params], class: button_classes(variant, size: size), form: local_assigns[:form], **html_options %>
+<% else %>
+  <%= link_to label, url, class: button_classes(variant, size: size), **html_options %>
+<% end %>

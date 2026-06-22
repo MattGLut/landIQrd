@@ -1,35 +1,29 @@
 <% content_for :title, @property.name %>
 
-<div class="mb-6 flex items-start justify-between">
-  <div>
-    <h1 class="text-2xl font-bold"><%= @property.name %></h1>
-    <p class="text-gray-500"><%= @property.full_address.presence || "No address on file" %></p>
-  </div>
-  <div class="flex gap-2">
-    <%= link_to "Edit", edit_property_path(@property), class: "rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
-    <%= button_to "Delete", property_path(@property), method: :delete, class: "rounded-md border border-red-200 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50", form: { data: { turbo_confirm: "Delete this property and all its units?" } } %>
-  </div>
-</div>
+<%= render "shared/page_header", title: @property.name, subtitle: @property.full_address.presence || "No address on file", action: safe_join([
+  render("shared/button", label: "Edit", url: edit_property_path(@property), variant: :secondary),
+  render("shared/button", label: "Delete", url: property_path(@property), variant: :danger, method: :delete, form: { data: { turbo_confirm: "Delete this property and all its units?" } })
+]) %>
 
 <div class="mb-3 flex items-center justify-between">
-  <h2 class="text-lg font-semibold">Units</h2>
-  <%= link_to "Add unit", new_property_unit_path(@property), class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
+  <h2 class="text-lg font-semibold text-primary">Units</h2>
+  <%= render "shared/button", label: "Add unit", url: new_property_unit_path(@property), variant: :ghost, size: :sm %>
 </div>
 
 <% if @property.units.any? %>
   <div class="space-y-2">
     <% @property.units.order(:label).each do |unit| %>
-      <div class="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4">
+      <div class="flex items-center justify-between rounded-lg border border-border-default bg-surface p-4">
         <div>
-          <%= link_to unit.label, unit_path(unit), class: "font-medium text-indigo-600 hover:text-indigo-500" %>
-          <p class="text-sm text-gray-500">
+          <%= link_to unit.label, unit_path(unit), class: "font-medium text-accent hover:text-accent-hover" %>
+          <p class="text-sm text-muted">
             <%= [ unit.bedrooms && "#{unit.bedrooms} bd", unit.bathrooms && "#{unit.bathrooms} ba", unit.square_feet && "#{unit.square_feet} sqft" ].compact.join(" \u00b7 ") %>
           </p>
         </div>
-        <span class="text-sm text-gray-500"><%= pluralize(unit.leases.size, "lease") %></span>
+        <span class="text-sm text-muted"><%= pluralize(unit.leases.size, "lease") %></span>
       </div>
     <% end %>
   </div>
 <% else %>
-  <p class="text-sm text-gray-500">No units yet.</p>
+  <p class="text-sm text-muted">No units yet.</p>
 <% end %>

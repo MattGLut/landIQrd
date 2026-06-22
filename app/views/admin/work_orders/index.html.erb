@@ -1,27 +1,27 @@
 <% content_for :title, "Admin - Work orders" %>
 
-<h1 class="mb-6 text-2xl font-bold">Admin console</h1>
+<%= render "shared/page_header", title: "Admin console" %>
 <%= render "admin/shared/nav" %>
 
-<div class="overflow-hidden rounded-lg border border-gray-200 bg-white">
-  <table class="min-w-full divide-y divide-gray-200 text-sm">
-    <thead class="bg-gray-50 text-left text-gray-500">
+<div class="overflow-hidden rounded-lg border border-border-default bg-surface">
+  <table class="table-dark">
+    <thead>
       <tr>
-        <th class="px-4 py-2">Title</th>
-        <th class="px-4 py-2">Property</th>
-        <th class="px-4 py-2">Priority</th>
-        <th class="px-4 py-2">Status</th>
+        <th>Title</th>
+        <th>Property</th>
+        <th>Priority</th>
+        <th>Status</th>
       </tr>
     </thead>
-    <tbody class="divide-y divide-gray-100">
+    <tbody>
       <% @work_orders.each do |wo| %>
         <tr>
-          <td class="px-4 py-2">
-            <%= link_to wo.title, admin_work_order_path(wo), class: "font-medium text-indigo-600 hover:text-indigo-500" %>
+          <td>
+            <%= link_to wo.title, admin_work_order_path(wo), class: "font-medium text-accent hover:text-accent-hover" %>
           </td>
-          <td class="px-4 py-2 text-gray-600"><%= wo.unit.property.name %> &middot; <%= wo.unit.label %></td>
-          <td class="px-4 py-2"><%= status_badge wo.priority.titleize, wo.priority_color %></td>
-          <td class="px-4 py-2"><%= status_badge wo.status.titleize.gsub("_", " "), wo.status_color %></td>
+          <td class="text-muted"><%= wo.unit.property.name %> · <%= wo.unit.label %></td>
+          <td><%= status_badge wo.priority.titleize, wo.priority_color %></td>
+          <td><%= status_badge wo.status.titleize.gsub("_", " "), wo.status_color %></td>
         </tr>
       <% end %>
     </tbody>

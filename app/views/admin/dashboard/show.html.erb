@@ -1,53 +1,48 @@
 <% content_for :title, "Admin" %>
 
-<h1 class="mb-6 text-2xl font-bold">Admin console</h1>
+<%= render "shared/page_header", title: "Admin console" %>
 <%= render "admin/shared/nav" %>
 
 <div class="grid gap-4 sm:grid-cols-4">
-  <div class="rounded-lg border border-gray-200 bg-white p-5">
-    <p class="text-sm text-gray-500">Users</p>
-    <p class="mt-1 text-2xl font-semibold"><%= @users_count %></p>
-  </div>
-  <div class="rounded-lg border border-gray-200 bg-white p-5">
-    <p class="text-sm text-gray-500">Properties</p>
-    <p class="mt-1 text-2xl font-semibold"><%= @properties_count %></p>
-  </div>
-  <div class="rounded-lg border border-gray-200 bg-white p-5">
-    <p class="text-sm text-gray-500">Open work orders</p>
-    <p class="mt-1 text-2xl font-semibold"><%= @open_work_orders_count %></p>
-  </div>
-  <div class="rounded-lg border border-gray-200 bg-white p-5">
-    <p class="text-sm text-gray-500">Conversations</p>
-    <p class="mt-1 text-2xl font-semibold"><%= @conversations_count %></p>
-  </div>
+  <% [
+    [ "Users", @users_count ],
+    [ "Properties", @properties_count ],
+    [ "Open work orders", @open_work_orders_count ],
+    [ "Conversations", @conversations_count ]
+  ].each do |label, count| %>
+    <div class="rounded-lg border border-border-default bg-surface p-5">
+      <p class="text-sm text-muted"><%= label %></p>
+      <p class="mt-1 text-3xl font-bold <%= label == 'Open work orders' ? 'text-accent' : 'text-primary' %>"><%= count %></p>
+    </div>
+  <% end %>
 </div>
 
 <div class="mt-6 grid gap-6 sm:grid-cols-2">
-  <div class="rounded-lg border border-gray-200 bg-white p-5">
-    <h2 class="mb-3 text-lg font-semibold">Users by role</h2>
+  <div class="rounded-lg border border-border-default bg-surface p-5">
+    <h2 class="mb-3 text-lg font-semibold text-primary">Users by role</h2>
     <ul class="space-y-1 text-sm">
       <% @users_by_role.each do |role, count| %>
         <li class="flex justify-between">
-          <span class="text-gray-600"><%= role.titleize %></span>
-          <span class="font-medium"><%= count %></span>
+          <span class="text-muted"><%= role.titleize %></span>
+          <span class="font-medium text-primary"><%= count %></span>
         </li>
       <% end %>
     </ul>
   </div>
 
-  <div class="rounded-lg border border-gray-200 bg-white p-5">
-    <h2 class="mb-3 text-lg font-semibold">Recent work orders</h2>
+  <div class="rounded-lg border border-border-default bg-surface p-5">
+    <h2 class="mb-3 text-lg font-semibold text-primary">Recent work orders</h2>
     <% if @recent_work_orders.any? %>
       <ul class="space-y-2 text-sm">
         <% @recent_work_orders.each do |wo| %>
           <li class="flex justify-between">
-            <%= link_to wo.title, admin_work_order_path(wo), class: "text-indigo-600 hover:text-indigo-500" %>
+            <%= link_to wo.title, admin_work_order_path(wo), class: "text-accent hover:text-accent-hover" %>
             <%= status_badge wo.status.titleize.gsub("_", " "), wo.status_color %>
           </li>
         <% end %>
       </ul>
     <% else %>
-      <p class="text-sm text-gray-500">No work orders yet.</p>
+      <p class="text-sm text-muted">No work orders yet.</p>
     <% end %>
   </div>
 </div>

@@ -1,16 +1,16 @@
 class ConversationsController < ApplicationController
   def index
     authorize Conversation
-    @conversations = policy_scope(Conversation)
-                       .includes(:participants, :work_order, :messages)
-                       .order(updated_at: :desc)
+    load_conversations
+    load_selected_conversation if params[:conversation_id].present?
   end
 
   def show
     @conversation = Conversation.find(params[:id])
     authorize @conversation
-    @messages = @conversation.messages.includes(:author).order(:created_at)
-    @message = @conversation.messages.new
+    load_conversations
+    load_conversation_thread
+    render :index
   end
 
   def create
@@ -28,5 +28,24 @@ class ConversationsController < ApplicationController
     end
 
     redirect_to @conversation
+  end
+
+  private
+
+  def load_conversations
+    @conversations = policy_scope(Conversation)
+                       .includes(:participants, :work_order, :messages)
+                       .order(updated_at: :desc)
+  end
+
+  def load_selected_conversation
+    @conversation = @conversations.find_by(id: params[:conversation_id])
+    authorize @conversation if @conversation
+    load_conversation_thread if @conversation
+  end
+
+  def load_conversation_thread
+    @messages = @conversation.messages.includes(:author).order(:created_at)
+    @message = @conversation.messages.new
   end
 end

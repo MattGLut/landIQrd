@@ -1,43 +1,43 @@
-<%= form_with model: work_order, url: form_url, class: "space-y-4 rounded-lg border border-gray-200 bg-white p-6" do |f| %>
+<%= form_with model: work_order, url: form_url, class: "space-y-4 rounded-lg border border-border-default bg-surface p-6" do |f| %>
   <%= render "shared/form_errors", resource: work_order %>
 
   <% unless work_order.persisted? %>
     <div>
-      <%= f.label :unit_id, "Unit", class: "block text-sm font-medium text-gray-700" %>
-      <%= f.collection_select :unit_id, units, :id, :full_label, { include_blank: "Select a unit" }, class: "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+      <%= f.label :unit_id, "Unit", class: "block text-sm font-medium text-muted" %>
+      <%= f.collection_select :unit_id, units, :id, :full_label, { include_blank: "Select a unit" }, class: "input-dark" %>
     </div>
   <% end %>
 
   <div>
-    <%= f.label :title, class: "block text-sm font-medium text-gray-700" %>
-    <%= f.text_field :title, class: "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+    <%= f.label :title, class: "block text-sm font-medium text-muted" %>
+    <%= f.text_field :title, class: "input-dark" %>
   </div>
 
   <div>
-    <%= f.label :description, class: "block text-sm font-medium text-gray-700" %>
-    <%= f.text_area :description, rows: 4, class: "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+    <%= f.label :description, class: "block text-sm font-medium text-muted" %>
+    <%= f.text_area :description, rows: 4, class: "input-dark" %>
   </div>
 
   <div class="grid grid-cols-2 gap-4">
     <div>
-      <%= f.label :priority, class: "block text-sm font-medium text-gray-700" %>
-      <%= f.select :priority, WorkOrder.priorities.keys.map { |p| [ p.titleize, p ] }, {}, class: "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+      <%= f.label :priority, class: "block text-sm font-medium text-muted" %>
+      <%= f.select :priority, WorkOrder.priorities.keys.map { |p| [ p.titleize, p ] }, {}, class: "input-dark" %>
     </div>
     <% if work_order.persisted? %>
       <div>
-        <%= f.label :status, class: "block text-sm font-medium text-gray-700" %>
-        <%= f.select :status, WorkOrder.statuses.keys.map { |s| [ s.titleize.gsub("_", " "), s ] }, {}, class: "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+        <%= f.label :status, class: "block text-sm font-medium text-muted" %>
+        <%= f.select :status, WorkOrder.statuses.keys.map { |s| [ s.titleize.gsub("_", " "), s ] }, {}, class: "input-dark" %>
       </div>
     <% end %>
   </div>
 
   <div>
-    <%= f.label :photos, class: "block text-sm font-medium text-gray-700" %>
-    <%= f.file_field :photos, multiple: true, accept: "image/*", class: "mt-1 block w-full text-sm text-gray-500" %>
+    <%= f.label :photos, class: "block text-sm font-medium text-muted" %>
+    <%= f.file_field :photos, multiple: true, accept: "image/*", class: "mt-1 block w-full text-sm text-muted" %>
   </div>
 
   <div class="flex gap-2">
-    <%= f.submit class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500" %>
-    <%= link_to "Cancel", cancel_url, class: "rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+    <%= f.submit "Save", class: button_classes(:primary) %>
+    <%= render "shared/button", label: "Cancel", url: cancel_url, variant: :secondary %>
   </div>
 <% end %>

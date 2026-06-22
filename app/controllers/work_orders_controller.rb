@@ -4,7 +4,8 @@ class WorkOrdersController < ApplicationController
 
   def index
     authorize WorkOrder
-    @work_orders = policy_scope(WorkOrder).includes(unit: :property).order(created_at: :desc)
+    @work_orders = filtered_work_orders
+    @status_filter = params[:status]
   end
 
   def show
@@ -76,5 +77,19 @@ class WorkOrdersController < ApplicationController
 
   def update_params
     params.require(:work_order).permit(:title, :description, :priority, :status, :lease_id, photos: [])
+  end
+
+  def filtered_work_orders
+    scope = policy_scope(WorkOrder).includes(unit: :property).order(created_at: :desc)
+    case params[:status]
+    when "active"
+      scope.active
+    when "completed"
+      scope.where(status: :completed)
+    when "cancelled"
+      scope.where(status: :cancelled)
+    else
+      scope
+    end
   end
 end

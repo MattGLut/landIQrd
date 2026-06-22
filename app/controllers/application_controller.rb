@@ -10,6 +10,8 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :configure_permitted_parameters, if: :devise_controller?
 
+  layout :layout_for_request
+
   after_action :verify_authorized, unless: :pundit_exempt?
   after_action :verify_policy_scoped, if: :verify_index_scope?
 
@@ -32,6 +34,10 @@ class ApplicationController < ActionController::Base
     extra = [ :first_name, :last_name, :phone, :company_name, :role ]
     devise_parameter_sanitizer.permit(:sign_up, keys: extra)
     devise_parameter_sanitizer.permit(:account_update, keys: extra)
+  end
+
+  def layout_for_request
+    devise_controller? ? "auth" : "application"
   end
 
   def user_not_authorized
