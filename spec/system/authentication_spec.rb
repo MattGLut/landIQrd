@@ -107,6 +107,38 @@ RSpec.describe "Authentication" do
     expect(page).to have_current_path(new_user_session_path)
   end
 
+  it "completes the password reset flow end to end" do
+    user = create(:tenant, first_name: "Reset", email: "resetme@example.com")
+    token = set_reset_password_token(user)
+
+    visit edit_user_password_path(reset_password_token: token)
+    fill_in "New password", with: "newpassword123"
+    fill_in "Confirm new password", with: "newpassword123"
+    click_button "Change my password"
+
+    expect(page).to have_content("Welcome back, Reset")
+
+    click_button "Sign out"
+    visit new_user_session_path
+    fill_in "Email", with: user.email
+    fill_in "Password", with: "newpassword123"
+    click_button "Log in"
+
+    expect(page).to have_content("Welcome back, Reset")
+  end
+
+  it "allows signing in with remember me checked" do
+    user = create(:landlord)
+
+    visit new_user_session_path
+    fill_in "Email", with: user.email
+    fill_in "Password", with: "password123"
+    check "Remember me"
+    click_button "Log in"
+
+    expect(page).to have_content("Welcome back, #{user.first_name}")
+  end
+
   it "updates account email" do
     user = create(:landlord, email: "lana@example.com")
     sign_in_and_visit(user, edit_user_registration_path)

@@ -50,4 +50,22 @@ RSpec.describe "File uploads" do
     expect(page).to have_content("sample.pdf")
     expect(conversation.messages.last.files).to be_attached
   end
+
+  it "downloads a lease document" do
+    lease = create(:lease, unit: unit, tenant: tenant)
+    lease.documents.attach(
+      io: File.open(Rails.root.join("spec/fixtures/files/sample.pdf")),
+      filename: "sample.pdf",
+      content_type: "application/pdf"
+    )
+
+    sign_in_and_visit(landlord, lease_path(lease))
+    click_link "Download"
+
+    expect(page.status_code).to be_in([ 200, 302 ])
+    if page.status_code == 302
+      visit page.response_headers["Location"]
+    end
+    expect(page.response_headers["Content-Type"]).to include("application/pdf")
+  end
 end

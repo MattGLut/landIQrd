@@ -80,5 +80,13 @@ RSpec.describe "Conversations", type: :request do
       post conversation_messages_path(conversation), params: { message: { body: "Sneaky" } }
       expect(conversation.messages.count).to eq(0)
     end
+
+    it "rejects an empty message without attachments" do
+      conversation = Conversation.direct_between!(tenant, landlord)
+      sign_in tenant
+      post conversation_messages_path(conversation), params: { message: { body: "" } }
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(conversation.messages.count).to eq(0)
+    end
   end
 end

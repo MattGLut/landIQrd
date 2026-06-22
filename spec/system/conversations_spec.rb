@@ -64,6 +64,16 @@ RSpec.describe "Conversations" do
     expect(page).to have_content(landlord.display_name)
   end
 
+  it "shows validation errors for an empty message" do
+    conversation = Conversation.direct_between!(tenant, landlord)
+    sign_in_and_visit(tenant, conversation_path(conversation))
+
+    click_button "Send"
+
+    expect(page).to have_content("error prevented this from being saved")
+    expect(page).to have_content("Body can't be blank")
+  end
+
   describe "Turbo Stream messaging", js: true do
     it "appends a message without a full page reload" do
       conversation = Conversation.direct_between!(tenant, landlord)
@@ -77,6 +87,28 @@ RSpec.describe "Conversations" do
       expect(page).to have_content("Turbo hello")
       expect(page).not_to have_content("No messages yet. Say hello.")
       expect(page).to have_field("Write a message...", with: "")
+    end
+
+    it "delivers a message to another participant in real time" do
+      conversation = Conversation.direct_between!(tenant, landlord)
+
+      using_session(:landlord) do
+        sign_in landlord
+        visit conversation_path(conversation)
+        expect(page).to have_content("No messages yet. Say hello.")
+      end
+
+      using_session(:tenant) do
+        sign_in tenant
+        visit conversation_path(conversation)
+        fill_in "Write a message...", with: "Live update hello"
+        click_button "Send"
+        expect(page).to have_content("Live update hello")
+      end
+
+      using_session(:landlord) do
+        expect(page).to have_content("Live update hello", wait: 10)
+      end
     end
   end
 end

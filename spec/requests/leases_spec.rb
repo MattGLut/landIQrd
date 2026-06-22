@@ -67,4 +67,22 @@ RSpec.describe "Leases", type: :request do
       expect(response).to redirect_to(property)
     end
   end
+
+  describe "lease documents" do
+    it "downloads an attached document" do
+      lease = create(:lease, unit: unit, tenant: tenant)
+      lease.documents.attach(
+        io: File.open(Rails.root.join("spec/fixtures/files/sample.pdf")),
+        filename: "sample.pdf",
+        content_type: "application/pdf"
+      )
+      sign_in landlord
+      get rails_blob_path(lease.documents.first, disposition: "attachment")
+
+      expect(response).to have_http_status(:redirect)
+      follow_redirect!
+      expect(response).to have_http_status(:ok)
+      expect(response.headers["Content-Disposition"]).to include("sample.pdf")
+    end
+  end
 end

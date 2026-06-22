@@ -45,4 +45,17 @@ RSpec.describe "Units" do
     expect(page).to have_content("Unit removed.")
     expect(page).to have_content("Maple Court")
   end
+
+  it "navigates back to the property via breadcrumbs" do
+    unit = create(:unit, property: property, label: "Apt 3C")
+
+    visit unit_path(unit)
+
+    within('nav[aria-label="Breadcrumb"]') do
+      click_link "Maple Court"
+    end
+
+    expect(page).to have_current_path(property_path(property))
+    expect(page).to have_content("Apt 3C")
+  end
 end
