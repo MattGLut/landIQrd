@@ -1,7 +1,12 @@
-<% flash.each do |type, message| %>
-  <% next if message.blank? %>
-  <% style = type.to_sym == :alert ? "border-danger/30 bg-danger/10 text-danger" : "border-accent/30 bg-accent/10 text-accent" %>
-  <div class="mb-4 rounded-lg border px-4 py-3 text-sm <%= style %>" role="alert">
-    <%= message %>
+<% messages = flash.select { |_, message| message.present? } %>
+<% if messages.any? %>
+  <% container_class = local_assigns[:inset] ? "flash-container flash-container--inset" : "flash-container" %>
+  <div class="<%= container_class %>">
+    <% messages.each do |type, message| %>
+      <% variant = type.to_sym == :alert ? "danger" : "success" %>
+      <div data-flash-auto-dismiss class="flash-toast flash-toast--<%= variant %>" role="alert">
+        <%= message %>
+      </div>
+    <% end %>
   </div>
 <% end %>
