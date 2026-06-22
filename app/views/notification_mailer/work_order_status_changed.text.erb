@@ -1,0 +1,7 @@
+Work order update for <%= @work_order.unit.property.name %>
+
+Hi <%= @recipient.greeting_name %>,
+
+"<%= @work_order.title %>" is now <%= @work_order.status.humanize %>.
+
+View: <%= work_order_url(@work_order) %>

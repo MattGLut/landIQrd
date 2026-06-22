@@ -3,6 +3,7 @@ class Lease < ApplicationRecord
   belongs_to :tenant, class_name: "User", inverse_of: :leases
 
   has_many :work_orders, dependent: :nullify
+  has_one :lease_invitation, dependent: :nullify
 
   has_many_attached :documents
 
@@ -11,6 +12,11 @@ class Lease < ApplicationRecord
   validates :start_date, presence: true
   validates :rent_amount, :deposit_amount, numericality: { greater_than_or_equal_to: 0 }
   validate :end_after_start
+  validate :one_active_lease_per_unit, if: :active?
+
+  scope :expiring_within, ->(days) {
+    where(status: :active).where.not(end_date: nil).where(end_date: Date.current..(Date.current + days.days))
+  }
 
   delegate :property, to: :unit
   delegate :landlord, to: :unit
@@ -26,5 +32,12 @@ class Lease < ApplicationRecord
     return if end_date.blank? || start_date.blank?
 
     errors.add(:end_date, "must be after the start date") if end_date < start_date
+  end
+
+  def one_active_lease_per_unit
+    return if unit_id.blank?
+
+    conflict = unit.leases.where(status: :active).where.not(id: id)
+    errors.add(:unit, "already has an active lease") if conflict.exists?
   end
 end

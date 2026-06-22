@@ -1,0 +1,8 @@
+<p>Hi <%= @recipient.greeting_name %>,</p>
+
+<p>A new work request was submitted for <%= @work_order.unit.property.name %> · <%= @work_order.unit.label %>.</p>
+
+<p><strong><%= @work_order.title %></strong></p>
+<p><%= @work_order.description %></p>
+
+<p><%= link_to "View work order", work_order_url(@work_order) %></p>

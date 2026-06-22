@@ -30,6 +30,16 @@ RSpec.describe Conversation, type: :model do
       conversation = described_class.for_work_order!(work_order)
       expect(conversation.participants).to include(contractor)
     end
+
+    it "includes the current tenant on the unit" do
+      leased_tenant = create(:tenant)
+      create(:lease, unit: unit, tenant: leased_tenant, status: :active)
+      other_tenant = create(:tenant)
+      work_order = create(:work_order, unit: unit, created_by: other_tenant)
+
+      conversation = described_class.for_work_order!(work_order)
+      expect(conversation.participants).to include(leased_tenant)
+    end
   end
 
   describe ".direct_between!" do

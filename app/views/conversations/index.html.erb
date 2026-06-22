@@ -7,9 +7,13 @@
       <div class="flex-1 space-y-1 overflow-y-auto">
         <% @conversations.each do |conversation| %>
           <% active = @conversation&.id == conversation.id %>
+          <% unread = conversation.unread_for?(current_user) %>
           <%= link_to conversation_path(conversation), class: "block rounded-lg border p-3 transition-colors #{active ? 'border-accent/50 bg-accent/10' : 'border-border-default bg-surface hover:border-accent/30'}" do %>
             <div class="flex items-center gap-2">
-              <p class="min-w-0 flex-1 truncate font-medium text-primary"><%= conversation.title %></p>
+              <p class="min-w-0 flex-1 truncate font-medium #{unread ? 'text-primary' : 'text-muted'}"><%= conversation.title %></p>
+              <% if unread %>
+                <span class="h-2 w-2 shrink-0 rounded-full bg-accent"></span>
+              <% end %>
               <% if conversation.work_order %>
                 <%= status_badge "Work order", :indigo %>
               <% end %>

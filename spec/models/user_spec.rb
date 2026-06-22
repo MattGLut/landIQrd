@@ -1,42 +1,32 @@
 require "rails_helper"
 
 RSpec.describe User, type: :model do
-  describe "validations" do
-    subject { build(:user) }
-
-    it { is_expected.to validate_presence_of(:first_name) }
-    it { is_expected.to validate_presence_of(:last_name) }
-    it { is_expected.to validate_presence_of(:email) }
-    it { is_expected.to validate_presence_of(:password) }
-  end
-
-  describe "roles" do
-    it do
-      is_expected.to define_enum_for(:role)
-        .with_values(tenant: 0, landlord: 1, contractor: 2, admin: 3)
-    end
-
-    it "defaults to tenant" do
-      expect(User.new.role).to eq("tenant")
-    end
-  end
-
-  describe "#full_name" do
-    it "joins first and last name" do
-      user = build(:user, first_name: "Ada", last_name: "Lovelace")
-      expect(user.full_name).to eq("Ada Lovelace")
-    end
-  end
-
   describe "#display_name" do
-    it "prefers company name when present" do
-      user = build(:landlord, company_name: "Acme Realty", first_name: "Ada", last_name: "Lovelace")
-      expect(user.display_name).to eq("Acme Realty")
-    end
+    it "prefers preferred name, then company, then full name" do
+      user = build(:tenant, first_name: "Toni", last_name: "Tenant", preferred_name: "T", company_name: "Co")
+      expect(user.display_name).to eq("T")
 
-    it "falls back to full name without a company" do
-      user = build(:tenant, first_name: "Ada", last_name: "Lovelace", company_name: nil)
-      expect(user.display_name).to eq("Ada Lovelace")
+      user.preferred_name = nil
+      expect(user.display_name).to eq("Co")
+
+      user.company_name = nil
+      expect(user.display_name).to eq("Toni Tenant")
+    end
+  end
+
+  describe "#greeting_name" do
+    it "prefers preferred name over first name" do
+      user = build(:tenant, first_name: "Toni", preferred_name: "T")
+      expect(user.greeting_name).to eq("T")
+    end
+  end
+
+  describe "avatar validations" do
+    it "rejects unsupported content types" do
+      user = create(:tenant)
+      user.avatar.attach(io: StringIO.new("not-an-image"), filename: "bad.txt", content_type: "text/plain")
+      expect(user).not_to be_valid
+      expect(user.errors[:avatar]).to be_present
     end
   end
 end

@@ -11,7 +11,10 @@
       <%= sidebar_link properties_path, "Properties", icon: :building %>
     <% end %>
     <%= sidebar_link work_orders_path, work_orders_nav_label, icon: :wrench %>
-    <%= sidebar_link conversations_path, "Messages", icon: :chat %>
+    <% if current_user.landlord? || current_user.contractor? %>
+      <%= sidebar_link schedule_work_orders_path, "Schedule", icon: :calendar %>
+    <% end %>
+    <%= sidebar_link conversations_path, "Messages", icon: :chat, badge: unread_badge(unread_conversations_count(current_user)) %>
   </nav>
 
   <% if current_user.admin? %>

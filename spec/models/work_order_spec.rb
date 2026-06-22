@@ -13,6 +13,17 @@ RSpec.describe WorkOrder, type: :model do
       .with_prefix
   end
 
+  it "defaults new work orders to the general category" do
+    work_order = create(:work_order)
+    expect(work_order.category).to eq("general")
+    expect(work_order).to be_category_general
+  end
+
+  it "logs a created event after create" do
+    work_order = create(:work_order)
+    expect(work_order.work_order_events.last.action).to eq("created")
+  end
+
   describe "scopes" do
     let(:landlord) { create(:landlord) }
     let(:property) { create(:property, landlord: landlord) }

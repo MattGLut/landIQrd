@@ -53,7 +53,19 @@ class LeasesController < ApplicationController
   end
 
   def load_tenants
-    @tenants = User.tenant.order(:last_name, :first_name)
+    @tenants = if current_user.admin?
+      User.tenant.order(:last_name, :first_name)
+    else
+      linked_ids = Lease.joins(unit: :property)
+                        .where(properties: { landlord_id: current_user.id })
+                        .select(:tenant_id)
+      invited_emails = LeaseInvitation.joins(unit: :property)
+                                      .where(properties: { landlord_id: current_user.id })
+                                      .select(:email)
+      invited_ids = User.tenant.where(email: invited_emails).select(:id)
+      User.tenant.where(id: linked_ids).or(User.tenant.where(id: invited_ids))
+           .distinct.order(:last_name, :first_name)
+    end
   end
 
   def lease_params

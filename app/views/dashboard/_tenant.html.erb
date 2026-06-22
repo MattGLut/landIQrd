@@ -25,6 +25,14 @@
   </div>
 <% end %>
 
+<% if @expiring_soon_lease %>
+  <div class="mt-6 rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-4">
+    <p class="text-sm font-medium text-yellow-400">Lease ending soon</p>
+    <p class="mt-1 text-primary"><%= @expiring_soon_lease.unit.property.name %> · <%= @expiring_soon_lease.unit.label %> ends <%= @expiring_soon_lease.end_date.to_fs(:long) %></p>
+    <%= link_to "View lease", lease_path(@expiring_soon_lease), class: "mt-2 inline-block text-sm text-accent hover:text-accent-hover" %>
+  </div>
+<% end %>
+
 <div class="mt-6">
   <%= render "shared/button", label: "New work request", url: new_work_order_path, variant: :primary %>
 </div>

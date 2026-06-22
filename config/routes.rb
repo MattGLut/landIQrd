@@ -5,6 +5,9 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   resource :dashboard, only: [ :show ], controller: "dashboard"
+  resource :account, only: [ :show, :edit, :update ], controller: "accounts"
+
+  get "invites/:token", to: "lease_invitations#show", as: :invite
 
   resources :properties do
     resources :units, only: [ :new, :create ]
@@ -12,11 +15,18 @@ Rails.application.routes.draw do
 
   resources :units, only: [ :show, :edit, :update, :destroy ] do
     resources :leases, only: [ :new, :create ]
+    resources :lease_invitations, only: [ :new, :create ]
   end
 
   resources :leases, only: [ :show, :edit, :update, :destroy ]
 
   resources :work_orders do
+    collection do
+      get :schedule
+    end
+    member do
+      post :close
+    end
     resources :work_order_assignments, only: [ :create, :update, :destroy ]
   end
 

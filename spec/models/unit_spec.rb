@@ -11,7 +11,7 @@ RSpec.describe Unit, type: :model do
       property = create(:property, name: "Oak Court")
       unit = create(:unit, property: property, label: "2B")
 
-      expect(unit.full_label).to eq("Oak Court - 2B")
+      expect(unit.full_label).to eq("Oak Court · 2B")
     end
   end
 

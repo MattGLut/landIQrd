@@ -2,7 +2,7 @@
 
 <% header_actions = capture do %>
   <%= button_to "Open conversation", conversations_path, params: { work_order_id: @work_order.id }, method: :post, class: button_classes(:secondary, size: :sm), form: { class: "inline" } %>
-  <% if policy(@work_order).update? %>
+  <% if policy(@work_order).edit_details? %>
     <%= render "shared/button", label: "Edit", url: edit_work_order_path(@work_order), variant: :secondary, size: :sm %>
   <% end %>
   <% if policy(@work_order).destroy? %>
@@ -12,7 +12,8 @@
 
 <%= render "shared/page_header", title: @work_order.title, subtitle: "#{@work_order.unit.property.name} · #{@work_order.unit.label}", action: header_actions %>
 
-<div class="mb-2 flex gap-2">
+<div class="mb-2 flex flex-wrap gap-2">
+  <%= status_badge @work_order.category.titleize, :indigo %>
   <%= status_badge @work_order.priority.titleize, @work_order.priority_color %>
   <%= status_badge @work_order.status.titleize.gsub("_", " "), @work_order.status_color %>
 </div>
@@ -21,9 +22,29 @@
   <h2 class="text-sm font-medium text-muted">Description</h2>
   <p class="mt-1 whitespace-pre-line text-primary"><%= @work_order.description.presence || "No description provided." %></p>
   <p class="mt-4 text-xs text-muted">
-    Reported by <%= @work_order.created_by.full_name %> on <%= @work_order.created_at.to_fs(:long) %>
+    Reported by <%= @work_order.created_by.display_name %> on <%= @work_order.created_at.to_fs(:long) %>
   </p>
+  <% if @work_order.status_cancelled? && @work_order.closure_reason.present? %>
+    <div class="mt-4 rounded-md border border-border-default bg-elevated p-3">
+      <p class="text-sm font-medium text-muted">Closed by <%= @work_order.closed_by&.display_name || "Unknown" %></p>
+      <p class="mt-1 text-sm text-primary"><%= @work_order.closure_reason %></p>
+    </div>
+  <% end %>
 </div>
+
+<% if policy(@work_order).close? %>
+  <div class="mt-6 rounded-lg border border-border-default bg-surface p-6">
+    <h2 class="mb-3 text-lg font-semibold text-primary">Close request</h2>
+    <p class="mb-4 text-sm text-muted">If this issue is resolved or no longer needed, close it with a brief reason.</p>
+    <%= form_with url: close_work_order_path(@work_order), method: :post, class: "space-y-4" do |f| %>
+      <div>
+        <%= f.label :closure_reason, "Reason for closing", class: "block text-sm font-medium text-muted" %>
+        <%= f.text_area :closure_reason, rows: 3, required: true, class: "input-dark", placeholder: "e.g. Fixed it myself, no longer an issue..." %>
+      </div>
+      <%= f.submit "Close request", class: button_classes(:secondary) %>
+    <% end %>
+  </div>
+<% end %>
 
 <% if @work_order.photos.attached? %>
   <div class="mt-6">
@@ -89,3 +110,17 @@
     </div>
   <% end %>
 </div>
+
+<% if @events.any? %>
+  <div class="mt-6">
+    <h2 class="mb-3 text-lg font-semibold text-primary">Activity</h2>
+    <div class="space-y-2">
+      <% @events.each do |event| %>
+        <div class="rounded-lg border border-border-default bg-surface p-4">
+          <p class="text-sm text-primary"><%= event.description %></p>
+          <p class="mt-1 text-xs text-muted"><%= event.created_at.to_fs(:long) %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

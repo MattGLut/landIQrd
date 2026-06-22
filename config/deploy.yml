@@ -40,7 +40,10 @@ env:
     - DATABASE_URL          # RDS Postgres connection string
     - AWS_ACCESS_KEY_ID     # ActiveStorage S3
     - AWS_SECRET_ACCESS_KEY
+    - SENDGRID_API_KEY
+    - MAILER_FROM
   clear:
+    MAILER_HOST: app.example.com
     # ActiveStorage S3 (non-secret config)
     AWS_REGION: us-east-1
     S3_BUCKET: prop-man-production

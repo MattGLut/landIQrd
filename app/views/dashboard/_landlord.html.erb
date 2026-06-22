@@ -10,8 +10,28 @@
   <%= link_to conversations_path, class: "rounded-lg border border-border-default bg-surface p-5 transition-colors hover:border-accent/50" do %>
     <p class="text-sm text-muted">Conversations</p>
     <p class="mt-1 text-3xl font-bold text-primary"><%= @conversations_count %></p>
+    <% if @unread_conversations_count.to_i.positive? %>
+      <p class="mt-1 text-xs text-accent"><%= @unread_conversations_count %> unread</p>
+    <% end %>
   <% end %>
 </div>
+
+<% if @expiring_leases.any? %>
+  <div class="mt-6">
+    <h2 class="mb-3 text-lg font-semibold text-primary">Leases expiring soon</h2>
+    <div class="space-y-2">
+      <% @expiring_leases.each do |lease| %>
+        <%= link_to lease_path(lease), class: "flex items-center justify-between rounded-lg border border-border-default bg-surface p-4 hover:border-accent/50" do %>
+          <div>
+            <p class="font-medium text-primary"><%= lease.unit.property.name %> · <%= lease.unit.label %></p>
+            <p class="text-sm text-muted"><%= lease.tenant.full_name %></p>
+          </div>
+          <p class="text-sm text-accent"><%= lease.end_date.to_fs(:long) %></p>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% end %>
 
 <div class="mt-6">
   <%= render "shared/button", label: "Manage properties", url: properties_path, variant: :primary %>

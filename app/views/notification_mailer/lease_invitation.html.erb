@@ -1,0 +1,7 @@
+<p>Hi,</p>
+
+<p><%= @invitation.invited_by.display_name %> invited you to join <%= @invitation.unit.property.name %> · <%= @invitation.unit.label %> on LandIQrd.</p>
+
+<p><%= link_to "Accept invitation", invite_url(@invitation.token) %></p>
+
+<p>This invitation expires <%= @invitation.expires_at.to_fs(:long) %>.</p>

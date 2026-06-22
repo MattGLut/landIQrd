@@ -1,6 +1,10 @@
 require "rails_helper"
 
 RSpec.describe "Conversations", type: :request do
+  include ActiveJob::TestHelper
+
+  after { clear_enqueued_jobs }
+
   let(:landlord) { create(:landlord) }
   let(:property) { create(:property, landlord: landlord) }
   let(:unit) { create(:unit, property: property) }
@@ -87,6 +91,26 @@ RSpec.describe "Conversations", type: :request do
       post conversation_messages_path(conversation), params: { message: { body: "" } }
       expect(response).to have_http_status(:unprocessable_content)
       expect(conversation.messages.count).to eq(0)
+    end
+
+    it "enqueues notification mail for other participants" do
+      conversation = Conversation.direct_between!(tenant, landlord)
+      sign_in tenant
+      expect {
+        post conversation_messages_path(conversation), params: { message: { body: "Ping" } }
+      }.to have_enqueued_mail(NotificationMailer, :new_message)
+    end
+  end
+
+  describe "GET /conversations/:id read state" do
+    it "marks the conversation read for the viewer" do
+      conversation = Conversation.direct_between!(tenant, landlord)
+      conversation.messages.create!(author: landlord, body: "Hello")
+      participant = conversation.conversation_participants.find_by!(user: tenant)
+
+      sign_in tenant
+      get conversation_path(conversation)
+      expect(participant.reload.last_read_at).to be_present
     end
   end
 end
