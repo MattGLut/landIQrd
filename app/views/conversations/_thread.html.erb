@@ -2,11 +2,17 @@
 
 <div class="flex h-full flex-col">
   <div class="mb-4 border-b border-border-default pb-4">
-    <h2 class="text-lg font-bold text-primary"><%= conversation.title %></h2>
-    <p class="text-sm text-muted"><%= conversation.participants.map(&:display_name).join(", ") %></p>
-    <% if conversation.work_order %>
-      <%= link_to "View work order", work_order_path(conversation.work_order), class: "mt-1 inline-block text-sm font-medium text-accent hover:text-accent-hover" %>
-    <% end %>
+    <div class="<%= conversation.work_order ? "flex flex-col items-start gap-2 lg:flex-row lg:gap-4" : "" %>">
+      <div class="min-w-0">
+        <h2 class="text-lg font-bold text-primary"><%= conversation.title %></h2>
+        <p class="text-sm text-muted"><%= conversation.participants.map(&:display_name).join(", ") %></p>
+      </div>
+      <% if conversation.work_order %>
+        <div class="ml-auto shrink-0">
+          <%= link_to "View work order", work_order_path(conversation.work_order), class: "whitespace-nowrap text-sm font-medium text-accent hover:text-accent-hover" %>
+        </div>
+      <% end %>
+    </div>
   </div>
 
   <div id="messages" class="flex-1 space-y-3 overflow-y-auto rounded-lg border border-border-default bg-surface p-4">
