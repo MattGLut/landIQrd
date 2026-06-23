@@ -18,6 +18,14 @@ RSpec.describe Notifications::Deliver do
         described_class.work_order_created(work_order, actor: tenant)
       }.to have_enqueued_mail(NotificationMailer, :work_order_created).with(work_order, landlord)
     end
+
+    it "skips email when the landlord has disabled the notification" do
+      landlord.update!(email_notification_preferences: { "work_order_created" => false })
+
+      expect {
+        described_class.work_order_created(work_order, actor: tenant)
+      }.not_to have_enqueued_mail(NotificationMailer, :work_order_created)
+    end
   end
 
   describe ".work_order_status_changed" do
@@ -49,6 +57,16 @@ RSpec.describe Notifications::Deliver do
       expect {
         described_class.new_message(message, actor: tenant)
       }.to have_enqueued_mail(NotificationMailer, :new_message).with(message, landlord)
+    end
+
+    it "skips email when the recipient has disabled the notification" do
+      landlord.update!(email_notification_preferences: { "new_message" => false })
+      conversation = Conversation.direct_between!(tenant, landlord)
+      message = conversation.messages.create!(author: tenant, body: "Ping")
+
+      expect {
+        described_class.new_message(message, actor: tenant)
+      }.not_to have_enqueued_mail(NotificationMailer, :new_message)
     end
   end
 

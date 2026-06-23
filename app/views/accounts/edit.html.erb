@@ -1,47 +1,34 @@
 <% content_for :title, "Account" %>
 
-<div class="mx-auto max-w-3xl">
-  <%= render "shared/page_header", title: "Account", subtitle: "Manage your profile and settings" %>
+<%= render layout: "accounts/layout", locals: { section_title: "Profile" } do %>
+  <%= form_with model: @user, url: account_path, method: :patch, class: "space-y-4" do |f| %>
+    <%= render "shared/form_errors", resource: @user %>
 
-  <div class="grid gap-6 lg:grid-cols-[12rem_1fr]">
-    <nav class="space-y-1">
-      <%= link_to "Profile", edit_account_path, class: "block rounded-lg bg-accent/10 px-3 py-2 text-sm font-medium text-accent" %>
-      <%= link_to "Email & security", edit_user_registration_path, class: "block rounded-lg px-3 py-2 text-sm text-muted hover:bg-elevated hover:text-primary" %>
-    </nav>
-
-    <div class="rounded-lg border border-border-default bg-surface p-6">
-      <h2 class="mb-4 text-lg font-semibold text-primary">Profile</h2>
-
-      <%= form_with model: @user, url: account_path, method: :patch, class: "space-y-4" do |f| %>
-        <%= render "shared/form_errors", resource: @user %>
-
-        <div class="flex items-center gap-4">
-          <%= render "shared/user_avatar", user: @user, size: :lg %>
-          <div class="space-y-2">
-            <%= f.file_field :avatar, accept: "image/png,image/jpeg,image/webp", class: "file-input-dark block w-full text-sm" %>
-            <% if @user.avatar.attached? %>
-              <label class="flex items-center gap-2 text-sm text-muted">
-                <%= check_box_tag "user[remove_avatar]", "1", false, class: "rounded border-border-default" %>
-                Remove photo
-              </label>
-            <% end %>
-          </div>
-        </div>
-
-        <div>
-          <%= f.label :preferred_name, "Preferred name", class: "block text-sm font-medium text-muted" %>
-          <%= f.text_field :preferred_name, class: "input-dark", placeholder: "How you'd like to be addressed" %>
-        </div>
-
-        <div class="rounded-md border border-border-default bg-elevated p-3 text-sm">
-          <p class="text-muted">Legal name</p>
-          <p class="font-medium text-primary"><%= @user.full_name %></p>
-          <p class="mt-2 text-muted">Email</p>
-          <p class="font-medium text-primary"><%= @user.email %></p>
-        </div>
-
-        <%= f.submit "Save profile", class: button_classes(:primary), data: { turbo_submits_with: "Saving…" } %>
-      <% end %>
+    <div class="flex items-center gap-4">
+      <%= render "shared/user_avatar", user: @user, size: :lg %>
+      <div class="space-y-2">
+        <%= f.file_field :avatar, accept: "image/png,image/jpeg,image/webp", class: "file-input-dark block w-full text-sm" %>
+        <% if @user.avatar.attached? %>
+          <label class="flex items-center gap-2 text-sm text-muted">
+            <%= check_box_tag "user[remove_avatar]", "1", false, class: "rounded border-border-default" %>
+            Remove photo
+          </label>
+        <% end %>
+      </div>
     </div>
-  </div>
-</div>
+
+    <div>
+      <%= f.label :preferred_name, "Preferred name", class: "block text-sm font-medium text-muted" %>
+      <%= f.text_field :preferred_name, class: "input-dark", placeholder: "How you'd like to be addressed" %>
+    </div>
+
+    <div class="rounded-md border border-border-default bg-elevated p-3 text-sm">
+      <p class="text-muted">Legal name</p>
+      <p class="font-medium text-primary"><%= @user.full_name %></p>
+      <p class="mt-2 text-muted">Email</p>
+      <p class="font-medium text-primary"><%= @user.email %></p>
+    </div>
+
+    <%= f.submit "Save profile", class: button_classes(:primary), data: { turbo_submits_with: "Saving…" } %>
+  <% end %>
+<% end %>

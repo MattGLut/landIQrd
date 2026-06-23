@@ -29,4 +29,45 @@ RSpec.describe User, type: :model do
       expect(user.errors[:avatar]).to be_present
     end
   end
+
+  describe "#email_notification_enabled?" do
+    it "defaults to enabled when preference is unset" do
+      user = build(:tenant, email_notification_preferences: {})
+      expect(user.email_notification_enabled?(:new_message)).to be(true)
+    end
+
+    it "returns false when preference is disabled" do
+      user = build(:tenant, email_notification_preferences: { "new_message" => false })
+      expect(user.email_notification_enabled?(:new_message)).to be(false)
+    end
+  end
+
+  describe "#applicable_email_notification_types" do
+    it "returns tenant notification types for tenants" do
+      user = build(:tenant)
+      keys = user.applicable_email_notification_types.keys
+
+      expect(keys).to contain_exactly(:work_order_status_changed, :new_message, :lease_expiring)
+    end
+
+    it "returns landlord notification types for landlords" do
+      user = build(:landlord)
+      keys = user.applicable_email_notification_types.keys
+
+      expect(keys).to contain_exactly(
+        :work_order_created,
+        :work_order_status_changed,
+        :new_message,
+        :lease_invitation_accepted,
+        :lease_expiring
+      )
+    end
+
+    it "returns contractor notification types for contractors" do
+      user = build(:contractor)
+      keys = user.applicable_email_notification_types.keys
+
+      expect(keys).to contain_exactly(:work_order_status_changed, :contractor_assigned, :new_message)
+    end
+  end
 end

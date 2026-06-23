@@ -143,6 +143,10 @@ RSpec.describe "Authentication" do
     user = create(:landlord, email: "lana@example.com")
     sign_in_and_visit(user, edit_user_registration_path)
 
+    expect(page).to have_content("Account")
+    expect(page).to have_link("Email & security")
+    expect(page).not_to have_link("← Back to account")
+
     fill_in "Email", with: "lana.updated@example.com"
     fill_in "Current password", with: "password123"
     click_button "Update"

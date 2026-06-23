@@ -1,0 +1,12 @@
+<div class="mx-auto max-w-3xl">
+  <%= render "shared/page_header", title: "Account", subtitle: "Manage your profile and settings" %>
+
+  <div class="grid gap-6 lg:grid-cols-[12rem_1fr]">
+    <%= render "accounts/nav" %>
+
+    <div class="rounded-lg border border-border-default bg-surface p-6">
+      <h2 class="mb-4 text-lg font-semibold text-primary"><%= section_title %></h2>
+      <%= yield %>
+    </div>
+  </div>
+</div>

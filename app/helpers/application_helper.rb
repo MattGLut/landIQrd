@@ -101,6 +101,15 @@ module ApplicationHelper
     end
   end
 
+  def nav_link_classes(active:)
+    base = "block rounded-lg px-3 py-2 text-sm"
+    if active
+      "#{base} bg-accent/10 font-medium text-accent"
+    else
+      "#{base} text-muted hover:bg-elevated hover:text-primary"
+    end
+  end
+
   private
 
   def icon_svg(name)

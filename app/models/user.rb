@@ -6,6 +6,39 @@ class User < ApplicationRecord
 
   enum :role, { tenant: 0, landlord: 1, contractor: 2, admin: 3 }
 
+  EMAIL_NOTIFICATION_TYPES = {
+    work_order_created: {
+      label: "New work requests",
+      description: "When a tenant submits a maintenance request for your property.",
+      roles: %i[landlord]
+    },
+    work_order_status_changed: {
+      label: "Work order updates",
+      description: "When a work order status changes or is closed.",
+      roles: %i[tenant landlord contractor]
+    },
+    contractor_assigned: {
+      label: "Work order assignments",
+      description: "When you are assigned to a work order.",
+      roles: %i[contractor]
+    },
+    new_message: {
+      label: "New messages",
+      description: "When someone sends you a message in a conversation.",
+      roles: %i[tenant landlord contractor]
+    },
+    lease_invitation_accepted: {
+      label: "Lease invitation accepted",
+      description: "When a tenant accepts your lease invitation.",
+      roles: %i[landlord]
+    },
+    lease_expiring: {
+      label: "Lease ended",
+      description: "When an active lease reaches its end date.",
+      roles: %i[tenant landlord]
+    }
+  }.freeze
+
   has_many :properties, foreign_key: :landlord_id, dependent: :destroy, inverse_of: :landlord
   has_many :leases, foreign_key: :tenant_id, dependent: :destroy, inverse_of: :tenant
   has_many :created_work_orders, class_name: "WorkOrder", foreign_key: :created_by_id,
@@ -38,6 +71,14 @@ class User < ApplicationRecord
 
   def greeting_name
     preferred_name.presence || first_name
+  end
+
+  def email_notification_enabled?(type)
+    email_notification_preferences.fetch(type.to_s, true)
+  end
+
+  def applicable_email_notification_types
+    EMAIL_NOTIFICATION_TYPES.select { |_, config| config[:roles].include?(role.to_sym) }
   end
 
   def initials

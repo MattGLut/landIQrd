@@ -5,7 +5,10 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   resource :dashboard, only: [ :show ], controller: "dashboard"
-  resource :account, only: [ :show, :edit, :update ], controller: "accounts"
+  resource :account, only: [ :show, :edit, :update ], controller: "accounts" do
+    get :notifications
+    patch :notifications, action: :update_notifications
+  end
 
   get "invites/:token", to: "lease_invitations#show", as: :invite
 

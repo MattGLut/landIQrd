@@ -17,6 +17,21 @@ module SystemHelpers
     user.update!(reset_password_token: enc, reset_password_sent_at: Time.current)
     raw
   end
+
+  def set_toggle(id, checked:)
+    field = find("##{id}", visible: :all)
+    return if field.checked? == checked
+
+    find("label[for='#{id}']").click
+  end
+
+  def check_toggle(id)
+    set_toggle(id, checked: true)
+  end
+
+  def uncheck_toggle(id)
+    set_toggle(id, checked: false)
+  end
 end
 
 RSpec.configure do |config|
