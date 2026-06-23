@@ -12,6 +12,7 @@
       </div>
       <label class="relative inline-flex shrink-0 cursor-pointer items-center">
         <%= check_box_tag nil, "1", @user.applicable_email_notification_types.keys.all? { |key| @user.email_notification_enabled?(key) },
+            id: "email_notification_preference_all",
             class: "peer sr-only",
             data: { notification_preferences_target: "master", action: "change->notification-preferences#toggleAll" } %>
         <span class="h-5 w-9 rounded-full bg-border-default peer-checked:bg-accent peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent/50 after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-border-default after:bg-surface after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-accent"></span>

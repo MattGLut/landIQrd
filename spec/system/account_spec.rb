@@ -34,4 +34,65 @@ RSpec.describe "Accounts" do
     expect(page).to have_unchecked_field("email_notification_preference_new_message")
     expect(tenant.reload.email_notification_preferences).to include("new_message" => false)
   end
+
+  describe "notification preferences", js: true do
+    it "disables all notification types with the master toggle" do
+      visit notifications_account_path
+
+      uncheck "email_notification_preference_all"
+
+      expect(page).to have_unchecked_field("email_notification_preference_work_order_status_changed")
+      expect(page).to have_unchecked_field("email_notification_preference_new_message")
+      expect(page).to have_unchecked_field("email_notification_preference_lease_expiring")
+      expect(tenant.reload.email_notification_preferences).to eq(
+        "work_order_status_changed" => false,
+        "new_message" => false,
+        "lease_expiring" => false
+      )
+    end
+
+    it "enables all notification types with the master toggle" do
+      tenant.update!(email_notification_preferences: {
+        "work_order_status_changed" => false,
+        "new_message" => false,
+        "lease_expiring" => false
+      })
+      visit notifications_account_path
+
+      check "email_notification_preference_all"
+
+      expect(page).to have_checked_field("email_notification_preference_work_order_status_changed")
+      expect(page).to have_checked_field("email_notification_preference_new_message")
+      expect(page).to have_checked_field("email_notification_preference_lease_expiring")
+      expect(tenant.reload.email_notification_preferences).to eq(
+        "work_order_status_changed" => true,
+        "new_message" => true,
+        "lease_expiring" => true
+      )
+    end
+
+    it "shows landlord notification types only" do
+      landlord = create(:landlord)
+      sign_in_and_visit(landlord, notifications_account_path)
+
+      expect(page).to have_content("New work requests")
+      expect(page).to have_content("Work order updates")
+      expect(page).to have_content("New messages")
+      expect(page).to have_content("Lease invitation accepted")
+      expect(page).to have_content("Lease ended")
+      expect(page).not_to have_content("Work order assignments")
+    end
+
+    it "shows contractor notification types only" do
+      contractor = create(:contractor)
+      sign_in_and_visit(contractor, notifications_account_path)
+
+      expect(page).to have_content("Work order updates")
+      expect(page).to have_content("Work order assignments")
+      expect(page).to have_content("New messages")
+      expect(page).not_to have_content("New work requests")
+      expect(page).not_to have_content("Lease invitation accepted")
+      expect(page).not_to have_content("Lease ended")
+    end
+  end
 end
