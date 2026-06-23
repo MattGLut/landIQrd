@@ -1,0 +1,8 @@
+<nav class="space-y-1">
+  <%= link_to "Profile", edit_account_path,
+      class: nav_link_classes(active: current_page?(edit_account_path)) %>
+  <%= link_to "Notifications", notifications_account_path,
+      class: nav_link_classes(active: current_page?(notifications_account_path)) %>
+  <%= link_to "Email & security", edit_user_registration_path,
+      class: nav_link_classes(active: current_page?(edit_user_registration_path)) %>
+</nav>

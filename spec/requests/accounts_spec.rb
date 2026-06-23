@@ -15,4 +15,34 @@ RSpec.describe "Accounts", type: :request do
     patch account_path, params: { user: { preferred_name: "Nope" } }
     expect(response).to redirect_to(new_user_session_path)
   end
+
+  describe "notification preferences" do
+    it "updates the current user's email notification preferences" do
+      sign_in tenant
+      patch notifications_account_path, params: {
+        user: {
+          email_notification_preferences: {
+            work_order_status_changed: "1",
+            new_message: "0",
+            lease_expiring: "0"
+          }
+        }
+      }
+
+      expect(response).to redirect_to(notifications_account_path)
+      expect(tenant.reload.email_notification_preferences).to eq(
+        "work_order_status_changed" => true,
+        "new_message" => false,
+        "lease_expiring" => false
+      )
+    end
+
+    it "requires authentication" do
+      patch notifications_account_path, params: {
+        user: { email_notification_preferences: { new_message: "0" } }
+      }
+
+      expect(response).to redirect_to(new_user_session_path)
+    end
+  end
 end
