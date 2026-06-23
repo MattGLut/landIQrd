@@ -29,7 +29,7 @@ RSpec.describe "Accounts" do
     expect(page).to have_content("Account")
     expect(page).to have_link("Notifications")
     expect(page).to have_content("Email notifications")
-    uncheck "email_notification_preference_new_message"
+    uncheck_toggle "email_notification_preference_new_message"
 
     expect(page).to have_unchecked_field("email_notification_preference_new_message")
     expect(tenant.reload.email_notification_preferences).to include("new_message" => false)
@@ -39,7 +39,7 @@ RSpec.describe "Accounts" do
     it "disables all notification types with the master toggle" do
       visit notifications_account_path
 
-      uncheck "email_notification_preference_all"
+      uncheck_toggle "email_notification_preference_all"
 
       expect(page).to have_unchecked_field("email_notification_preference_work_order_status_changed")
       expect(page).to have_unchecked_field("email_notification_preference_new_message")
@@ -59,7 +59,7 @@ RSpec.describe "Accounts" do
       })
       visit notifications_account_path
 
-      check "email_notification_preference_all"
+      check_toggle "email_notification_preference_all"
 
       expect(page).to have_checked_field("email_notification_preference_work_order_status_changed")
       expect(page).to have_checked_field("email_notification_preference_new_message")

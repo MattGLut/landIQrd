@@ -10,7 +10,7 @@
         <p class="text-sm font-medium text-primary">All email notifications</p>
         <p class="text-xs text-muted">Turn all notification types on or off at once.</p>
       </div>
-      <label class="relative inline-flex shrink-0 cursor-pointer items-center">
+      <label for="email_notification_preference_all" class="relative inline-flex shrink-0 cursor-pointer items-center">
         <%= check_box_tag nil, "1", @user.applicable_email_notification_types.keys.all? { |key| @user.email_notification_enabled?(key) },
             id: "email_notification_preference_all",
             class: "peer sr-only",
@@ -26,7 +26,7 @@
             <p class="text-sm font-medium text-primary"><%= config[:label] %></p>
             <p class="text-xs text-muted"><%= config[:description] %></p>
           </div>
-          <label class="relative inline-flex shrink-0 cursor-pointer items-center">
+          <label for="email_notification_preference_<%= key %>" class="relative inline-flex shrink-0 cursor-pointer items-center">
             <%= check_box_tag "user[email_notification_preferences][#{key}]",
                 "1",
                 @user.email_notification_enabled?(key),
