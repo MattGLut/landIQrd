@@ -24,4 +24,21 @@ RSpec.describe Unit, type: :model do
       expect(unit.active_lease).to eq(active)
     end
   end
+
+  describe "#current_tenant" do
+    it "returns the tenant on the active lease" do
+      unit = create(:unit)
+      tenant = create(:tenant)
+      create(:lease, unit: unit, tenant: tenant, status: :active)
+
+      expect(unit.current_tenant).to eq(tenant)
+    end
+
+    it "returns nil when there is no active lease" do
+      unit = create(:unit)
+      create(:lease, unit: unit, status: :ended, start_date: 2.years.ago, end_date: 1.year.ago)
+
+      expect(unit.current_tenant).to be_nil
+    end
+  end
 end

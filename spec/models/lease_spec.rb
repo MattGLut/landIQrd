@@ -20,4 +20,27 @@ RSpec.describe Lease, type: :model do
     lease = create(:lease)
     expect(lease.landlord).to eq(lease.unit.property.landlord)
   end
+
+  describe ".expiring_within" do
+    it "returns active leases ending within the given number of days" do
+      unit = create(:unit)
+      expiring_soon = create(
+        :lease,
+        unit: unit,
+        status: :active,
+        end_date: 2.weeks.from_now.to_date
+      )
+      create(:lease, unit: create(:unit), status: :active, end_date: 6.months.from_now.to_date)
+      create(:lease, unit: create(:unit), status: :ended, end_date: 1.week.from_now.to_date)
+      create(:lease, unit: create(:unit), status: :active, end_date: nil)
+
+      expect(Lease.expiring_within(60)).to contain_exactly(expiring_soon)
+    end
+
+    it "excludes leases ending after the window" do
+      create(:lease, status: :active, end_date: 3.months.from_now.to_date)
+
+      expect(Lease.expiring_within(30)).to be_empty
+    end
+  end
 end

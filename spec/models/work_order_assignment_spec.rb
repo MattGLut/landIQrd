@@ -36,5 +36,23 @@ RSpec.describe WorkOrderAssignment, type: :model do
       conversation = Conversation.find_by!(work_order: work_order)
       expect(conversation.participants).to include(contractor)
     end
+
+    it "resyncs the work order conversation when destroyed" do
+      landlord = create(:landlord)
+      property = create(:property, landlord: landlord)
+      unit = create(:unit, property: property)
+      tenant = create(:tenant)
+      create(:lease, unit: unit, tenant: tenant, status: :active)
+      work_order = create(:work_order, unit: unit, created_by: tenant)
+      contractor = create(:contractor)
+      assignment = create(:work_order_assignment, work_order: work_order, contractor: contractor)
+      conversation = work_order.conversation
+
+      expect(conversation).to receive(:sync_work_order_participants!).and_call_original
+
+      assignment.destroy!
+
+      expect(work_order.reload.contractors).to be_empty
+    end
   end
 end
