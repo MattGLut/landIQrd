@@ -83,9 +83,21 @@ module HasTypedFeatures
     when :integer
       errors.add(:features, "#{definition.label} must be a whole number") unless value.is_a?(Integer)
     when :decimal
-      errors.add(:features, "#{definition.label} must be a number") unless value.is_a?(BigDecimal)
+      unless decimal_value?(value)
+        errors.add(:features, "#{definition.label} must be a number")
+      end
     when :enum
       errors.add(:features, "#{definition.label} is not a valid option") unless definition.options.include?(value.to_s)
     end
+  end
+
+  def decimal_value?(value)
+    return true if value.is_a?(BigDecimal)
+    return true if value.is_a?(Integer) || value.is_a?(Float)
+
+    BigDecimal(value.to_s)
+    true
+  rescue ArgumentError, TypeError
+    false
   end
 end

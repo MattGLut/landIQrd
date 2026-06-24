@@ -29,12 +29,28 @@ Optional demo data (development only):
 bin/rails db:seed
 ```
 
-Default password for every seeded account is `password123`. Seeded emails:
+Rebuild the full demo dataset from scratch:
+
+```bash
+FORCE_SEED=1 bin/rails db:seed
+```
+
+Default password for every seeded account is `password123`.
+
+**Stable logins** (always present):
 
 - `admin@propman.test` (admin)
-- `landlord@propman.test` (landlord)
-- `tenant@propman.test` (tenant)
+- `landlord@propman.test` (landlord — showcase portfolio)
+- `tenant@propman.test` (tenant — lease on Maple Court)
 - `contractor@propman.test` (contractor)
+
+**Generated examples:** `landlord2@propman.test`, `tenant2@propman.test`,
+`contractor2@propman.test`, etc.
+
+After a full seed you can expect roughly **40+ properties**, **150+ units**,
+**80+ work orders**, and **8 contractors** across six landlords. Re-running
+`db:seed` skips bulk generation when demo data already exists; use
+`FORCE_SEED=1` to wipe and regenerate.
 
 Seeds are skipped in test and production.
 
