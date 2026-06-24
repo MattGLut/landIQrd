@@ -3,12 +3,13 @@ require "rails_helper"
 RSpec.describe "Dashboard" do
   it "shows landlord stats and CTAs" do
     landlord = create(:landlord)
-    property = create(:property, landlord: landlord)
+    property = create(:property, landlord: landlord, name: "Maple Court")
     unit = create(:unit, property: property)
     tenant = create(:tenant)
     create(:lease, unit: unit, tenant: tenant)
-    create(:work_order, unit: unit, created_by: tenant, status: :open)
-    Conversation.direct_between!(tenant, landlord)
+    work_order = create(:work_order, unit: unit, created_by: tenant, status: :open, title: "Leaky faucet")
+    conversation = Conversation.direct_between!(tenant, landlord)
+    conversation.messages.create!(author: tenant, body: "Can we schedule a visit?")
 
     sign_in_and_visit(landlord)
 
@@ -16,7 +17,12 @@ RSpec.describe "Dashboard" do
     expect(page).to have_content("Properties")
     expect(page).to have_content("Open work orders")
     expect(page).to have_content("Conversations")
-    expect(page).to have_link("Manage properties")
+    expect(page).to have_content("Maple Court")
+    expect(page).to have_content("Leaky faucet")
+    expect(page).to have_content("Can we schedule a visit?")
+    expect(page).to have_link("View all", href: properties_path)
+    expect(page).to have_link("View all work orders")
+    expect(page).to have_link("View all messages")
   end
 
   it "shows expiring leases for landlords" do
@@ -36,6 +42,7 @@ RSpec.describe "Dashboard" do
 
     expect(page).to have_content("Leases expiring soon")
     expect(page).to have_content("Sunset Apts · 3C")
+    expect(page).to have_content(tenant.full_name)
   end
 
   it "shows tenant leases and new work request CTA" do
