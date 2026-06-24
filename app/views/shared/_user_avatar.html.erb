@@ -1,9 +1,9 @@
 <% size = local_assigns.fetch(:size, :md) %>
-<% sizes = { sm: "h-8 w-8 text-xs", md: "h-9 w-9 text-sm", lg: "h-12 w-12 text-base" } %>
-<% classes = "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent/20 font-medium text-accent #{sizes.fetch(size)}" %>
+<% sizes = { sm: "h-8 w-8", md: "h-9 w-9", lg: "h-12 w-12" } %>
+<% size_class = sizes.fetch(size) %>
 
 <% if user.avatar.attached? %>
-  <%= image_tag user.avatar.variant(resize_to_fill: [ 96, 96 ]), class: "#{classes} object-cover", alt: user.display_name %>
+  <%= image_tag user.avatar.variant(resize_to_fill: [ 96, 96 ]), class: "inline-flex shrink-0 #{size_class} overflow-hidden rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-700", alt: user.display_name %>
 <% else %>
-  <span class="<%= classes %>"><%= user.initials %></span>
+  <span class="<%= avatar_initials_circle_classes(user, size) %>"><%= user.initials %></span>
 <% end %>

@@ -10,7 +10,7 @@
     [ "Cancelled", "cancelled" ]
   ].each do |label, value| %>
     <% active = @status_filter == value || (value.nil? && @status_filter.blank?) %>
-    <%= link_to label, work_orders_path(status: value), class: "rounded-full px-3 py-1 text-sm font-medium #{active ? 'bg-accent/15 text-accent' : 'bg-elevated text-muted hover:text-primary'}" %>
+    <%= link_to label, work_orders_path(status: value), class: "rounded-full px-3 py-1 text-sm font-medium #{active ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400' : 'bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'}" %>
   <% end %>
 </div>
 

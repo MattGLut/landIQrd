@@ -1,11 +1,11 @@
 module WorkOrdersHelper
   STATUS_PILL_COLORS = {
-    blue: "border-blue-500/40 bg-blue-500/15 text-blue-300",
-    yellow: "border-yellow-500/40 bg-yellow-500/15 text-yellow-300",
-    indigo: "border-purple-500/40 bg-purple-500/15 text-purple-300",
-    gray: "border-border-default bg-elevated text-muted hover:bg-surface",
-    green: "border-accent/40 bg-accent/15 text-accent",
-    red: "border-danger/40 bg-danger/15 text-danger"
+    blue: "border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+    yellow: "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
+    indigo: "border-violet-200 bg-violet-50 text-violet-800 dark:border-violet-800 dark:bg-violet-900/30 dark:text-violet-300",
+    gray: "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600",
+    green: "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
+    red: "border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-800 dark:bg-rose-900/30 dark:text-rose-300"
   }.freeze
 
   def work_order_status_label(status, viewer: current_user, creator: nil)
@@ -77,7 +77,7 @@ module WorkOrdersHelper
 
   def work_order_status_pill_classes(color)
     palette = STATUS_PILL_COLORS.fetch(color.to_sym, STATUS_PILL_COLORS[:gray])
-    "inline-flex items-center gap-1 rounded-full border py-1 pl-3 pr-2 text-xs font-semibold shadow-sm transition-shadow hover:shadow focus:outline-none focus:ring-2 focus:ring-accent/30 #{palette}"
+    "inline-flex items-center gap-1 rounded-full border py-1 pl-3 pr-2 text-xs font-semibold shadow-sm transition-shadow hover:shadow focus:outline-none focus:ring-2 focus:ring-brand-500/30 #{palette}"
   end
 
   def work_order_photo_thumbnail(photo)

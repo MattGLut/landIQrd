@@ -118,7 +118,7 @@ RSpec.describe "Authentication" do
 
     expect(page).to have_content("Welcome back, Reset")
 
-    click_button "Sign out"
+    sign_out_via_header
     visit new_user_session_path
     fill_in "Email", with: user.email
     fill_in "Password", with: "newpassword123"
@@ -158,7 +158,7 @@ RSpec.describe "Authentication" do
   it "signs out" do
     sign_in_and_visit(create(:landlord))
 
-    click_button "Sign out"
+    sign_out_via_header
 
     expect(page).to have_current_path(new_user_session_path)
     expect(page).to have_content("Log in to LandIQrd")

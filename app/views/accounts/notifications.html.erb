@@ -5,26 +5,26 @@
       data: { controller: "notification-preferences", turbo: true } do |f| %>
     <%= render "shared/form_errors", resource: @user %>
 
-    <div class="flex items-center justify-between gap-3 rounded-md border border-border-default bg-elevated px-3 py-2.5">
+    <div class="flex items-center justify-between gap-3 rounded-md border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 px-3 py-2.5">
       <div class="min-w-0">
-        <p class="text-sm font-medium text-primary">All email notifications</p>
-        <p class="text-xs text-muted">Turn all notification types on or off at once.</p>
+        <p class="text-sm font-medium text-slate-900 dark:text-slate-100">All email notifications</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Turn all notification types on or off at once.</p>
       </div>
       <label for="email_notification_preference_all" class="relative inline-flex shrink-0 cursor-pointer items-center">
         <%= check_box_tag nil, "1", @user.applicable_email_notification_types.keys.all? { |key| @user.email_notification_enabled?(key) },
             id: "email_notification_preference_all",
             class: "peer sr-only",
             data: { notification_preferences_target: "master", action: "change->notification-preferences#toggleAll" } %>
-        <span class="h-5 w-9 rounded-full bg-border-default peer-checked:bg-accent peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent/50 after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-border-default after:bg-surface after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-accent"></span>
+        <span class="h-5 w-9 rounded-full bg-slate-200 dark:bg-slate-600 peer-checked:bg-brand-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-brand-500/50 after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-slate-200 dark:border-slate-700 after:bg-white dark:bg-slate-800 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-brand-600"></span>
       </label>
     </div>
 
-    <div class="divide-y divide-border-default rounded-md border border-border-default">
+    <div class="divide-y divide-slate-200 dark:divide-slate-700 rounded-md border border-slate-200 dark:border-slate-700">
       <% @user.applicable_email_notification_types.each do |key, config| %>
         <div class="flex items-center justify-between gap-3 px-3 py-2.5">
           <div class="min-w-0">
-            <p class="text-sm font-medium text-primary"><%= config[:label] %></p>
-            <p class="text-xs text-muted"><%= config[:description] %></p>
+            <p class="text-sm font-medium text-slate-900 dark:text-slate-100"><%= config[:label] %></p>
+            <p class="text-xs text-slate-500 dark:text-slate-400"><%= config[:description] %></p>
           </div>
           <label for="email_notification_preference_<%= key %>" class="relative inline-flex shrink-0 cursor-pointer items-center">
             <%= check_box_tag "user[email_notification_preferences][#{key}]",
@@ -33,7 +33,7 @@
                 id: "email_notification_preference_#{key}",
                 class: "peer sr-only",
                 data: { notification_preferences_target: "type", action: "change->notification-preferences#typeChanged" } %>
-            <span class="h-5 w-9 rounded-full bg-border-default peer-checked:bg-accent peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent/50 after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-border-default after:bg-surface after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-accent"></span>
+            <span class="h-5 w-9 rounded-full bg-slate-200 dark:bg-slate-600 peer-checked:bg-brand-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-brand-500/50 after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-slate-200 dark:border-slate-700 after:bg-white dark:bg-slate-800 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-brand-600"></span>
           </label>
         </div>
       <% end %>

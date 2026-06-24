@@ -30,7 +30,7 @@
       <ul role="listbox"
           aria-label="Status options"
           data-work-order-status-target="menu"
-          class="absolute left-0 top-full z-30 mt-1.5 hidden min-w-44 overflow-hidden rounded-lg border border-border-default bg-surface py-1 shadow-xl">
+          class="absolute left-0 top-full z-30 mt-1.5 hidden min-w-44 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 py-1 shadow-xl">
         <% status_options.each do |label, value| %>
           <% option_attrs = work_order_status_option_attrs(value, wo_policy) %>
           <li role="presentation">
@@ -44,7 +44,7 @@
                       data-reason-required="<%= option_attrs[:reason_required] %>"
                       data-submit-mode="<%= option_attrs[:submit_mode] %>"
                     <% end %>
-                    class="block w-full px-3 py-2 text-left text-sm transition-colors hover:bg-elevated <%= value.in?(%w[cancelled closed]) ? "text-danger hover:bg-danger/10" : "text-primary" %>">
+                    class="block w-full px-3 py-2 text-left text-sm transition-colors hover:bg-slate-100 dark:hover:bg-slate-600 <%= value.in?(%w[cancelled closed]) ? "text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:bg-rose-900/30" : "text-slate-900 dark:text-slate-100" %>">
               <%= label %>
             </button>
           </li>
@@ -71,12 +71,12 @@
       </div>
 
       <dialog data-work-order-status-target="dialog"
-              class="fixed top-1/2 left-1/2 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border-default bg-surface p-0 text-primary shadow-xl backdrop:bg-black/60 open:animate-none">
+              class="fixed top-1/2 left-1/2 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 p-0 text-slate-900 dark:text-slate-100 shadow-xl backdrop:bg-black/60 open:animate-none">
         <div class="p-6">
-          <h2 data-work-order-status-target="dialogTitle" class="text-lg font-semibold text-primary">
+          <h2 data-work-order-status-target="dialogTitle" class="text-lg font-semibold text-slate-900 dark:text-slate-100">
             <%= tenant_close_only ? "Close request" : "Cancel work order" %>
           </h2>
-          <p data-work-order-status-target="dialogDescription" class="mt-2 text-sm text-muted">
+          <p data-work-order-status-target="dialogDescription" class="mt-2 text-sm text-slate-500 dark:text-slate-400">
             <% if tenant_close_only %>
               Tell us why you're closing this request.
             <% else %>
@@ -84,13 +84,13 @@
             <% end %>
           </p>
           <div class="mt-4">
-            <label for="work_order_closure_reason_<%= work_order.id %>" class="block text-sm font-medium text-muted">
+            <label for="work_order_closure_reason_<%= work_order.id %>" class="block text-sm font-medium text-slate-500 dark:text-slate-400">
               Reason
             </label>
             <textarea id="work_order_closure_reason_<%= work_order.id %>"
                       data-work-order-status-target="reason"
                       rows="3"
-                      class="input-dark"
+                      class="<%= form_input_class %>"
                       placeholder="e.g. Fixed it myself, no longer an issue..."
                       <%= "required" if tenant_close_only %>></textarea>
           </div>

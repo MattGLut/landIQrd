@@ -15,26 +15,26 @@ RSpec.describe ApplicationHelper, type: :helper do
     end
   end
 
-  describe "#sidebar_link_active?" do
+  describe "#nav_link_active?" do
     it "matches exact paths" do
       allow(helper).to receive(:request).and_return(double(path: "/work_orders"))
-      expect(helper.sidebar_link_active?("/work_orders")).to be(true)
+      expect(helper.nav_link_active?("/work_orders")).to be(true)
     end
 
     it "matches nested paths under the link" do
       allow(helper).to receive(:request).and_return(double(path: "/work_orders/1"))
-      expect(helper.sidebar_link_active?("/work_orders")).to be(true)
+      expect(helper.nav_link_active?("/work_orders")).to be(true)
     end
 
     it "excludes configured sibling paths from prefix matching" do
       allow(helper).to receive(:request).and_return(double(path: "/work_orders/schedule"))
-      expect(helper.sidebar_link_active?("/work_orders", exclude_paths: [ "/work_orders/schedule" ])).to be(false)
-      expect(helper.sidebar_link_active?("/work_orders/schedule")).to be(true)
+      expect(helper.nav_link_active?("/work_orders", exclude_paths: [ "/work_orders/schedule" ])).to be(false)
+      expect(helper.nav_link_active?("/work_orders/schedule")).to be(true)
     end
 
     it "accepts a single excluded path" do
       allow(helper).to receive(:request).and_return(double(path: "/work_orders/schedule"))
-      expect(helper.sidebar_link_active?("/work_orders", exclude_paths: "/work_orders/schedule")).to be(false)
+      expect(helper.nav_link_active?("/work_orders", exclude_paths: "/work_orders/schedule")).to be(false)
     end
   end
 

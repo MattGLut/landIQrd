@@ -8,6 +8,11 @@ module SystemHelpers
     page.driver.browser.manage.window.resize_to(375, 812) if page.driver.respond_to?(:browser)
   end
 
+  def sign_out_via_header
+    within("header") do
+      click_button "Sign out", match: :first
+    end
+  end
   def desktop_viewport
     page.driver.browser.manage.window.resize_to(1400, 900) if page.driver.respond_to?(:browser)
   end

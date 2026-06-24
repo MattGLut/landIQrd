@@ -23,7 +23,7 @@ RSpec.describe "Lease invitations" do
   it "lets an invited guest sign up and accept the invitation" do
     invitation = create(:lease_invitation, unit: unit, invited_by: landlord, email: "guest@example.com")
 
-    click_button "Sign out"
+    sign_out_via_header
     visit invite_path(invitation.token)
     fill_in "First name", with: "Guest"
     fill_in "Last name", with: "Tenant"

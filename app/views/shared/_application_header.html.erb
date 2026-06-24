@@ -1,0 +1,122 @@
+<header
+  class="border-b border-[var(--color-border)] bg-[var(--color-surface-card)]"
+  data-controller="mobile-nav"
+  data-action="keydown@window->mobile-nav#keydown">
+  <div class="mx-auto max-w-6xl">
+    <div class="flex items-center justify-between gap-4 px-6 py-4">
+      <%= link_to (user_signed_in? ? authenticated_root_path : root_path), class: "flex min-w-0 items-center gap-2 text-lg font-semibold tracking-tight text-navy-800 dark:text-navy-100" do %>
+        <span>Land<span class="text-brand-600 dark:text-brand-400">IQ</span>rd</span>
+      <% end %>
+
+      <nav class="hidden items-center gap-4 text-sm md:flex" aria-label="Main">
+        <% if user_signed_in? %>
+          <% if current_user.landlord? %>
+            <%= link_to "Properties", properties_path, class: nav_link_class(properties_path) %>
+          <% end %>
+          <%= link_to work_orders_nav_label, work_orders_path, class: nav_link_class(work_orders_path, exclude_paths: schedule_work_orders_path) %>
+          <% if current_user.landlord? || current_user.contractor? %>
+            <%= link_to "Schedule", schedule_work_orders_path, class: nav_link_class(schedule_work_orders_path) %>
+          <% end %>
+          <%= link_to conversations_path, class: nav_link_class(conversations_path) do %>
+            Messages<%= unread_badge(unread_conversations_count(current_user)) %>
+          <% end %>
+          <% if current_user.admin? %>
+            <%= link_to "Admin", admin_dashboard_path, class: nav_link_class(admin_dashboard_path) %>
+          <% end %>
+
+          <div class="relative group">
+            <button type="button" class="flex cursor-pointer items-center gap-2 rounded-md p-0 text-left text-[var(--color-text-secondary)] hover:text-brand-600 dark:hover:text-brand-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
+              <%= render "shared/user_avatar", user: current_user, size: :sm %>
+              <span class="flex h-8 items-center leading-none">Hi, <%= current_user.display_name %></span>
+            </button>
+            <div class="invisible absolute right-0 top-full z-10 w-48 pt-1 group-hover:visible group-focus-within:visible">
+              <div class="rounded-md border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800">
+                <%= link_to "Account settings", edit_account_path, class: "block px-4 py-2 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]" %>
+                <hr class="my-1 border-[var(--color-border)]">
+                <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "block w-full px-4 py-2 text-left text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)] cursor-pointer" %>
+              </div>
+            </div>
+          </div>
+        <% else %>
+          <%= link_to "Sign in", new_user_session_path, class: "rounded-md border border-[var(--color-border)] px-3 py-1.5 hover:bg-[var(--color-surface-hover)]" %>
+          <%= link_to "Sign up", new_user_registration_path, class: "rounded-md bg-brand-600 px-3 py-1.5 text-white hover:bg-brand-700" %>
+        <% end %>
+      </nav>
+
+      <div class="shrink-0 md:hidden">
+        <button
+          type="button"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-md text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)] hover:text-brand-600 dark:hover:text-brand-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+          data-action="click->mobile-nav#toggle"
+          data-mobile-nav-target="button"
+          aria-controls="mobile-nav-panel"
+          aria-expanded="false"
+          aria-label="Open main menu">
+          <svg
+            class="h-5 w-5"
+            data-mobile-nav-target="iconMenu"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            aria-hidden="true">
+            <path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
+          </svg>
+          <svg
+            class="hidden h-5 w-5"
+            data-mobile-nav-target="iconClose"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            aria-hidden="true">
+            <path stroke-linecap="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div
+      id="mobile-nav-panel"
+      class="hidden border-t border-[var(--color-border)] bg-[var(--color-surface-card)] md:hidden"
+      data-mobile-nav-target="panel"
+      data-action="click->mobile-nav#handlePanelNavigate"
+      aria-hidden="true">
+      <div class="flex flex-col gap-1 px-6 py-3 text-sm">
+        <% if user_signed_in? %>
+          <% if current_user.landlord? %>
+            <%= link_to "Properties", properties_path, class: "rounded-md px-2 py-2 #{nav_link_class(properties_path)}" %>
+          <% end %>
+          <%= link_to work_orders_nav_label, work_orders_path, class: "rounded-md px-2 py-2 #{nav_link_class(work_orders_path, exclude_paths: schedule_work_orders_path)}" %>
+          <% if current_user.landlord? || current_user.contractor? %>
+            <%= link_to "Schedule", schedule_work_orders_path, class: "rounded-md px-2 py-2 #{nav_link_class(schedule_work_orders_path)}" %>
+          <% end %>
+          <%= link_to conversations_path, class: "rounded-md px-2 py-2 #{nav_link_class(conversations_path)}" do %>
+            Messages<%= unread_badge(unread_conversations_count(current_user)) %>
+          <% end %>
+          <% if current_user.admin? %>
+            <%= link_to "Admin", admin_dashboard_path, class: "rounded-md px-2 py-2 #{nav_link_class(admin_dashboard_path)}" %>
+          <% end %>
+
+          <div class="mt-2 border-t border-[var(--color-border)] pt-3">
+            <div class="mb-2 flex items-center gap-2 px-2 text-[var(--color-text-slate-500 dark:text-slate-400)]">
+              <%= render "shared/user_avatar", user: current_user, size: :sm %>
+              <span class="text-sm">Hi, <%= current_user.display_name %></span>
+            </div>
+            <%= link_to "Account settings", edit_account_path, class: "block rounded-md px-2 py-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]" %>
+            <div>
+              <%= button_to "Sign out", destroy_user_session_path,
+                            method: :delete,
+                            class: mobile_sign_out_button_class %>
+            </div>
+          </div>
+        <% else %>
+          <div class="flex flex-col gap-2">
+            <%= link_to "Sign in", new_user_session_path, class: "rounded-md border border-[var(--color-border)] px-3 py-2 text-center hover:bg-[var(--color-surface-hover)]" %>
+            <%= link_to "Sign up", new_user_registration_path, class: "rounded-md bg-brand-600 px-3 py-2 text-center text-white hover:bg-brand-700" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</header>

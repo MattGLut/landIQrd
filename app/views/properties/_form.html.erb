@@ -1,33 +1,33 @@
-<%= form_with model: property, class: "space-y-4 rounded-lg border border-border-default bg-surface p-6" do |f| %>
+<%= form_with model: property, class: "space-y-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800" do |f| %>
   <%= render "shared/form_errors", resource: property %>
 
   <div>
-    <%= f.label :name, class: "block text-sm font-medium text-muted" %>
-    <%= f.text_field :name, class: "input-dark" %>
+    <%= f.label :name, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+    <%= f.text_field :name, class: form_input_class %>
   </div>
 
   <div>
-    <%= f.label :address_line1, "Address", class: "block text-sm font-medium text-muted" %>
-    <%= f.text_field :address_line1, class: "input-dark" %>
+    <%= f.label :address_line1, "Address", class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+    <%= f.text_field :address_line1, class: form_input_class %>
   </div>
 
   <div>
-    <%= f.label :address_line2, "Address line 2", class: "block text-sm font-medium text-muted" %>
-    <%= f.text_field :address_line2, class: "input-dark" %>
+    <%= f.label :address_line2, "Address line 2", class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+    <%= f.text_field :address_line2, class: form_input_class %>
   </div>
 
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
     <div>
-      <%= f.label :city, class: "block text-sm font-medium text-muted" %>
-      <%= f.text_field :city, class: "input-dark" %>
+      <%= f.label :city, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+      <%= f.text_field :city, class: form_input_class %>
     </div>
     <div>
-      <%= f.label :state, class: "block text-sm font-medium text-muted" %>
-      <%= f.text_field :state, class: "input-dark" %>
+      <%= f.label :state, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+      <%= f.text_field :state, class: form_input_class %>
     </div>
     <div>
-      <%= f.label :postal_code, "ZIP", class: "block text-sm font-medium text-muted" %>
-      <%= f.text_field :postal_code, class: "input-dark" %>
+      <%= f.label :postal_code, "ZIP", class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+      <%= f.text_field :postal_code, class: form_input_class %>
     </div>
   </div>
 

@@ -1,21 +1,21 @@
 <% content_for :title, "Log in" %>
 
-<h2 class="mb-6 text-2xl font-bold text-primary">Log in to LandIQrd</h2>
+<h2 class="mb-6 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Log in to LandIQrd</h2>
 
-<%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-4 rounded-lg border border-border-default bg-surface p-6" }) do |f| %>
+<%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800" }) do |f| %>
   <div>
-    <%= f.label :email, class: "block text-sm font-medium text-muted" %>
-    <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "input-dark" %>
+    <%= f.label :email, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+    <%= f.email_field :email, autofocus: true, autocomplete: "email", class: form_input_class %>
   </div>
 
   <div>
-    <%= f.label :password, class: "block text-sm font-medium text-muted" %>
-    <%= f.password_field :password, autocomplete: "current-password", class: "input-dark" %>
+    <%= f.label :password, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+    <%= f.password_field :password, autocomplete: "current-password", class: form_input_class %>
   </div>
 
   <% if devise_mapping.rememberable? %>
-    <label class="flex items-center gap-2 text-sm text-muted">
-      <%= f.check_box :remember_me, class: "rounded border-border-default bg-elevated text-accent focus:ring-accent" %>
+    <label class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+      <%= f.check_box :remember_me, class: "rounded border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 text-brand-600 dark:text-brand-400 focus:ring-brand-500" %>
       Remember me
     </label>
   <% end %>
@@ -23,6 +23,6 @@
   <%= f.submit "Log in", class: "w-full #{button_classes(:primary)}", data: { turbo_submits_with: "Logging in…" } %>
 <% end %>
 
-<div class="mt-4 text-center text-sm text-muted">
+<div class="mt-4 text-center text-sm text-slate-500 dark:text-slate-400">
   <%= render "devise/shared/links" %>
 </div>

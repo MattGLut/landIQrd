@@ -13,7 +13,7 @@
 <%= render "shared/page_header", title: @unit.label, subtitle: [ @unit.bedrooms && "#{@unit.bedrooms} bd", @unit.bathrooms && "#{@unit.bathrooms} ba", @unit.square_feet && "#{@unit.square_feet} sqft" ].compact.join(" \u00b7 "), action: header_actions %>
 
 <div class="mb-3 flex items-center justify-between">
-  <h2 class="text-lg font-semibold text-primary">Leases</h2>
+  <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Leases</h2>
   <% if @unit.leases.any? %>
     <div class="flex gap-2">
       <% if policy(@unit).update? %>
@@ -27,10 +27,10 @@
 <% if @unit.leases.any? %>
   <div class="space-y-2">
     <% @unit.leases.order(start_date: :desc).each do |lease| %>
-      <%= link_to lease_path(lease), class: "flex items-center justify-between rounded-lg border border-border-default bg-surface p-4 transition-colors hover:border-accent/50" do %>
+      <%= link_to lease_path(lease), class: "flex items-center justify-between rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800 transition-colors hover:border-brand-300 dark:hover:border-brand-700" do %>
         <div>
-          <p class="font-medium text-primary"><%= lease.tenant.full_name %></p>
-          <p class="text-sm text-muted"><%= lease.term_description %></p>
+          <p class="font-medium text-slate-900 dark:text-slate-100"><%= lease.tenant.full_name %></p>
+          <p class="text-sm text-slate-500 dark:text-slate-400"><%= lease.term_description %></p>
         </div>
         <%= status_badge lease.status.titleize, lease.active? ? :green : :gray %>
       <% end %>
