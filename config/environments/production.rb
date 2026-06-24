@@ -1,5 +1,4 @@
 require "active_support/core_ext/integer/time"
-require "ipaddr"
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
@@ -87,9 +86,6 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  config.hosts = [
-    ENV["MAILER_HOST"],
-    IPAddr.new("0.0.0.0/0"),       # allow bare IP access (staging)
-    IPAddr.new("::/0")
-  ].compact
+  config.hosts.clear
+  config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 end

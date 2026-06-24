@@ -13,6 +13,9 @@ servers:
 proxy:
   ssl: false
   host: 18.225.110.137
+  healthcheck:
+    interval: 3
+    timeout: 120
 
 # Container registry (GitHub Container Registry).
 registry:
