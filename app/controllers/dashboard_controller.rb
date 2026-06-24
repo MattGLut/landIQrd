@@ -15,6 +15,8 @@ class DashboardController < ApplicationController
     @recent_properties = []
     @recent_open_work_orders = []
     @recent_conversations = []
+    @tenants_count = 0
+    @recent_tenant_leases = []
 
     @conversations_count = current_user.conversations.count unless current_user.admin?
     @unread_conversations_count = helpers.unread_conversations_count(current_user) unless current_user.admin?
@@ -58,5 +60,13 @@ class DashboardController < ApplicationController
                             .includes(:tenant, unit: :property)
                             .order(:end_date)
                             .limit(6)
+
+    active_tenant_leases = Lease.joins(:tenant, unit: :property)
+                                .where(properties: { landlord_id: current_user.id })
+                                .active
+                                .includes(:tenant, unit: :property)
+                                .order("users.last_name ASC, users.first_name ASC, leases.start_date DESC")
+    @tenants_count = active_tenant_leases.distinct.count(:tenant_id)
+    @recent_tenant_leases = active_tenant_leases.to_a.uniq(&:tenant_id).first(6)
   end
 end

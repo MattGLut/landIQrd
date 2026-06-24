@@ -5,7 +5,13 @@
   </div>
 
   <div class="grid gap-6 lg:grid-cols-2">
-    <%= render "dashboard/conversations_panel" %>
+    <%= render "dashboard/tenants_panel" %>
     <%= render "dashboard/expiring_leases_panel" %>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <div class="lg:col-span-2">
+      <%= render "dashboard/conversations_panel" %>
+    </div>
   </div>
 </div>
