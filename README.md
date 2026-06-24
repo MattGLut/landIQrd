@@ -26,17 +26,68 @@ Always run tooling through Bundler (`bundle exec ...`) because gems are vendored
 Optional demo data (development only):
 
 ```bash
-bin/rails db:seed
+bundle exec rails db:seed
 ```
 
-Default password for every seeded account is `password123`. Seeded emails:
+Rebuild the full demo dataset from scratch:
+
+```bash
+FORCE_SEED=1 bundle exec rails db:seed
+```
+
+On **PowerShell** (Windows), set env vars separately — `FORCE_SEED=1` bash syntax does not work:
+
+```powershell
+$env:FORCE_SEED = "1"; bundle exec rails db:seed
+```
+
+Normal seed (no rebuild):
+
+```powershell
+bundle exec rails db:seed
+```
+
+Use `bundle exec rails`, not `bin/rails`, in PowerShell unless you are in Git Bash/WSL (`bin/` scripts are Unix shell scripts).
+
+Default password for every seeded account is `password123`.
+
+**Stable logins** (always present):
 
 - `admin@propman.test` (admin)
-- `landlord@propman.test` (landlord)
-- `tenant@propman.test` (tenant)
+- `landlord@propman.test` (landlord — showcase portfolio)
+- `tenant@propman.test` (tenant — lease on Maple Court)
 - `contractor@propman.test` (contractor)
 
-Seeds are skipped in test and production.
+**Generated examples:** `landlord2@propman.test`, `tenant2@propman.test`,
+`contractor2@propman.test`, etc.
+
+After a full seed you can expect roughly **40+ properties**, **150+ units**,
+**80+ work orders**, and **8 contractors** across six landlords. Re-running
+`db:seed` skips bulk generation when demo data already exists; use
+`FORCE_SEED=1` to wipe and regenerate.
+
+Seeds are skipped in test. Production/staging skips by default unless you
+explicitly opt in (see below).
+
+### One-time seed on staging (Kamal / Docker)
+
+The deployed container runs `RAILS_ENV=production`. Do **not** override that —
+it would break `DATABASE_URL` and other production config. Instead, pass
+`ALLOW_DEMO_SEED=1` for a one-time demo load:
+
+```bash
+bin/kamal app exec 'ALLOW_DEMO_SEED=1 FORCE_SEED=1 bin/rails db:seed'
+```
+
+On the EC2 host directly:
+
+```bash
+docker exec -it $(docker ps -q -f name=prop_man-web) \
+  env ALLOW_DEMO_SEED=1 FORCE_SEED=1 bin/rails db:seed
+```
+
+Remove `ALLOW_DEMO_SEED=1` after the first run; normal `db:seed` will stay
+blocked in production.
 
 ### Roles
 
