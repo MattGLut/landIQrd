@@ -4,16 +4,36 @@
 <%= render "admin/shared/nav" %>
 
 <div class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-  <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100"><%= @property.name %></h2>
+  <div class="flex items-center gap-2">
+    <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100"><%= @property.name %></h2>
+    <%= property_type_badge(@property.property_type) %>
+  </div>
   <p class="text-slate-500 dark:text-slate-400"><%= @property.full_address %></p>
   <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Landlord: <%= @property.landlord.display_name %> (<%= @property.landlord.email %>)</p>
 
+  <% if @property.present_features.any? %>
+    <h3 class="mt-4 mb-2 font-semibold text-slate-900 dark:text-slate-100">Property features</h3>
+    <dl class="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
+      <% @property.present_features.each do |entry| %>
+        <div>
+          <dt class="text-slate-500 dark:text-slate-400"><%= entry[:definition].label %></dt>
+          <dd class="text-slate-900 dark:text-slate-100"><%= format_feature_value(entry[:definition], entry[:value]) %></dd>
+        </div>
+      <% end %>
+    </dl>
+  <% end %>
+
   <h3 class="mt-4 mb-2 font-semibold text-slate-900 dark:text-slate-100">Units</h3>
-  <ul class="space-y-1 text-sm">
+  <ul class="space-y-2 text-sm">
     <% @property.units.each do |unit| %>
-      <li class="flex justify-between text-slate-900 dark:text-slate-100">
-        <span><%= unit.label %></span>
-        <span class="text-slate-500 dark:text-slate-400"><%= pluralize(unit.leases.size, "lease") %></span>
+      <li class="flex justify-between gap-4 text-slate-900 dark:text-slate-100">
+        <div>
+          <span><%= unit.label %></span>
+          <% if unit.summary_line.present? %>
+            <span class="text-slate-500 dark:text-slate-400"> — <%= unit.summary_line %></span>
+          <% end %>
+        </div>
+        <span class="shrink-0 text-slate-500 dark:text-slate-400"><%= pluralize(unit.leases.size, "lease") %></span>
       </li>
     <% end %>
   </ul>

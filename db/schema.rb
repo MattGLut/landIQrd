@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_23_124342) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_24_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -112,9 +112,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_124342) do
     t.string "address_line2"
     t.string "city"
     t.datetime "created_at", null: false
+    t.jsonb "features", default: {}, null: false
     t.bigint "landlord_id", null: false
     t.string "name", null: false
     t.string "postal_code"
+    t.integer "property_type", default: 0, null: false
     t.string "state"
     t.datetime "updated_at", null: false
     t.index ["landlord_id"], name: "index_properties_on_landlord_id"
@@ -242,12 +244,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_124342) do
   end
 
   create_table "units", force: :cascade do |t|
+    t.decimal "acreage", precision: 10, scale: 2
     t.decimal "bathrooms", precision: 3, scale: 1
     t.integer "bedrooms"
     t.datetime "created_at", null: false
+    t.jsonb "features", default: {}, null: false
     t.string "label", null: false
     t.bigint "property_id", null: false
     t.integer "square_feet"
+    t.integer "unit_type"
     t.datetime "updated_at", null: false
     t.index ["property_id"], name: "index_units_on_property_id"
   end

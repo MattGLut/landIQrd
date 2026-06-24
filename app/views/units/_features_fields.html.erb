@@ -1,0 +1,15 @@
+<%# locals: (record:, form_scope:, property:) %>
+<% PropertyFeatureCatalog::PROPERTY_TYPES.each do |type| %>
+  <div
+    class="<%= "hidden" unless record.effective_type == type.to_s %> space-y-4"
+    data-property-type-form-target="featureSection"
+    data-type="<%= type %>"
+  >
+    <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100"><%= PropertyFeatureCatalog.type_label(type) %> unit features</h3>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <% PropertyFeatureCatalog.definitions_for(type, scope: :unit).each do |definition| %>
+        <%= render_feature_field(form_scope, record, definition) %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

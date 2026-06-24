@@ -35,6 +35,38 @@ RSpec.describe WorkOrder, type: :model do
     expect(work_order.work_order_events.last.action).to eq("created")
   end
 
+  describe ".categories_for" do
+    it "returns base categories for residential units" do
+      unit = create(:unit)
+      expect(described_class.categories_for(unit)).to eq(described_class::BASE_CATEGORIES)
+    end
+
+    it "includes commercial categories for commercial units" do
+      unit = create(:unit, :commercial)
+      expect(described_class.categories_for(unit)).to include("fire_safety", "structural")
+    end
+
+    it "includes land categories for undeveloped units" do
+      unit = create(:unit, :undeveloped)
+      expect(described_class.categories_for(unit)).to include("site_maintenance", "environmental")
+    end
+  end
+
+  describe "category validation" do
+    it "rejects commercial-only categories on residential units" do
+      unit = create(:unit)
+      work_order = build(:work_order, unit: unit, category: :fire_safety)
+      expect(work_order).not_to be_valid
+      expect(work_order.errors[:category]).to include("is not valid for this unit type")
+    end
+
+    it "allows land categories on undeveloped units" do
+      unit = create(:unit, :undeveloped)
+      work_order = build(:work_order, unit: unit, category: :site_maintenance)
+      expect(work_order).to be_valid
+    end
+  end
+
   describe "scopes" do
     let(:landlord) { create(:landlord) }
     let(:property) { create(:property, landlord: landlord) }
