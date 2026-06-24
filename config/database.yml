@@ -24,15 +24,15 @@ development:
   primary:
     <<: *default
     database: prop_man_development
-    host: localhost
-    username: tatl
-    password: tatl_dev
+    host: <%= ENV.fetch("PGHOST", "localhost") %>
+    username: <%= ENV.fetch("PGUSER", "tatl") %>
+    password: <%= ENV.fetch("PGPASSWORD", "tatl_dev") %>
   queue:
     <<: *default
     database: prop_man_development
-    host: localhost
-    username: tatl
-    password: tatl_dev
+    host: <%= ENV.fetch("PGHOST", "localhost") %>
+    username: <%= ENV.fetch("PGUSER", "tatl") %>
+    password: <%= ENV.fetch("PGPASSWORD", "tatl_dev") %>
     migrations_paths: db/queue_migrate
 
 # Warning: The database defined as "test" will be erased and
@@ -42,15 +42,15 @@ test:
   primary:
     <<: *default
     database: prop_man_test
-    host: localhost
-    username: tatl
-    password: tatl_dev
+    host: <%= ENV.fetch("PGHOST", "localhost") %>
+    username: <%= ENV.fetch("PGUSER", "tatl") %>
+    password: <%= ENV.fetch("PGPASSWORD", "tatl_dev") %>
   queue:
     <<: *default
     database: prop_man_test
-    host: localhost
-    username: tatl
-    password: tatl_dev
+    host: <%= ENV.fetch("PGHOST", "localhost") %>
+    username: <%= ENV.fetch("PGUSER", "tatl") %>
+    password: <%= ENV.fetch("PGPASSWORD", "tatl_dev") %>
     migrations_paths: db/queue_migrate
 
 # As with config/credentials.yml, you never want to store sensitive information,
