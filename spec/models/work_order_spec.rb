@@ -54,6 +54,18 @@ RSpec.describe WorkOrder, type: :model do
       expect(WorkOrder.for_contractor(contractor)).to contain_exactly(assigned)
     end
 
+    it ".for_tenant returns work orders created by or on leased units" do
+      tenant = create(:tenant)
+      other_tenant = create(:tenant)
+      leased_unit = create(:unit, property: property)
+      create(:lease, unit: leased_unit, tenant: tenant, status: :active)
+      created_by_tenant = create(:work_order, unit: unit, created_by: tenant)
+      on_leased_unit = create(:work_order, unit: leased_unit, created_by: other_tenant)
+      create(:work_order, unit: unit, created_by: other_tenant)
+
+      expect(WorkOrder.for_tenant(tenant)).to contain_exactly(created_by_tenant, on_leased_unit)
+    end
+
     it ".active excludes completed and cancelled" do
       open = create(:work_order, unit: unit, status: :open)
       create(:work_order, unit: unit, status: :completed)

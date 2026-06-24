@@ -9,6 +9,7 @@ contractors, and admins collaborate around leases, work requests, and messaging.
 - PostgreSQL, Devise (auth), Pundit (authorization).
 - ActiveStorage (local disk in dev/test, S3 in staging/production).
 - Solid Queue (background jobs), Action Cable (real-time messaging).
+- Stimulus controllers: sidebar, work order status, notification preferences.
 - RSpec, FactoryBot, Capybara, SimpleCov.
 - Deploy via Kamal (Docker) to a single EC2 host + RDS + S3; CI via GitHub Actions.
 
@@ -28,14 +29,75 @@ Optional demo data (development only):
 bin/rails db:seed
 ```
 
-Default password for every seeded account is `password123`. Seeds are skipped in
-test and production.
+Default password for every seeded account is `password123`. Seeded emails:
+
+- `admin@propman.test` (admin)
+- `landlord@propman.test` (landlord)
+- `tenant@propman.test` (tenant)
+- `contractor@propman.test` (contractor)
+
+Seeds are skipped in test and production.
 
 ### Roles
 
 `User#role` is an enum: `tenant`, `landlord`, `contractor`, `admin`. Self
 sign-up is limited to tenant/landlord/contractor; admins are created via the
 admin console or the console.
+
+## Features
+
+### Properties and units
+
+Landlords create and manage properties (name, address) and units (label,
+bedrooms, bathrooms, square feet). Visibility is scoped by role via Pundit
+policies.
+
+### Leases
+
+Leases move through draft, active, ended, and terminated statuses. Only one
+active lease is allowed per unit. Landlords upload lease documents via
+ActiveStorage. Active leases past their end date are ended automatically by
+`Leases::ExpireDueJob` (daily at 6am; see `config/recurring.yml`).
+
+### Lease invitations
+
+Landlords invite prospective tenants by email. The invitee receives a token
+link (`/invites/:token`), signs up, and accepts into a draft lease on the
+target unit.
+
+### Work orders
+
+Tenants and landlords submit maintenance requests with category, priority, and
+photos. Statuses follow an AASM state machine: open, pending_tenant,
+pending_management, on_hold, completed, and cancelled. Landlords manage
+transitions; tenants can close and reopen their requests. Closure requires a
+reason. Every change is recorded in a work order event log.
+
+Landlords assign contractors with an optional scheduled date. Landlords and
+contractors can view upcoming assignments at `/work_orders/schedule`. Each
+assigned work order gets a conversation thread.
+
+### Messaging
+
+Work-order threads and direct messages between two users. Messages support
+file attachments. New messages broadcast in real time via Turbo Streams (Action
+Cable). Unread counts are tracked per participant.
+
+### Notifications
+
+Six email notification types, each opt-out per user and filtered by role (see
+`User::EMAIL_NOTIFICATION_TYPES`). Users manage preferences at
+`/account/notifications` with auto-save toggles.
+
+### Account
+
+Profile settings (preferred name, avatar), notification preferences, and
+Devise email and security settings under `/account`.
+
+### Admin
+
+The `/admin` namespace provides user CRUD plus read-only views of properties,
+work orders, and conversations.
 
 ## Running the test suite
 
@@ -44,6 +106,9 @@ bundle exec rspec
 bundle exec rubocop
 bin/brakeman
 ```
+
+GitHub Actions runs Brakeman, Bundler Audit, importmap audit, RuboCop, and the
+full RSpec suite on every pull request and push to `main`.
 
 ---
 

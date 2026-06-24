@@ -37,6 +37,16 @@ RSpec.describe Notifications::Deliver do
         described_class.work_order_status_changed(work_order, actor: landlord)
       }.to have_enqueued_mail(NotificationMailer, :work_order_status_changed).exactly(2).times
     end
+
+    it "skips email when a recipient has disabled the notification" do
+      create(:work_order_assignment, work_order: work_order, contractor: contractor)
+      work_order.reload
+      tenant.update!(email_notification_preferences: { "work_order_status_changed" => false })
+
+      expect {
+        described_class.work_order_status_changed(work_order, actor: landlord)
+      }.to have_enqueued_mail(NotificationMailer, :work_order_status_changed).once
+    end
   end
 
   describe ".contractor_assigned" do
@@ -46,6 +56,15 @@ RSpec.describe Notifications::Deliver do
       expect {
         described_class.contractor_assigned(assignment, actor: landlord)
       }.to have_enqueued_mail(NotificationMailer, :contractor_assigned).with(assignment)
+    end
+
+    it "skips email when the contractor has disabled the notification" do
+      contractor.update!(email_notification_preferences: { "contractor_assigned" => false })
+      assignment = create(:work_order_assignment, work_order: work_order, contractor: contractor)
+
+      expect {
+        described_class.contractor_assigned(assignment, actor: landlord)
+      }.not_to have_enqueued_mail(NotificationMailer, :contractor_assigned)
     end
   end
 
@@ -89,6 +108,16 @@ RSpec.describe Notifications::Deliver do
         described_class.lease_invitation_accepted(invitation, actor: tenant)
       }.to have_enqueued_mail(NotificationMailer, :lease_invitation_accepted).with(invitation)
     end
+
+    it "skips email when the landlord has disabled the notification" do
+      landlord.update!(email_notification_preferences: { "lease_invitation_accepted" => false })
+      invitation = create(:lease_invitation, unit: unit, invited_by: landlord)
+      tenant = create(:tenant)
+
+      expect {
+        described_class.lease_invitation_accepted(invitation, actor: tenant)
+      }.not_to have_enqueued_mail(NotificationMailer, :lease_invitation_accepted)
+    end
   end
 
   describe ".lease_expiring" do
@@ -98,6 +127,15 @@ RSpec.describe Notifications::Deliver do
       expect {
         described_class.lease_expiring(lease)
       }.to have_enqueued_mail(NotificationMailer, :lease_expiring).exactly(2).times
+    end
+
+    it "skips email when a recipient has disabled the notification" do
+      tenant.update!(email_notification_preferences: { "lease_expiring" => false })
+      lease = create(:lease, unit: unit, tenant: tenant, status: :active)
+
+      expect {
+        described_class.lease_expiring(lease)
+      }.to have_enqueued_mail(NotificationMailer, :lease_expiring).once
     end
   end
 end
