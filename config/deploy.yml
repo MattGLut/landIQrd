@@ -1,35 +1,23 @@
 # Name of your application. Used to uniquely configure containers.
 service: prop_man
 
-# Name of the container image. For GHCR this must be <github-owner>/<repo>.
-image: your-github-owner/prop_man
+# Name of the container image. Must match GHCR: ghcr.io/<owner>/<repo>.
+image: mattglut/prop_man
 
-# Deploy to these servers (your EC2 instance's public IP or DNS).
+# Deploy to these servers.
 servers:
   web:
-    - YOUR_EC2_PUBLIC_IP
-  # job:
-  #   hosts:
-  #     - 192.168.0.1
-  #   cmd: bin/jobs
+    - 18.225.110.137
 
-# Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
-# If used with Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
-#
-# Using an SSL proxy like this requires turning on config.assume_ssl and config.force_ssl in production.rb!
-#
-# Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
-#
+# No SSL for now (bare IP, no domain). Enable ssl + host when a domain is ready.
 proxy:
-  ssl: true
-  host: app.example.com # <- set to your real domain
+  ssl: false
+  host: 18.225.110.137
 
-# Where you keep your container images (GitHub Container Registry).
+# Container registry (GitHub Container Registry).
 registry:
   server: ghcr.io
-  username: your-github-owner
-
-  # Always use an access token rather than real password when possible.
+  username: MattGLut
   password:
     - KAMAL_REGISTRY_PASSWORD
 
@@ -37,90 +25,46 @@ registry:
 env:
   secret:
     - RAILS_MASTER_KEY
-    - DATABASE_URL          # RDS Postgres connection string
-    - AWS_ACCESS_KEY_ID     # ActiveStorage S3
+    - DATABASE_URL
+    - AWS_ACCESS_KEY_ID
     - AWS_SECRET_ACCESS_KEY
+    - REDIS_URL
     - SENDGRID_API_KEY
     - MAILER_FROM
   clear:
-    MAILER_HOST: app.example.com
-    # ActiveStorage S3 (non-secret config)
-    AWS_REGION: us-east-1
-    S3_BUCKET: prop-man-production
-
-    # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
-    # When you start using multiple servers, you should split out job processing to a dedicated machine.
+    MAILER_HOST: 18.225.110.137
+    AWS_REGION: us-east-2
+    S3_BUCKET: landiqrd-staging
     SOLID_QUEUE_IN_PUMA: true
-
-    # Set number of processes dedicated to Solid Queue (default: 1)
-    # JOB_CONCURRENCY: 3
-
-    # Set number of cores available to the application on each server (default: 1).
-    # WEB_CONCURRENCY: 2
-
-    # Match this to any external database server to configure Active Record correctly
-    # Use prop_man-db for a db accessory server on same machine via local kamal docker network.
-    # DB_HOST: 192.168.0.2
-
-    # Log everything from Rails
     # RAILS_LOG_LEVEL: debug
 
-# Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
-# "bin/kamal logs -r job" will tail logs from the first server in the job section.
+# SSH into EC2 Ubuntu instances as the ubuntu user.
+ssh:
+  user: ubuntu
+
+# Aliases triggered with "bin/kamal <alias>".
 aliases:
   console: app exec --interactive --reuse "bin/rails console"
   shell: app exec --interactive --reuse "bash"
   logs: app logs -f
   dbc: app exec --interactive --reuse "bin/rails dbconsole --include-password"
 
-# Use a persistent storage volume for sqlite database files and local Active Storage files.
-# Recommended to change this to a mounted volume path that is backed up off server.
+# Persistent storage volume.
 volumes:
   - "prop_man_storage:/rails/storage"
 
-# Bridge fingerprinted assets, like JS and CSS, between versions to avoid
-# hitting 404 on in-flight requests. Combines all files from new and old
-# version inside the asset_path.
+# Bridge fingerprinted assets between deploys.
 asset_path: /rails/public/assets
 
-# Configure the image builder.
+# Build amd64 images (EC2 is x86).
 builder:
   arch: amd64
 
-  # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
-  # remote: ssh://docker@docker-builder-server
-  #
-  # # Pass arguments and secrets to the Docker build process
-  # args:
-  #   RUBY_VERSION: ruby-4.0.5
-  # secrets:
-  #   - GITHUB_TOKEN
-  #   - RAILS_MASTER_KEY
-
-# Use a different ssh user than root
-# ssh:
-#   user: app
-
-# Use accessory services (secrets come from .kamal/secrets).
-# accessories:
-#   db:
-#     image: mysql:8.0
-#     host: 192.168.0.2
-#     # Change to 3306 to expose port to the world instead of just local network.
-#     port: "127.0.0.1:3306:3306"
-#     env:
-#       clear:
-#         MYSQL_ROOT_HOST: '%'
-#       secret:
-#         - MYSQL_ROOT_PASSWORD
-#     files:
-#       - config/mysql/production.cnf:/etc/mysql/my.cnf
-#       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
-#     directories:
-#       - data:/var/lib/mysql
-#   redis:
-#     image: valkey/valkey:8
-#     host: 192.168.0.2
-#     port: 6379
-#     directories:
-#       - data:/data
+# Redis accessory on the same EC2 host.
+accessories:
+  redis:
+    image: valkey/valkey:8
+    host: 18.225.110.137
+    port: "127.0.0.1:6379:6379"
+    directories:
+      - data:/data
