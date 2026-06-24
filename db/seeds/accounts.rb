@@ -47,9 +47,9 @@ module Seeds
         landlord = Support.upsert_user(
           "landlord#{index + 2}@propman.test",
           role: :landlord,
-          first_name: Faker::Name.first_name,
-          last_name: Faker::Name.last_name,
-          company_name: "#{Faker::Address.community} Properties"
+          first_name: Support.fake_first_name,
+          last_name: Support.fake_last_name,
+          company_name: "#{Support.fake_community_name} Properties"
         )
         Support.state[:landlords] << landlord
       end
@@ -58,8 +58,8 @@ module Seeds
         tenant = Support.upsert_user(
           "tenant#{index + 2}@propman.test",
           role: :tenant,
-          first_name: Faker::Name.first_name,
-          last_name: Faker::Name.last_name
+          first_name: Support.fake_first_name,
+          last_name: Support.fake_last_name
         )
         Support.state[:tenants] << tenant
       end
