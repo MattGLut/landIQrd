@@ -29,6 +29,21 @@ RSpec.describe "Properties", type: :request do
       }.to change(landlord.properties, :count).by(1)
       expect(response).to redirect_to(Property.last)
     end
+
+    it "creates a commercial property with features" do
+      sign_in landlord
+      post properties_path, params: {
+        property: {
+          name: "Riverside Retail",
+          property_type: "commercial",
+          features: { ada_accessible: "1", elevator: "0" }
+        }
+      }
+      property = Property.last
+      expect(property).to be_commercial
+      expect(property.feature_value("ada_accessible")).to eq(true)
+      expect(property.feature_value("elevator")).to eq(false)
+    end
   end
 
   describe "PATCH /properties/:id" do

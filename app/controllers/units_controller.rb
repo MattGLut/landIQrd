@@ -1,4 +1,6 @@
 class UnitsController < ApplicationController
+  include FeatureParams
+
   before_action :set_property, only: %i[new create]
   before_action :set_unit, only: %i[show edit update destroy]
 
@@ -52,6 +54,13 @@ class UnitsController < ApplicationController
   end
 
   def unit_params
-    params.require(:unit).permit(:label, :bedrooms, :bathrooms, :square_feet)
+    permitted = params.require(:unit).permit(
+      :label, :bedrooms, :bathrooms, :square_feet, :unit_type, :acreage,
+      features: PropertyFeatureCatalog.all_keys_for(:unit)
+    )
+    permitted[:unit_type] = nil if permitted[:unit_type].blank?
+    effective_type = permitted[:unit_type].presence || @property&.property_type || @unit&.property&.property_type
+    permitted[:features] = build_features_params(permitted[:features], type: effective_type, scope: :unit)
+    permitted
   end
 end

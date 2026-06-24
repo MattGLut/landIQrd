@@ -1,25 +1,45 @@
-<%= form_with model: unit, url: form_url, class: "space-y-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800" do |f| %>
+<%= form_with model: unit, url: form_url, class: "space-y-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800", data: { controller: "property-type-form", property_type_form_mode_value: "unit", property_type_form_property_type_value: unit.property.property_type } do |f| %>
   <%= render "shared/form_errors", resource: unit %>
 
   <div>
-    <%= f.label :label, "Unit label", class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
-    <%= f.text_field :label, placeholder: "e.g. Apt 2B", class: form_input_class %>
+    <%= f.label :unit_type, "Unit type", class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+    <%= f.select :unit_type, unit_type_options(unit.property), { include_blank: false }, class: form_input_class, data: { property_type_form_target: "typeSelect", action: "property-type-form#typeChanged" } %>
+    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400" data-property-type-form-target="typeHint"></p>
   </div>
 
-  <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-    <div>
-      <%= f.label :bedrooms, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
-      <%= f.number_field :bedrooms, class: form_input_class %>
-    </div>
-    <div>
-      <%= f.label :bathrooms, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
-      <%= f.number_field :bathrooms, step: 0.5, class: form_input_class %>
-    </div>
+  <div>
+    <%= f.label :label, "Unit label", class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+    <%= f.text_field :label, placeholder: "e.g. Apt 2B, Suite 100, Lot A", class: form_input_class %>
+  </div>
+
+  <div class="<%= "hidden" unless %w[residential commercial].include?(unit.effective_type) %>" data-property-type-form-target="sizeSection">
     <div>
       <%= f.label :square_feet, "Sq ft", class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
       <%= f.number_field :square_feet, class: form_input_class %>
     </div>
   </div>
+
+  <div class="<%= "hidden" unless unit.effective_type == "residential" %>" data-property-type-form-target="scalarSection" data-type="residential">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <%= f.label :bedrooms, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+        <%= f.number_field :bedrooms, class: form_input_class %>
+      </div>
+      <div>
+        <%= f.label :bathrooms, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+        <%= f.number_field :bathrooms, step: 0.5, class: form_input_class %>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= "hidden" unless unit.effective_type == "undeveloped" %>" data-property-type-form-target="scalarSection" data-type="undeveloped">
+    <div>
+      <%= f.label :acreage, "Acreage", class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+      <%= f.number_field :acreage, step: 0.01, class: form_input_class %>
+    </div>
+  </div>
+
+  <%= render "features_fields", record: unit, form_scope: "unit", property: unit.property %>
 
   <div class="flex gap-2">
     <%= f.submit "Save", class: button_classes(:primary), data: { turbo_submits_with: "Saving…" } %>

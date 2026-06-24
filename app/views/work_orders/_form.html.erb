@@ -1,10 +1,12 @@
-<%= form_with model: work_order, url: form_url, class: "space-y-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800" do |f| %>
+<% unit_types = units.index_with { |unit| unit.effective_type }.transform_keys(&:id) %>
+<% form_data = work_order.persisted? ? {} : { controller: "work-order-category", work_order_category_unit_types_value: unit_types.to_json } %>
+<%= form_with model: work_order, url: form_url, class: "space-y-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800", data: form_data do |f| %>
   <%= render "shared/form_errors", resource: work_order %>
 
   <% unless work_order.persisted? %>
     <div>
       <%= f.label :unit_id, "Unit", class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
-      <%= f.collection_select :unit_id, units, :id, :full_label, { include_blank: "Select a unit" }, class: form_input_class %>
+      <%= f.collection_select :unit_id, units, :id, :full_label, { include_blank: "Select a unit" }, class: form_input_class, data: { work_order_category_target: "unitSelect" } %>
     </div>
   <% end %>
 
@@ -21,7 +23,11 @@
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
       <%= f.label :category, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
-      <%= f.select :category, WorkOrder.categories.keys.map { |c| [ c.titleize, c ] }, {}, class: form_input_class %>
+      <% if work_order.persisted? %>
+        <%= f.select :category, WorkOrder.category_options_for(work_order.unit), {}, class: form_input_class %>
+      <% else %>
+        <%= f.select :category, WorkOrder.categories.keys.map { |c| [ c.titleize, c ] }, {}, class: form_input_class, data: { work_order_category_target: "categorySelect" } %>
+      <% end %>
     </div>
     <div>
       <%= f.label :priority, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>

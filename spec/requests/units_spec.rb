@@ -30,6 +30,23 @@ RSpec.describe "Units", type: :request do
       }.to change(property.units, :count).by(1)
       expect(response).to redirect_to(property)
     end
+
+    it "creates an undeveloped unit with acreage and features" do
+      land_property = create(:property, :undeveloped, landlord: landlord)
+      sign_in landlord
+      post property_units_path(land_property), params: {
+        unit: {
+          label: "Lot A",
+          acreage: 3.25,
+          features: { zoning: "R-1", water_hookup: "1", sewer_hookup: "0" }
+        }
+      }
+      unit = land_property.units.last
+      expect(unit.acreage).to eq(3.25)
+      expect(unit.feature_value("zoning")).to eq("R-1")
+      expect(unit.feature_value("water_hookup")).to eq(true)
+      expect(unit.feature_value("sewer_hookup")).to eq(false)
+    end
   end
 
   describe "PATCH /units/:id" do

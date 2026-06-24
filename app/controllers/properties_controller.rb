@@ -1,4 +1,6 @@
 class PropertiesController < ApplicationController
+  include FeatureParams
+
   before_action :set_property, only: %i[show edit update destroy]
 
   def index
@@ -51,6 +53,15 @@ class PropertiesController < ApplicationController
   end
 
   def property_params
-    params.require(:property).permit(:name, :address_line1, :address_line2, :city, :state, :postal_code)
+    permitted = params.require(:property).permit(
+      :name, :address_line1, :address_line2, :city, :state, :postal_code, :property_type,
+      features: PropertyFeatureCatalog.all_keys_for(:property)
+    )
+    permitted[:features] = build_features_params(
+      permitted[:features],
+      type: permitted[:property_type] || @property&.property_type,
+      scope: :property
+    )
+    permitted
   end
 end

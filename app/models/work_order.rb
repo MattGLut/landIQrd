@@ -31,10 +31,39 @@ class WorkOrder < ApplicationRecord
     appliance: "appliance",
     pest: "pest",
     general: "general",
-    other: "other"
+    other: "other",
+    fire_safety: "fire_safety",
+    signage: "signage",
+    accessibility: "accessibility",
+    structural: "structural",
+    site_maintenance: "site_maintenance",
+    fencing: "fencing",
+    utilities: "utilities",
+    grading: "grading",
+    environmental: "environmental"
   }, prefix: true
 
+  BASE_CATEGORIES = %w[plumbing electrical hvac appliance pest general other].freeze
+  COMMERCIAL_CATEGORIES = %w[fire_safety signage accessibility structural].freeze
+  UNDEVELOPED_CATEGORIES = %w[site_maintenance fencing utilities grading environmental].freeze
+
   validates :title, presence: true
+  validate :category_allowed_for_unit
+
+  def self.categories_for(unit)
+    keys = BASE_CATEGORIES.dup
+    case unit&.effective_type
+    when "commercial"
+      keys.concat(COMMERCIAL_CATEGORIES)
+    when "undeveloped"
+      keys.concat(UNDEVELOPED_CATEGORIES)
+    end
+    keys
+  end
+
+  def self.category_options_for(unit)
+    categories_for(unit).map { |key| [ key.titleize, key ] }
+  end
 
   scope :active, -> { where.not(status: %i[completed cancelled]) }
 
@@ -156,6 +185,13 @@ class WorkOrder < ApplicationRecord
   end
 
   private
+
+  def category_allowed_for_unit
+    return if unit.blank?
+    return if self.class.categories_for(unit).include?(category)
+
+    errors.add(:category, "is not valid for this unit type")
+  end
 
   def log_created_event
     WorkOrders::RecordEvent.call(work_order: self, user: created_by, action: "created")
