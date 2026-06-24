@@ -11,6 +11,8 @@ class Message < ApplicationRecord
   private
 
   def broadcast_to_conversation
+    return if Thread.current[:suppress_realtime_broadcasts]
+
     broadcast_append_to(
       conversation,
       target: "messages",

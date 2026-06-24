@@ -106,8 +106,10 @@ module Seeds
     def silence_side_effects
       previous_adapter = ActiveJob::Base.queue_adapter
       ActiveJob::Base.queue_adapter = :test
+      Thread.current[:suppress_realtime_broadcasts] = true
       yield
     ensure
+      Thread.current[:suppress_realtime_broadcasts] = false
       ActiveJob::Base.queue_adapter = previous_adapter
     end
 
