@@ -60,5 +60,27 @@ RSpec.describe "Seed builders" do
         expect(scenarios).to include(:active, :vacant, :invitation_pending)
       end
     end
+
+    describe ".demo_seed_allowed?" do
+      it "allows development without a flag" do
+        allow(Rails).to receive(:env).and_return(ActiveSupport::StringInquirer.new("development"))
+        expect(described_class.demo_seed_allowed?).to be(true)
+      end
+
+      it "blocks production unless ALLOW_DEMO_SEED is set" do
+        allow(Rails).to receive(:env).and_return(ActiveSupport::StringInquirer.new("production"))
+        original = ENV["ALLOW_DEMO_SEED"]
+        ENV.delete("ALLOW_DEMO_SEED")
+        expect(described_class.demo_seed_allowed?).to be(false)
+        ENV["ALLOW_DEMO_SEED"] = "1"
+        expect(described_class.demo_seed_allowed?).to be(true)
+      ensure
+        if original
+          ENV["ALLOW_DEMO_SEED"] = original
+        else
+          ENV.delete("ALLOW_DEMO_SEED")
+        end
+      end
+    end
   end
 end

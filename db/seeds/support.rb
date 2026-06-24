@@ -76,6 +76,10 @@ module Seeds
       ENV["FORCE_SEED"] == "1"
     end
 
+    def demo_seed_allowed?
+      !Rails.env.production? || ENV["ALLOW_DEMO_SEED"] == "1"
+    end
+
     def prepare!
       reset_state!
       Faker::Config.random = rng

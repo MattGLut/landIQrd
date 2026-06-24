@@ -66,7 +66,28 @@ After a full seed you can expect roughly **40+ properties**, **150+ units**,
 `db:seed` skips bulk generation when demo data already exists; use
 `FORCE_SEED=1` to wipe and regenerate.
 
-Seeds are skipped in test and production.
+Seeds are skipped in test. Production/staging skips by default unless you
+explicitly opt in (see below).
+
+### One-time seed on staging (Kamal / Docker)
+
+The deployed container runs `RAILS_ENV=production`. Do **not** override that —
+it would break `DATABASE_URL` and other production config. Instead, pass
+`ALLOW_DEMO_SEED=1` for a one-time demo load:
+
+```bash
+bin/kamal app exec 'ALLOW_DEMO_SEED=1 FORCE_SEED=1 bin/rails db:seed'
+```
+
+On the EC2 host directly:
+
+```bash
+docker exec -it $(docker ps -q -f name=prop_man-web) \
+  env ALLOW_DEMO_SEED=1 FORCE_SEED=1 bin/rails db:seed
+```
+
+Remove `ALLOW_DEMO_SEED=1` after the first run; normal `db:seed` will stay
+blocked in production.
 
 ### Roles
 
