@@ -1,0 +1,29 @@
+<div class="<%= panel_card_class %>">
+  <div class="flex items-center justify-between gap-4">
+    <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Leases expiring soon</h2>
+    <%= link_to "View properties", properties_path, class: "text-sm font-medium text-brand-600 hover:text-brand-800 dark:text-brand-400 dark:hover:text-brand-300" %>
+  </div>
+  <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Active leases ending within the next 90 days.</p>
+
+  <% if @expiring_leases.any? %>
+    <ul class="mt-4 space-y-3">
+      <% @expiring_leases.each do |lease| %>
+        <li>
+          <%= link_to lease_path(lease), class: dashboard_list_link_class do %>
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <span class="font-medium text-slate-900 line-clamp-1 dark:text-slate-100">
+                <%= lease.unit.property.name %> &middot; <%= lease.unit.label %>
+              </span>
+              <span class="text-xs font-medium text-brand-600 dark:text-brand-400">
+                <%= lease.end_date.to_fs(:long) %>
+              </span>
+            </div>
+            <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400"><%= lease.tenant.full_name %></p>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">No leases expiring in the next 90 days.</p>
+  <% end %>
+</div>

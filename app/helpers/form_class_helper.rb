@@ -84,4 +84,11 @@ module FormClassHelper
   def table_class
     "min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-700"
   end
+
+  def dashboard_list_link_class
+    "block rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2 " \
+      "text-sm transition hover:border-brand-200 hover:bg-white " \
+      "dark:border-slate-700 dark:bg-slate-700/40 dark:hover:border-brand-700 " \
+      "dark:hover:bg-slate-700"
+  end
 end

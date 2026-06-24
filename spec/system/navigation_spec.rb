@@ -66,10 +66,10 @@ RSpec.describe "Navigation" do
     end
   end
 
-  it "navigates from dashboard manage properties CTA" do
+  it "navigates from dashboard properties panel" do
     sign_in_and_visit(create(:landlord))
 
-    click_link "Manage properties"
+    click_link "View all", match: :first
 
     expect(page).to have_content("Properties")
   end
