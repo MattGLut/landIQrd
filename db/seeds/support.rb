@@ -82,8 +82,25 @@ module Seeds
 
     def prepare!
       reset_state!
+      require "faker"
       Faker::Config.random = rng
       demo_reset! if force_reseed?
+    end
+
+    def fake_first_name
+      Faker::Name.first_name
+    end
+
+    def fake_last_name
+      Faker::Name.last_name
+    end
+
+    def fake_street_address
+      Faker::Address.street_address
+    end
+
+    def fake_community_name
+      Faker::Address.community
     end
 
     def silence_side_effects
@@ -157,7 +174,7 @@ module Seeds
     def texas_address
       city, state_abbr, zip = pick(TEXAS_CITIES)
       {
-        address_line1: Faker::Address.street_address,
+        address_line1: fake_street_address,
         city: city,
         state: state_abbr,
         postal_code: zip
