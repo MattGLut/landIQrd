@@ -1,24 +1,24 @@
 <% content_for :title, "Messages" %>
 
 <div class="flex h-[calc(100vh-8rem)] flex-col lg:flex-row lg:gap-4">
-  <div class="<%= @conversation ? 'hidden lg:flex' : 'flex' %> w-full flex-col border-border-default lg:w-80 lg:shrink-0 lg:border-r lg:pr-4">
-    <h1 class="mb-4 text-xl font-bold text-primary lg:hidden">Messages</h1>
+  <div class="<%= @conversation ? 'hidden lg:flex' : 'flex' %> w-full flex-col border-slate-200 dark:border-slate-700 lg:w-80 lg:shrink-0 lg:border-r lg:pr-4">
+    <h1 class="mb-4 text-xl font-bold text-slate-900 dark:text-slate-100 lg:hidden">Messages</h1>
     <% if @conversations.any? %>
       <div class="flex-1 space-y-1 overflow-y-auto">
         <% @conversations.each do |conversation| %>
           <% active = @conversation&.id == conversation.id %>
           <% unread = conversation.unread_for?(current_user) %>
-          <%= link_to conversation_path(conversation), class: "block rounded-lg border px-3 py-2 transition-colors #{active ? 'border-accent/50 bg-accent/10' : 'border-border-default bg-surface hover:border-accent/30'}" do %>
+          <%= link_to conversation_path(conversation), class: "block rounded-lg border px-3 py-2 transition-colors #{active ? 'border-brand-300 bg-brand-50 dark:border-brand-700 dark:bg-brand-900/20' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-brand-200 dark:border-brand-800'}" do %>
             <div class="flex items-center gap-2">
-              <p class="min-w-0 flex-1 truncate font-medium #{unread ? 'text-primary' : 'text-muted'}"><%= conversation.title %></p>
+              <p class="min-w-0 flex-1 truncate font-medium #{unread ? 'text-slate-900 dark:text-slate-100' : 'text-slate-500 dark:text-slate-400'}"><%= conversation.title %></p>
               <% if unread %>
-                <span class="h-2 w-2 shrink-0 rounded-full bg-accent"></span>
+                <span class="h-2 w-2 shrink-0 rounded-full bg-brand-600"></span>
               <% end %>
               <% if conversation.work_order %>
                 <%= status_badge "Work order", :indigo %>
               <% end %>
             </div>
-            <p class="mt-0.5 truncate text-sm text-muted">
+            <p class="mt-0.5 truncate text-sm text-slate-500 dark:text-slate-400">
               <%= conversation.latest_message&.body.presence || "No messages yet" %>
             </p>
           <% end %>
@@ -32,12 +32,12 @@
   <div class="<%= @conversation ? 'flex' : 'hidden lg:flex' %> min-h-0 flex-1 flex-col">
     <% if @conversation %>
       <div class="mb-4 lg:hidden">
-        <%= link_to "← Back to messages", conversations_path, class: "text-sm text-accent hover:text-accent-hover" %>
+        <%= link_to "← Back to messages", conversations_path, class: "text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300" %>
       </div>
       <%= render "conversations/thread", conversation: @conversation, messages: @messages, message: @message %>
     <% else %>
-      <div class="flex flex-1 items-center justify-center rounded-lg border border-dashed border-border-default bg-surface">
-        <p class="text-muted">Select a conversation to view messages</p>
+      <div class="flex flex-1 items-center justify-center rounded-lg border border-dashed border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+        <p class="text-slate-500 dark:text-slate-400">Select a conversation to view messages</p>
       </div>
     <% end %>
   </div>

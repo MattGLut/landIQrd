@@ -8,33 +8,33 @@
 
 <%= render "shared/page_header", title: "Invite tenant", subtitle: "#{@unit.property.name} · #{@unit.label}" %>
 
-<%= form_with model: @invitation, url: unit_lease_invitations_path(@unit), class: "space-y-4 rounded-lg border border-border-default bg-surface p-6" do |f| %>
+<%= form_with model: @invitation, url: unit_lease_invitations_path(@unit), class: "space-y-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800" do |f| %>
   <%= render "shared/form_errors", resource: @invitation %>
 
   <div>
-    <%= f.label :email, class: "block text-sm font-medium text-muted" %>
-    <%= f.email_field :email, class: "input-dark", placeholder: "tenant@example.com" %>
+    <%= f.label :email, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+    <%= f.email_field :email, class: form_input_class, placeholder: "tenant@example.com" %>
   </div>
 
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
-      <%= f.label :start_date, class: "block text-sm font-medium text-muted" %>
-      <%= f.date_field :start_date, class: "input-dark" %>
+      <%= f.label :start_date, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+      <%= f.date_field :start_date, class: form_input_class %>
     </div>
     <div>
-      <%= f.label :end_date, class: "block text-sm font-medium text-muted" %>
-      <%= f.date_field :end_date, class: "input-dark" %>
+      <%= f.label :end_date, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+      <%= f.date_field :end_date, class: form_input_class %>
     </div>
   </div>
 
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
-      <%= f.label :rent_amount, "Monthly rent", class: "block text-sm font-medium text-muted" %>
-      <%= f.number_field :rent_amount, step: 0.01, class: "input-dark" %>
+      <%= f.label :rent_amount, "Monthly rent", class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+      <%= f.number_field :rent_amount, step: 0.01, class: form_input_class %>
     </div>
     <div>
-      <%= f.label :deposit_amount, "Security deposit", class: "block text-sm font-medium text-muted" %>
-      <%= f.number_field :deposit_amount, step: 0.01, class: "input-dark" %>
+      <%= f.label :deposit_amount, "Security deposit", class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+      <%= f.number_field :deposit_amount, step: 0.01, class: form_input_class %>
     </div>
   </div>
 

@@ -11,21 +11,21 @@
 
 <div class="mb-2"><%= status_badge @user.role.titleize, :gray %></div>
 
-<dl class="grid grid-cols-2 gap-4 rounded-lg border border-border-default bg-surface p-6">
+<dl class="grid grid-cols-2 gap-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
   <div>
-    <dt class="text-sm text-muted">Phone</dt>
-    <dd class="mt-1 text-primary"><%= @user.phone.presence || "—" %></dd>
+    <dt class="text-sm text-slate-500 dark:text-slate-400">Phone</dt>
+    <dd class="mt-1 text-slate-900 dark:text-slate-100"><%= @user.phone.presence || "—" %></dd>
   </div>
   <div>
-    <dt class="text-sm text-muted">Company</dt>
-    <dd class="mt-1 text-primary"><%= @user.company_name.presence || "—" %></dd>
+    <dt class="text-sm text-slate-500 dark:text-slate-400">Company</dt>
+    <dd class="mt-1 text-slate-900 dark:text-slate-100"><%= @user.company_name.presence || "—" %></dd>
   </div>
   <div>
-    <dt class="text-sm text-muted">Joined</dt>
-    <dd class="mt-1 text-primary"><%= @user.created_at.to_fs(:long) %></dd>
+    <dt class="text-sm text-slate-500 dark:text-slate-400">Joined</dt>
+    <dd class="mt-1 text-slate-900 dark:text-slate-100"><%= @user.created_at.to_fs(:long) %></dd>
   </div>
 </dl>
 
 <p class="mt-4">
-  <%= link_to "Back to users", admin_users_path, class: "text-sm text-accent hover:text-accent-hover" %>
+  <%= link_to "Back to users", admin_users_path, class: "text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300" %>
 </p>

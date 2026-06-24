@@ -1,17 +1,17 @@
 <%- if controller_name != 'sessions' %>
   <p class="text-center">
-    <%= link_to "Log in", new_session_path(resource_name), class: "text-accent hover:text-accent-hover" %>
+    <%= link_to "Log in", new_session_path(resource_name), class: "text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300" %>
   </p>
 <% end %>
 
 <%- if devise_mapping.registerable? && controller_name != 'registrations' %>
   <p class="text-center">
-    <%= link_to "Sign up", new_registration_path(resource_name), class: "text-accent hover:text-accent-hover" %>
+    <%= link_to "Sign up", new_registration_path(resource_name), class: "text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300" %>
   </p>
 <% end %>
 
 <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
   <p class="text-center">
-    <%= link_to "Forgot your password?", new_password_path(resource_name), class: "text-accent hover:text-accent-hover" %>
+    <%= link_to "Forgot your password?", new_password_path(resource_name), class: "text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300" %>
   </p>
 <% end %>

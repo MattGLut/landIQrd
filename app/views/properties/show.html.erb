@@ -8,7 +8,7 @@
 <%= render "shared/page_header", title: @property.name, subtitle: @property.full_address.presence || "No address on file", action: header_actions %>
 
 <div class="mb-3 flex items-center justify-between">
-  <h2 class="text-lg font-semibold text-primary">Units</h2>
+  <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Units</h2>
   <% if @property.units.any? %>
     <%= render "shared/button", label: "Add unit", url: new_property_unit_path(@property), variant: :ghost, size: :sm %>
   <% end %>
@@ -17,15 +17,15 @@
 <% if @property.units.any? %>
   <div class="space-y-2">
     <% @property.units.order(:label).each do |unit| %>
-      <%= link_to unit_path(unit), class: "block rounded-lg border border-border-default bg-surface p-4 transition-colors hover:border-accent/50" do %>
+      <%= link_to unit_path(unit), class: "block rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800 transition-colors hover:border-brand-300 dark:hover:border-brand-700" do %>
         <div class="flex items-center justify-between">
           <div>
-            <p class="font-medium text-primary"><%= unit.label %></p>
-            <p class="text-sm text-muted">
+            <p class="font-medium text-slate-900 dark:text-slate-100"><%= unit.label %></p>
+            <p class="text-sm text-slate-500 dark:text-slate-400">
               <%= [ unit.bedrooms && "#{unit.bedrooms} bd", unit.bathrooms && "#{unit.bathrooms} ba", unit.square_feet && "#{unit.square_feet} sqft" ].compact.join(" \u00b7 ") %>
             </p>
           </div>
-          <span class="text-sm text-muted"><%= pluralize(unit.leases.size, "lease") %></span>
+          <span class="text-sm text-slate-500 dark:text-slate-400"><%= pluralize(unit.leases.size, "lease") %></span>
         </div>
       <% end %>
     <% end %>

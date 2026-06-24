@@ -4,8 +4,8 @@
 <%= render "admin/shared/nav" %>
 
 <% if @work_orders.any? %>
-<div class="overflow-hidden rounded-lg border border-border-default bg-surface">
-  <table class="table-dark">
+<div class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+  <table class="table_class">
     <thead>
       <tr>
         <th>Title</th>
@@ -18,9 +18,9 @@
       <% @work_orders.each do |wo| %>
         <tr>
           <td>
-            <%= link_to wo.title, admin_work_order_path(wo), class: "font-medium text-accent hover:text-accent-hover" %>
+            <%= link_to wo.title, admin_work_order_path(wo), class: "font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300" %>
           </td>
-          <td class="text-muted"><%= wo.unit.property.name %> · <%= wo.unit.label %></td>
+          <td class="text-slate-500 dark:text-slate-400"><%= wo.unit.property.name %> · <%= wo.unit.label %></td>
           <td><%= status_badge wo.priority.titleize, wo.priority_color %></td>
           <td><%= status_badge wo.status.titleize.gsub("_", " "), wo.status_color %></td>
         </tr>

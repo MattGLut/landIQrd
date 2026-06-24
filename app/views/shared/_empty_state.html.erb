@@ -1,5 +1,11 @@
-<div class="rounded-lg border border-dashed border-border-default bg-surface p-10 text-center">
-  <p class="text-muted"><%= message %></p>
+<div class="rounded-xl border border-dashed border-slate-300 p-10 text-center dark:border-slate-600">
+  <% description = local_assigns[:description] || local_assigns[:message] %>
+  <% if local_assigns[:title].present? %>
+    <p class="font-medium text-slate-900 dark:text-slate-100"><%= title %></p>
+  <% end %>
+  <% if description.present? %>
+    <p class="<%= local_assigns[:title].present? ? 'mt-1' : '' %> text-sm text-slate-500 dark:text-slate-400"><%= description %></p>
+  <% end %>
   <% if local_assigns[:action].present? %>
     <div class="mt-4"><%= action %></div>
   <% end %>

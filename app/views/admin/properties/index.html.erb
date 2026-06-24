@@ -4,8 +4,8 @@
 <%= render "admin/shared/nav" %>
 
 <% if @properties.any? %>
-<div class="overflow-hidden rounded-lg border border-border-default bg-surface">
-  <table class="table-dark">
+<div class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+  <table class="table_class">
     <thead>
       <tr>
         <th>Property</th>
@@ -17,10 +17,10 @@
       <% @properties.each do |property| %>
         <tr>
           <td>
-            <%= link_to property.name, admin_property_path(property), class: "font-medium text-accent hover:text-accent-hover" %>
+            <%= link_to property.name, admin_property_path(property), class: "font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300" %>
           </td>
-          <td class="text-muted"><%= property.landlord.display_name %></td>
-          <td class="text-primary"><%= property.units.size %></td>
+          <td class="text-slate-500 dark:text-slate-400"><%= property.landlord.display_name %></td>
+          <td class="text-slate-900 dark:text-slate-100"><%= property.units.size %></td>
         </tr>
       <% end %>
     </tbody>

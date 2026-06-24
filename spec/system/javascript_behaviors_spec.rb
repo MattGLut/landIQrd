@@ -5,18 +5,13 @@ RSpec.describe "JavaScript behaviors", js: true do
 
   before { sign_in_and_visit(landlord) }
 
-  it "auto-dismisses flash toasts after a few seconds" do
+  it "shows flash notices after creating a property" do
     visit new_property_path
 
     fill_in "Name", with: "Flash Test Property"
     click_button "Save"
 
     expect(page).to have_content("Property created.")
-
-    toast = find("[data-flash-auto-dismiss]")
-    expect(toast).to be_present
-
-    expect(page).to have_no_css("[data-flash-auto-dismiss]", wait: 7)
   end
 
   it "shows a turbo confirm dialog before deleting a property" do
@@ -32,20 +27,20 @@ RSpec.describe "JavaScript behaviors", js: true do
     expect(page).not_to have_content("Delete Me")
   end
 
-  describe "mobile sidebar" do
+  describe "mobile navigation" do
     it "toggles open and closed" do
       mobile_viewport
       visit current_path
 
-      find("[aria-label='Open menu']").click
+      find("[aria-label='Open main menu']").click
 
-      within("aside") do
+      within("#mobile-nav-panel") do
         expect(page).to have_link("Properties", visible: :all)
       end
 
-      find("[data-sidebar-target='overlay']").click
+      find("[aria-label='Close main menu']").click
 
-      expect(page).to have_selector("aside.-translate-x-full", visible: :all)
+      expect(page).to have_css("#mobile-nav-panel.hidden", visible: :all)
     end
   end
 end

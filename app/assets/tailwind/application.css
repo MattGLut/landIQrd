@@ -1,27 +1,67 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Tailwind only scans certain paths by default; class strings in Ruby helpers are not included unless listed here. */
+@source "../../helpers/**/*.rb";
+
 @theme {
-  --color-base: #000000;
-  --color-surface: #161616;
-  --color-elevated: #1e1e1e;
-  --color-border-default: #2d2d2d;
-  --color-primary: #ffffff;
-  --color-muted: #9b9b9b;
-  --color-accent: #00c805;
-  --color-accent-hover: #00a804;
-  --color-danger: #ff5000;
-  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
-}
+  --color-brand-50:  #f0faf1;
+  --color-brand-100: #e8f5e9;
+  --color-brand-200: #c8e6c9;
+  --color-brand-300: #81c784;
+  --color-brand-400: #4caf50;
+  --color-brand-500: #3da84a;
+  --color-brand-600: #339e3d;
+  --color-brand-700: #2e8a3a;
+  --color-brand-800: #1b5e20;
+  --color-brand-900: #103a13;
 
-html {
-  color-scheme: dark;
-}
-
-body {
-  font-family: var(--font-sans);
+  --color-navy-50:  #f0f3f8;
+  --color-navy-100: #d9e0ed;
+  --color-navy-200: #b0bdd6;
+  --color-navy-300: #7e91b5;
+  --color-navy-400: #506894;
+  --color-navy-500: #364e73;
+  --color-navy-600: #2a3d5c;
+  --color-navy-700: #1f2f48;
+  --color-navy-800: #1b2a4a;
+  --color-navy-900: #111c32;
 }
 
 @layer base {
+  :root {
+    --color-surface: var(--color-slate-50);
+    --color-surface-card: #fff;
+    --color-surface-hover: var(--color-slate-100);
+    --color-text-primary: var(--color-slate-900);
+    --color-text-secondary: var(--color-slate-600);
+    --color-text-muted: var(--color-slate-500);
+    --color-border: var(--color-slate-200);
+  }
+
+  .dark {
+    /* Remap slate to neutral near-blacks (Cursor-style) */
+    --color-slate-50:  #fafafa;
+    --color-slate-100: #f0f0f0;
+    --color-slate-200: #e0e0e0;
+    --color-slate-300: #b0b0b0;
+    --color-slate-400: #888888;
+    --color-slate-500: #6e6e6e;
+    --color-slate-600: #4a4a4a;
+    --color-slate-700: #2e2e2e;
+    --color-slate-800: #1e1e1e;
+    --color-slate-900: #141414;
+
+    --color-surface: var(--color-slate-900);
+    --color-surface-card: var(--color-slate-800);
+    --color-surface-hover: var(--color-slate-700);
+    --color-text-primary: #ffffff;
+    --color-text-secondary: var(--color-slate-300);
+    --color-text-muted: var(--color-slate-400);
+    --color-border: #262626;
+  }
+
   button:not(:disabled),
   input[type="submit"]:not(:disabled),
   input[type="button"]:not(:disabled),
@@ -38,74 +78,23 @@ body {
 }
 
 @layer components {
-  .input-dark {
-    @apply mt-1 block w-full rounded-md border border-border-default bg-elevated px-3 py-2 text-sm text-primary shadow-sm placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent;
+  .table_class thead {
+    @apply bg-slate-50 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:bg-slate-800/50 dark:text-slate-400;
   }
 
-  .file-input-dark {
-    @apply cursor-pointer text-sm text-muted file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-elevated file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-primary hover:file:bg-border-default;
-  }
-
-  .table-dark {
-    @apply min-w-full divide-y divide-border-default text-sm;
-  }
-
-  .table-dark thead {
-    @apply bg-surface text-left text-muted;
-  }
-
-  .table-dark th {
-    @apply px-4 py-2 font-medium;
-  }
-
-  .table-dark tbody {
-    @apply divide-y divide-border-default;
-  }
-
-  .table-dark tr:hover {
-    @apply bg-elevated;
-  }
-
-  .table-dark td {
+  .table_class th {
     @apply px-4 py-2;
   }
 
-  .flash-container {
-    @apply pointer-events-none fixed top-4 right-0 left-0 z-50 flex flex-col items-center gap-2 px-4 lg:px-6;
+  .table_class tbody {
+    @apply divide-y divide-slate-200 dark:divide-slate-700;
   }
 
-  .flash-container--inset {
-    @apply lg:left-60;
+  .table_class tr:hover {
+    @apply bg-slate-50 dark:bg-slate-700/50;
   }
 
-  .flash-toast {
-    @apply pointer-events-auto w-full max-w-2xl rounded-lg border bg-surface px-4 py-3 text-sm shadow-lg;
-    transition: opacity 500ms ease, transform 500ms ease;
-    animation: flash-enter 300ms ease;
-  }
-
-  .flash-toast.is-dismissing {
-    opacity: 0;
-    transform: translateY(-0.5rem);
-  }
-
-  .flash-toast--success {
-    @apply border-accent/30 text-accent;
-  }
-
-  .flash-toast--danger {
-    @apply border-danger/30 text-danger;
-  }
-}
-
-@keyframes flash-enter {
-  from {
-    opacity: 0;
-    transform: translateY(-0.5rem);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .table_class td {
+    @apply px-4 py-2;
   }
 }

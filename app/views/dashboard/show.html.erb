@@ -1,8 +1,8 @@
 <% content_for :title, "Home" %>
 
 <div class="mb-6">
-  <h1 class="text-2xl font-bold text-primary">Welcome back, <%= current_user.greeting_name %></h1>
-  <p class="text-muted">Your LandIQrd <%= current_user.role.titleize.downcase %> overview.</p>
+  <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Welcome back, <%= current_user.greeting_name %></h1>
+  <p class="text-slate-500 dark:text-slate-400">Your LandIQrd <%= current_user.role.titleize.downcase %> overview.</p>
 </div>
 
 <%= render "dashboard/#{current_user.role}" %>

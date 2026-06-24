@@ -1,8 +1,8 @@
-<%= form_with model: [ conversation, message ], class: "space-y-3 rounded-lg border border-border-default bg-surface p-4" do |f| %>
+<%= form_with model: [ conversation, message ], class: "space-y-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800" do |f| %>
   <%= render "shared/form_errors", resource: message %>
-  <%= f.text_area :body, rows: 3, placeholder: "Write a message...", class: "input-dark" %>
+  <%= f.text_area :body, rows: 3, placeholder: "Write a message...", class: form_input_class %>
   <div class="flex items-center justify-between">
-    <%= f.file_field :files, multiple: true, class: "file-input-dark" %>
+    <%= f.file_field :files, multiple: true, class: form_file_input_class %>
     <%= f.submit "Send", class: button_classes(:primary), data: { turbo_submits_with: "Sending…" } %>
   </div>
 <% end %>

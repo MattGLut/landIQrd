@@ -6,24 +6,24 @@
       <%= render "shared/form_errors", resource: current_user %>
 
       <div>
-        <%= f.label :email, class: "block text-sm font-medium text-muted" %>
-        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "input-dark" %>
+        <%= f.label :email, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: form_input_class %>
       </div>
 
       <div>
-        <%= f.label :password, class: "block text-sm font-medium text-muted" %>
-        <p class="text-xs text-muted">Leave blank if you don't want to change it</p>
-        <%= f.password_field :password, autocomplete: "new-password", class: "input-dark" %>
+        <%= f.label :password, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Leave blank if you don't want to change it</p>
+        <%= f.password_field :password, autocomplete: "new-password", class: form_input_class %>
       </div>
 
       <div>
-        <%= f.label :password_confirmation, class: "block text-sm font-medium text-muted" %>
-        <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "input-dark" %>
+        <%= f.label :password_confirmation, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+        <%= f.password_field :password_confirmation, autocomplete: "new-password", class: form_input_class %>
       </div>
 
       <div>
-        <%= f.label :current_password, class: "block text-sm font-medium text-muted" %>
-        <%= f.password_field :current_password, autocomplete: "current-password", class: "input-dark" %>
+        <%= f.label :current_password, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+        <%= f.password_field :current_password, autocomplete: "current-password", class: form_input_class %>
       </div>
 
       <%= f.submit "Update credentials", class: button_classes(:primary), data: { turbo_submits_with: "Saving…" } %>
@@ -33,28 +33,28 @@
   <div class="mx-auto max-w-3xl">
     <%= render "shared/page_header", title: "Email & security", subtitle: "Update your sign-in credentials" %>
 
-    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: "space-y-4 rounded-lg border border-border-default bg-surface p-6" }) do |f| %>
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: "space-y-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800" }) do |f| %>
       <%= render "devise/shared/error_messages", resource: resource %>
 
       <div>
-        <%= f.label :email, class: "block text-sm font-medium text-muted" %>
-        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "input-dark" %>
+        <%= f.label :email, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: form_input_class %>
       </div>
 
       <div>
-        <%= f.label :password, class: "block text-sm font-medium text-muted" %>
-        <p class="text-xs text-muted">Leave blank if you don't want to change it</p>
-        <%= f.password_field :password, autocomplete: "new-password", class: "input-dark" %>
+        <%= f.label :password, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Leave blank if you don't want to change it</p>
+        <%= f.password_field :password, autocomplete: "new-password", class: form_input_class %>
       </div>
 
       <div>
-        <%= f.label :password_confirmation, class: "block text-sm font-medium text-muted" %>
-        <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "input-dark" %>
+        <%= f.label :password_confirmation, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+        <%= f.password_field :password_confirmation, autocomplete: "new-password", class: form_input_class %>
       </div>
 
       <div>
-        <%= f.label :current_password, class: "block text-sm font-medium text-muted" %>
-        <%= f.password_field :current_password, autocomplete: "current-password", class: "input-dark" %>
+        <%= f.label :current_password, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+        <%= f.password_field :current_password, autocomplete: "current-password", class: form_input_class %>
       </div>
 
       <%= f.submit "Update credentials", class: button_classes(:primary), data: { turbo_submits_with: "Saving…" } %>
