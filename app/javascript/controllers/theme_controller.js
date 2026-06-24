@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 // Manages dark-mode toggling on <html>.
-// Persists explicit choice in localStorage; absent key = follow OS.
+// Persists explicit choice in localStorage; absent key = dark (default).
 export default class extends Controller {
   static targets = ["modeButton"]
 
@@ -21,7 +21,7 @@ export default class extends Controller {
   setMode(event) {
     const mode = event.params.mode
     if (mode === "system") {
-      localStorage.removeItem("theme")
+      localStorage.setItem("theme", "system")
     } else {
       localStorage.setItem("theme", mode)
     }
@@ -30,10 +30,10 @@ export default class extends Controller {
 
   toggle() {
     const mode = this._storedMode()
-    if (mode === null) {
+    if (mode === null || mode === "dark") {
       localStorage.setItem("theme", "light")
     } else if (mode === "light") {
-      localStorage.setItem("theme", "dark")
+      localStorage.setItem("theme", "system")
     } else {
       localStorage.removeItem("theme")
     }
@@ -52,14 +52,15 @@ export default class extends Controller {
     const mode = this._storedMode()
     if (mode === "dark") return true
     if (mode === "light") return false
-    return this._mql.matches
+    if (mode === "system") return this._mql.matches
+    return true
   }
 
   _apply() {
     const dark = this._shouldBeDark()
     document.documentElement.classList.toggle("dark", dark)
 
-    const mode = this._storedMode() ?? "system"
+    const mode = this._storedMode() ?? "dark"
     this._highlightActiveButton(mode)
     document.dispatchEvent(new CustomEvent("theme:changed", { detail: { dark } }))
   }
