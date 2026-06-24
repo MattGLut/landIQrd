@@ -3,7 +3,6 @@
     <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Leases expiring soon</h2>
     <%= link_to "View properties", properties_path, class: "text-sm font-medium text-brand-600 hover:text-brand-800 dark:text-brand-400 dark:hover:text-brand-300" %>
   </div>
-  <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Active leases ending within the next 90 days.</p>
 
   <% if @expiring_leases.any? %>
     <ul class="mt-4 space-y-3">
