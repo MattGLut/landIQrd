@@ -293,12 +293,12 @@ module Seeds
         generated_landlords.each { |u| puts "  #{u.email}" }
         puts ""
       end
-      puts "Re-run with FORCE_SEED=1 bin/rails db:seed to rebuild demo data."
+      puts "Re-run with FORCE_SEED=1 bundle exec rails db:seed to rebuild demo data."
     end
 
     def print_skipped_summary
       puts "Demo data already present (#{Property.count} properties). Skipping bulk seed."
-      puts "Run FORCE_SEED=1 bin/rails db:seed to rebuild."
+      puts 'Run FORCE_SEED=1 bundle exec rails db:seed to rebuild (PowerShell: $env:FORCE_SEED = "1"; bundle exec rails db:seed).'
       print_summary
     end
   end

@@ -26,14 +26,28 @@ Always run tooling through Bundler (`bundle exec ...`) because gems are vendored
 Optional demo data (development only):
 
 ```bash
-bin/rails db:seed
+bundle exec rails db:seed
 ```
 
 Rebuild the full demo dataset from scratch:
 
 ```bash
-FORCE_SEED=1 bin/rails db:seed
+FORCE_SEED=1 bundle exec rails db:seed
 ```
+
+On **PowerShell** (Windows), set env vars separately — `FORCE_SEED=1` bash syntax does not work:
+
+```powershell
+$env:FORCE_SEED = "1"; bundle exec rails db:seed
+```
+
+Normal seed (no rebuild):
+
+```powershell
+bundle exec rails db:seed
+```
+
+Use `bundle exec rails`, not `bin/rails`, in PowerShell unless you are in Git Bash/WSL (`bin/` scripts are Unix shell scripts).
 
 Default password for every seeded account is `password123`.
 

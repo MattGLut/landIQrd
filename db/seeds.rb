@@ -2,7 +2,8 @@
 # Default password for every seeded account is "password123".
 #
 # Rebuild the full demo dataset:
-#   FORCE_SEED=1 bin/rails db:seed
+#   FORCE_SEED=1 bundle exec rails db:seed
+# PowerShell: $env:FORCE_SEED = "1"; bundle exec rails db:seed
 
 if Rails.env.production?
   puts "Skipping seeds in production."
