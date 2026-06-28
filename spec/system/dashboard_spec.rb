@@ -52,14 +52,23 @@ RSpec.describe "Dashboard" do
     landlord = create(:landlord)
     property = create(:property, landlord: landlord, name: "Oak Apartments")
     unit = create(:unit, property: property, label: "2B")
-    create(:lease, unit: unit, tenant: tenant)
+    create(:lease, unit: unit, tenant: tenant, status: :active)
+    work_order = create(:work_order, unit: unit, created_by: tenant, status: :open, title: "Broken heater")
+    conversation = Conversation.direct_between!(tenant, landlord)
+    conversation.messages.create!(author: landlord, body: "I'll send someone over.")
 
     sign_in_and_visit(tenant)
 
-    expect(page).to have_content("Active leases")
     expect(page).to have_content("Your leases")
+    expect(page).to have_content("My work requests")
+    expect(page).to have_content("Conversations")
     expect(page).to have_content("Oak Apartments · 2B")
+    expect(page).to have_content("Work order")
+    expect(page).to have_content("Broken heater")
+    expect(page).to have_content("I'll send someone over.")
     expect(page).to have_link("New work request")
+    expect(page).to have_link("View all work requests", href: work_orders_path(status: "active"))
+    expect(page).to have_link("View all messages")
   end
 
   it "warns tenants when a lease is ending soon" do
@@ -76,8 +85,10 @@ RSpec.describe "Dashboard" do
 
     sign_in_and_visit(tenant)
 
-    expect(page).to have_content("Lease ending soon")
+    expect(page).to have_content("Your leases")
     expect(page).to have_content("Pine Place · 1A")
+    expect(page).to have_content("Expiring soon")
+    expect(page).not_to have_content("Leases expiring soon")
   end
 
   it "shows contractor assigned work panel and conversations" do

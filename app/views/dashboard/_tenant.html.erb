@@ -1,38 +1,12 @@
-<div class="grid gap-6 sm:grid-cols-3">
-  <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-    <p class="text-sm text-slate-500 dark:text-slate-400">Active leases</p>
-    <p class="mt-1 text-3xl font-bold text-slate-900 dark:text-slate-100"><%= @leases&.count.to_i %></p>
+<div class="space-y-6">
+  <div class="grid gap-6 lg:grid-cols-2">
+    <%= render "dashboard/leases_panel" %>
+    <%= render "dashboard/my_work_requests_panel" %>
   </div>
-  <%= link_to work_orders_path(status: "active"), class: "rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-colors hover:border-brand-300 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-brand-700" do %>
-    <p class="text-sm text-slate-500 dark:text-slate-400">My work requests</p>
-    <p class="mt-1 text-3xl font-bold text-brand-600 dark:text-brand-400"><%= @open_work_orders_count %></p>
-  <% end %>
-  <%= link_to conversations_path, class: "rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-colors hover:border-brand-300 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-brand-700" do %>
-    <p class="text-sm text-slate-500 dark:text-slate-400">Conversations</p>
-    <p class="mt-1 text-3xl font-bold text-slate-900 dark:text-slate-100"><%= @conversations_count %></p>
-  <% end %>
-</div>
 
-<% if @leases.present? %>
-  <div class="mt-6 space-y-3">
-    <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Your leases</h2>
-    <% @leases.each do |lease| %>
-      <%= link_to lease_path(lease), class: "block rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800 transition-colors hover:border-brand-300 dark:hover:border-brand-700" do %>
-        <p class="font-medium text-slate-900 dark:text-slate-100"><%= lease.unit.property.name %> · <%= lease.unit.label %></p>
-        <p class="text-sm text-slate-500 dark:text-slate-400"><%= lease.term_description %></p>
-      <% end %>
-    <% end %>
+  <div class="grid gap-6 lg:grid-cols-2">
+    <div class="lg:col-span-2">
+      <%= render "dashboard/conversations_panel" %>
+    </div>
   </div>
-<% end %>
-
-<% if @expiring_soon_lease %>
-  <div class="mt-6 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/30 p-4">
-    <p class="text-sm font-medium text-amber-600 dark:text-amber-400">Lease ending soon</p>
-    <p class="mt-1 text-slate-900 dark:text-slate-100"><%= @expiring_soon_lease.unit.property.name %> · <%= @expiring_soon_lease.unit.label %> ends <%= @expiring_soon_lease.end_date.to_fs(:long) %></p>
-    <%= link_to "View lease", lease_path(@expiring_soon_lease), class: "mt-2 inline-block text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300" %>
-  </div>
-<% end %>
-
-<div class="mt-6">
-  <%= render "shared/button", label: "New work request", url: new_work_order_path, variant: :primary %>
 </div>

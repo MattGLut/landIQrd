@@ -18,8 +18,16 @@ class Lease < ApplicationRecord
     where(status: :active).where.not(end_date: nil).where(end_date: Date.current..(Date.current + days.days))
   }
 
+  EXPIRING_SOON_DAYS = 90
+
   delegate :property, to: :unit
   delegate :landlord, to: :unit
+
+  def expiring_soon?(days = EXPIRING_SOON_DAYS)
+    return false unless active? && end_date.present?
+
+    end_date.between?(Date.current, Date.current + days.days)
+  end
 
   def term_description
     finish = end_date ? end_date.to_fs(:long) : "open-ended"

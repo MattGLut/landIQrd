@@ -9,9 +9,10 @@ class DashboardController < ApplicationController
     @unread_conversations_count = 0
     @users_count = 0
     @work_orders_count = 0
-    @leases = nil
+    @leases_count = 0
     @expiring_leases = []
-    @expiring_soon_lease = nil
+    @recent_leases = []
+    @active_work_order_counts_by_unit_id = {}
     @recent_properties = []
     @recent_open_work_orders = []
     @recent_assigned_work_orders = []
@@ -26,9 +27,7 @@ class DashboardController < ApplicationController
     when :landlord
       load_landlord_dashboard
     when :tenant
-      @leases = current_user.leases.includes(unit: :property)
-      @open_work_orders_count = WorkOrder.for_tenant(current_user).active.count
-      @expiring_soon_lease = current_user.leases.active.expiring_within(60).order(:end_date).first
+      load_tenant_dashboard
     when :contractor
       load_contractor_dashboard
     when :admin
@@ -69,6 +68,27 @@ class DashboardController < ApplicationController
                                 .order("users.last_name ASC, users.first_name ASC, leases.start_date DESC")
     @tenants_count = active_tenant_leases.distinct.count(:tenant_id)
     @recent_tenant_leases = active_tenant_leases.to_a.uniq(&:tenant_id).first(6)
+  end
+
+  def load_tenant_dashboard
+    active_leases = current_user.leases.active.includes(unit: :property).order(start_date: :desc)
+    @leases_count = active_leases.count
+    @recent_leases = active_leases.limit(6)
+    @active_work_order_counts_by_unit_id = WorkOrder.active
+                                                    .where(unit_id: @recent_leases.map(&:unit_id))
+                                                    .group(:unit_id)
+                                                    .count
+
+    open_work_orders = WorkOrder.for_tenant(current_user).active
+                                .includes(:created_by, unit: :property)
+                                .order(updated_at: :desc)
+    @open_work_orders_count = open_work_orders.count
+    @recent_open_work_orders = open_work_orders.limit(6)
+
+    conversations = policy_scope(Conversation)
+                      .includes(:participants, :messages, :conversation_participants, :work_order)
+                      .order(updated_at: :desc)
+    @recent_conversations = conversations.limit(6)
   end
 
   def load_contractor_dashboard
