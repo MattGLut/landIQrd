@@ -14,6 +14,19 @@ RSpec.describe "JavaScript behaviors", js: true do
     expect(page).to have_content("Property created.")
   end
 
+  it "auto-dismisses flash notices after a few seconds" do
+    visit new_property_path
+
+    fill_in "Name", with: "Flash Dismiss Property"
+    click_button "Save"
+
+    expect(page).to have_content("Property created.")
+
+    using_wait_time(7) do
+      expect(page).to have_no_content("Property created.")
+    end
+  end
+
   it "shows a turbo confirm dialog before deleting a property" do
     property = create(:property, landlord: landlord, name: "Delete Me")
 

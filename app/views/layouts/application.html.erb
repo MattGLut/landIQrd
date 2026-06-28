@@ -23,12 +23,7 @@
   <body class="h-full text-[var(--color-text-primary)] antialiased">
     <%= render "shared/application_header" %>
 
-    <% if notice.present? %>
-      <div class="mx-auto mt-4 max-w-6xl rounded-md border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300"><%= notice %></div>
-    <% end %>
-    <% if alert.present? %>
-      <div class="mx-auto mt-4 max-w-6xl rounded-md border border-rose-200 bg-rose-50 px-4 py-2 text-sm text-rose-800 dark:border-rose-800 dark:bg-rose-900/30 dark:text-rose-300"><%= alert %></div>
-    <% end %>
+    <%= render "shared/flash", below_header: true %>
 
     <main class="mx-auto max-w-6xl px-6 py-10">
       <%= yield %>
