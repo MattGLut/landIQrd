@@ -14,6 +14,7 @@ export default class extends Controller {
   }
 
   dismiss() {
+    this.element.classList.remove("opacity-100")
     this.element.classList.add("opacity-0")
 
     this.element.addEventListener("transitionend", () => this.element.remove(), { once: true })
