@@ -1,10 +1,13 @@
 <% content_for :title, "Lease" %>
 
-<%= property_breadcrumbs(
-  { label: @lease.unit.property.name, path: property_path(@lease.unit.property) },
-  { label: @lease.unit.label, path: unit_path(@lease.unit) },
-  { label: "Lease", path: lease_path(@lease) }
-) %>
+<% property_crumb = { label: @lease.unit.property.name } %>
+<% unit_crumb = { label: @lease.unit.label } %>
+<% unless current_user.tenant? %>
+  <% property_crumb[:path] = property_path(@lease.unit.property) %>
+  <% unit_crumb[:path] = unit_path(@lease.unit) %>
+<% end %>
+
+<%= property_breadcrumbs(property_crumb, unit_crumb, { label: "Lease" }) %>
 
 <% header_actions = capture do %>
   <% if current_user.tenant? %>

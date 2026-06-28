@@ -27,6 +27,18 @@ RSpec.describe "JavaScript behaviors", js: true do
     end
   end
 
+  it "auto-dismisses flash alerts after a few seconds" do
+    tenant = create(:tenant)
+    sign_in tenant
+    visit properties_path
+
+    expect(page).to have_content("You are not authorized to perform that action.")
+
+    using_wait_time(7) do
+      expect(page).to have_no_content("You are not authorized to perform that action.")
+    end
+  end
+
   it "shows a turbo confirm dialog before deleting a property" do
     property = create(:property, landlord: landlord, name: "Delete Me")
 

@@ -4,20 +4,23 @@
       data-controller="flash-position"
       data-flash-position-offset-target-value="#application-header"
     <% end %>
+    data-turbo-temporary
     class="pointer-events-none fixed inset-x-0 z-50 flex flex-col items-center gap-2 px-4<%= local_assigns[:below_header] ? "" : " top-4" %>">
     <% if notice.present? %>
       <div
         data-controller="flash"
+        data-turbo-temporary
         role="status"
-        class="pointer-events-auto w-full max-w-6xl rounded-md border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
+        class="pointer-events-auto w-full max-w-6xl rounded-md border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800 opacity-100 transition-opacity duration-300 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
         <%= notice %>
       </div>
     <% end %>
     <% if alert.present? %>
       <div
         data-controller="flash"
+        data-turbo-temporary
         role="alert"
-        class="pointer-events-auto w-full max-w-6xl rounded-md border border-rose-200 bg-rose-50 px-4 py-2 text-sm text-rose-800 dark:border-rose-800 dark:bg-rose-900/30 dark:text-rose-300">
+        class="pointer-events-auto w-full max-w-6xl rounded-md border border-rose-200 bg-rose-50 px-4 py-2 text-sm text-rose-800 opacity-100 transition-opacity duration-300 dark:border-rose-800 dark:bg-rose-900/30 dark:text-rose-300">
         <%= alert %>
       </div>
     <% end %>
