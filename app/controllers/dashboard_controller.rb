@@ -14,6 +14,7 @@ class DashboardController < ApplicationController
     @expiring_soon_lease = nil
     @recent_properties = []
     @recent_open_work_orders = []
+    @recent_assigned_work_orders = []
     @recent_conversations = []
     @tenants_count = 0
     @recent_tenant_leases = []
@@ -29,7 +30,7 @@ class DashboardController < ApplicationController
       @open_work_orders_count = WorkOrder.for_tenant(current_user).active.count
       @expiring_soon_lease = current_user.leases.active.expiring_within(60).order(:end_date).first
     when :contractor
-      @assigned_work_orders_count = current_user.assigned_work_orders.merge(WorkOrder.active).count
+      load_contractor_dashboard
     when :admin
       @users_count = User.count
       @properties_count = Property.count
@@ -68,5 +69,19 @@ class DashboardController < ApplicationController
                                 .order("users.last_name ASC, users.first_name ASC, leases.start_date DESC")
     @tenants_count = active_tenant_leases.distinct.count(:tenant_id)
     @recent_tenant_leases = active_tenant_leases.to_a.uniq(&:tenant_id).first(6)
+  end
+
+  def load_contractor_dashboard
+    active_assigned = current_user.assigned_work_orders
+                                  .merge(WorkOrder.active)
+                                  .includes(:created_by, unit: :property)
+                                  .order(updated_at: :desc)
+    @assigned_work_orders_count = active_assigned.count
+    @recent_assigned_work_orders = active_assigned.limit(6)
+
+    conversations = policy_scope(Conversation)
+                      .includes(:participants, :messages, :conversation_participants, :work_order)
+                      .order(updated_at: :desc)
+    @recent_conversations = conversations.limit(6)
   end
 end
