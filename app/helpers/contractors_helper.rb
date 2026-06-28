@@ -7,10 +7,10 @@ module ContractorsHelper
             target: "_blank", rel: "noopener noreferrer"
   end
 
-  def portfolio_photo_thumbnail(photo)
+  def portfolio_photo_thumbnail(photo, compact: false)
     image_tag(
       portfolio_photo_source(photo),
-      class: "h-32 w-full object-cover",
+      class: compact ? "h-full w-full object-cover" : "h-32 w-full object-cover",
       alt: photo.filename.to_s
     )
   end
