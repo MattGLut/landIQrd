@@ -57,6 +57,20 @@ RSpec.describe "Leases" do
     expect(page).to have_button("Message tenant")
   end
 
+  it "shows plain breadcrumb labels for tenants without property or unit links" do
+    lease = create(:lease, unit: unit, tenant: tenant)
+
+    sign_in_and_visit(tenant, lease_path(lease))
+
+    within('nav[aria-label="Breadcrumb"]') do
+      expect(page).to have_content("Maple Court")
+      expect(page).to have_content("Apt 1A")
+      expect(page).to have_content("Lease")
+      expect(page).not_to have_link("Maple Court")
+      expect(page).not_to have_link("Apt 1A")
+    end
+  end
+
   it "edits and deletes a lease" do
     lease = create(:lease, unit: unit, tenant: tenant, rent_amount: 1500)
 

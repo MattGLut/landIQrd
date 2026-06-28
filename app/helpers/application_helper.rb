@@ -77,14 +77,15 @@ module ApplicationHelper
   def property_breadcrumbs(*crumbs)
     tag.nav class: "mb-4 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400", "aria-label": "Breadcrumb" do
       safe_join(crumbs.each_with_index.map { |crumb, i|
-        if i == crumbs.length - 1
+        segment = if i == crumbs.length - 1
           tag.span crumb[:label], class: "text-slate-900 dark:text-slate-100"
+        elsif crumb[:path].present?
+          link_to(crumb[:label], crumb[:path], class: "hover:text-brand-600 dark:hover:text-brand-400")
         else
-          safe_join([
-            link_to(crumb[:label], crumb[:path], class: "hover:text-brand-600 dark:hover:text-brand-400"),
-            tag.span("\u00b7", class: "text-slate-300 dark:text-slate-600")
-          ])
+          tag.span crumb[:label]
         end
+
+        i == crumbs.length - 1 ? segment : safe_join([ segment, tag.span("\u00b7", class: "text-slate-300 dark:text-slate-600") ])
       }.flatten)
     end
   end

@@ -47,4 +47,20 @@ RSpec.describe ApplicationHelper, type: :helper do
       expect(helper.unread_badge(3)).to include("3")
     end
   end
+
+  describe "#property_breadcrumbs" do
+    it "renders plain text for crumbs without a path" do
+      html = helper.property_breadcrumbs({ label: "Maple Court" }, { label: "Lease" })
+
+      expect(html).to include("Maple Court")
+      expect(html).not_to include('href=')
+    end
+
+    it "renders links for crumbs with a path" do
+      html = helper.property_breadcrumbs({ label: "Maple Court", path: "/properties/1" }, { label: "Lease" })
+
+      expect(html).to include('href="/properties/1"')
+      expect(html).to include("Lease")
+    end
+  end
 end
