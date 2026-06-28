@@ -80,18 +80,26 @@ RSpec.describe "Dashboard" do
     expect(page).to have_content("Pine Place · 1A")
   end
 
-  it "shows contractor assigned work count" do
+  it "shows contractor assigned work panel and conversations" do
     contractor = create(:contractor)
     landlord = create(:landlord)
     property = create(:property, landlord: landlord)
     unit = create(:unit, property: property)
-    work_order = create(:work_order, unit: unit)
+    work_order = create(:work_order, unit: unit, title: "Fix broken pipe")
     create(:work_order_assignment, work_order: work_order, contractor: contractor)
+    conversation = Conversation.direct_between!(landlord, contractor)
+    conversation.messages.create!(author: landlord, body: "Can you start tomorrow?")
 
     sign_in_and_visit(contractor)
 
     expect(page).to have_content("Assigned work orders")
-    expect(page).to have_link("View assigned work")
+    expect(page).to have_content("Fix broken pipe")
+    expect(page).to have_content("Conversations")
+    expect(page).to have_content("Can you start tomorrow?")
+    expect(page).not_to have_link("View assigned work")
+    expect(page).to have_link("View all assigned work", href: work_orders_path(status: "active"))
+    expect(page).to have_link("Assigned Work", href: work_orders_path(status: "active"))
+    expect(page).to have_link("View all messages")
   end
 
   it "shows admin console link and stats" do

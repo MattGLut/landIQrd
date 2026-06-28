@@ -1,14 +1,4 @@
-<div class="grid gap-6 sm:grid-cols-2">
-  <%= link_to work_orders_path, class: "rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-colors hover:border-brand-300 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-brand-700" do %>
-    <p class="text-sm text-slate-500 dark:text-slate-400">Assigned work orders</p>
-    <p class="mt-1 text-3xl font-bold text-brand-600 dark:text-brand-400"><%= @assigned_work_orders_count %></p>
-  <% end %>
-  <%= link_to conversations_path, class: "rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-colors hover:border-brand-300 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-brand-700" do %>
-    <p class="text-sm text-slate-500 dark:text-slate-400">Conversations</p>
-    <p class="mt-1 text-3xl font-bold text-slate-900 dark:text-slate-100"><%= @conversations_count %></p>
-  <% end %>
-</div>
-
-<div class="mt-6">
-  <%= render "shared/button", label: "View assigned work", url: work_orders_path, variant: :primary %>
+<div class="grid gap-6 lg:grid-cols-2">
+  <%= render "dashboard/assigned_work_orders_panel" %>
+  <%= render "dashboard/conversations_panel" %>
 </div>

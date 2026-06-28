@@ -10,10 +10,11 @@
 
       <nav class="hidden items-center gap-4 text-sm md:flex" aria-label="Main">
         <% if user_signed_in? %>
+          <% work_orders_link = current_user.contractor? ? work_orders_path(status: "active") : work_orders_path %>
           <% if current_user.landlord? %>
             <%= link_to "Properties", properties_path, class: nav_link_class(properties_path) %>
           <% end %>
-          <%= link_to work_orders_nav_label, work_orders_path, class: nav_link_class(work_orders_path, exclude_paths: schedule_work_orders_path) %>
+          <%= link_to work_orders_nav_label, work_orders_link, class: nav_link_class(work_orders_path, exclude_paths: schedule_work_orders_path) %>
           <% if current_user.landlord? || current_user.contractor? %>
             <%= link_to "Schedule", schedule_work_orders_path, class: nav_link_class(schedule_work_orders_path) %>
           <% end %>
@@ -84,10 +85,11 @@
       aria-hidden="true">
       <div class="flex flex-col gap-1 px-6 py-3 text-sm">
         <% if user_signed_in? %>
+          <% work_orders_link = current_user.contractor? ? work_orders_path(status: "active") : work_orders_path %>
           <% if current_user.landlord? %>
             <%= link_to "Properties", properties_path, class: "rounded-md px-2 py-2 #{nav_link_class(properties_path)}" %>
           <% end %>
-          <%= link_to work_orders_nav_label, work_orders_path, class: "rounded-md px-2 py-2 #{nav_link_class(work_orders_path, exclude_paths: schedule_work_orders_path)}" %>
+          <%= link_to work_orders_nav_label, work_orders_link, class: "rounded-md px-2 py-2 #{nav_link_class(work_orders_path, exclude_paths: schedule_work_orders_path)}" %>
           <% if current_user.landlord? || current_user.contractor? %>
             <%= link_to "Schedule", schedule_work_orders_path, class: "rounded-md px-2 py-2 #{nav_link_class(schedule_work_orders_path)}" %>
           <% end %>
