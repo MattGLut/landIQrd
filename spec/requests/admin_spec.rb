@@ -24,6 +24,51 @@ RSpec.describe "Admin", type: :request do
       expect(response.body).to include("Lana")
     end
 
+    it "paginates users" do
+      create_list(:tenant, Admin::BaseController::PER_PAGE + 1)
+
+      get admin_users_path
+      expect(response.body).to include("Showing 1–#{Admin::BaseController::PER_PAGE} of #{User.count}")
+
+      get admin_users_path, params: { page: 2 }
+      expect(response.body).to include("Showing #{Admin::BaseController::PER_PAGE + 1}–#{User.count} of #{User.count}")
+    end
+
+    it "paginates properties" do
+      landlord = create(:landlord)
+      create_list(:property, Admin::BaseController::PER_PAGE + 1, landlord: landlord)
+
+      get admin_properties_path
+      expect(response.body).to include("Showing 1–#{Admin::BaseController::PER_PAGE} of #{Property.count}")
+
+      get admin_properties_path, params: { page: 2 }
+      expect(response.body).to include("Showing #{Admin::BaseController::PER_PAGE + 1}–#{Property.count} of #{Property.count}")
+    end
+
+    it "paginates work orders" do
+      unit = create(:unit)
+      create_list(:work_order, Admin::BaseController::PER_PAGE + 1, unit: unit)
+
+      get admin_work_orders_path
+      expect(response.body).to include("Showing 1–#{Admin::BaseController::PER_PAGE} of #{WorkOrder.count}")
+
+      get admin_work_orders_path, params: { page: 2 }
+      expect(response.body).to include("Showing #{Admin::BaseController::PER_PAGE + 1}–#{WorkOrder.count} of #{WorkOrder.count}")
+    end
+
+    it "paginates conversations" do
+      unit = create(:unit)
+      create_list(:work_order, Admin::BaseController::PER_PAGE + 1, unit: unit).each do |work_order|
+        Conversation.for_work_order!(work_order)
+      end
+
+      get admin_conversations_path
+      expect(response.body).to include("Showing 1–#{Admin::BaseController::PER_PAGE} of #{Conversation.count}")
+
+      get admin_conversations_path, params: { page: 2 }
+      expect(response.body).to include("Showing #{Admin::BaseController::PER_PAGE + 1}–#{Conversation.count} of #{Conversation.count}")
+    end
+
     it "creates a user with the chosen role" do
       expect {
         post admin_users_path, params: {

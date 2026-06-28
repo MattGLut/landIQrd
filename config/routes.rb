@@ -45,6 +45,7 @@ Rails.application.routes.draw do
   end
 
   namespace :admin do
+    root to: "dashboard#show"
     resource :dashboard, only: [ :show ], controller: "dashboard"
     resources :users
     resources :properties, only: [ :index, :show ]

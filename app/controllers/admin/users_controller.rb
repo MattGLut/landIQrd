@@ -3,7 +3,7 @@ module Admin
     before_action :set_user, only: %i[show edit update destroy]
 
     def index
-      @users = User.order(:role, :last_name, :first_name)
+      @users = User.order(:role, :last_name, :first_name).page(params[:page]).per(PER_PAGE)
     end
 
     def show

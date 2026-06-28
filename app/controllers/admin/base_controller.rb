@@ -1,5 +1,7 @@
 module Admin
   class BaseController < ApplicationController
+    PER_PAGE = 25
+
     before_action :ensure_admin
 
     skip_after_action :verify_authorized

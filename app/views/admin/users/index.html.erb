@@ -1,38 +1,32 @@
 <% content_for :title, "Admin - Users" %>
 
-<%= render "shared/page_header", title: "Users" %>
+<%= render "shared/page_header",
+           title: "Users",
+           action: render("shared/button", label: "New user", url: new_admin_user_path, variant: :primary) %>
 <%= render "admin/shared/nav" %>
 
-<div class="mb-4 flex items-center justify-between">
-  <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Users</h2>
-  <%= render "shared/button", label: "New user", url: new_admin_user_path, variant: :primary %>
-</div>
-
 <% if @users.any? %>
-<div class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
-  <table class="table_class">
+  <%= render "admin/shared/index_table" do %>
     <thead>
       <tr>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Role</th>
-        <th></th>
+        <th class="w-[30%]">Name</th>
+        <th class="w-[40%]">Email</th>
+        <th class="w-[30%]">Role</th>
       </tr>
     </thead>
     <tbody>
       <% @users.each do |user| %>
         <tr>
-          <td class="font-medium text-slate-900 dark:text-slate-100"><%= user.full_name %></td>
-          <td class="text-slate-500 dark:text-slate-400"><%= user.email %></td>
-          <td><%= status_badge user.role.titleize, :gray %></td>
-          <td class="text-right">
-            <%= link_to "View", admin_user_path(user), class: "text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300" %>
+          <td>
+            <%= link_to user.full_name, admin_user_path(user), class: admin_table_link_class %>
           </td>
+          <td class="truncate <%= admin_table_muted_class %>"><%= user.email %></td>
+          <td><%= status_badge user.role.titleize, :gray %></td>
         </tr>
       <% end %>
     </tbody>
-  </table>
-</div>
+  <% end %>
+  <%= render "shared/pagination", collection: @users %>
 <% else %>
   <%= render "shared/empty_state", message: "No users yet.", action: render("shared/button", label: "New user", url: new_admin_user_path, variant: :primary) %>
 <% end %>

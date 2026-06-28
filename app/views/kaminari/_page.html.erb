@@ -1,0 +1,5 @@
+<% if page.current? %>
+  <span class="inline-flex h-9 min-w-9 items-center justify-center rounded-md bg-brand-600 px-3 text-sm font-medium text-white" aria-current="page"><%= page %></span>
+<% else %>
+  <%= link_to page, url, class: "inline-flex h-9 min-w-9 items-center justify-center rounded-md px-3 text-sm text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800", remote: remote, data: { turbo_action: "advance" } %>
+<% end %>

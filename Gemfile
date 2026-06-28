@@ -45,6 +45,7 @@ gem "image_processing", "~> 2.0"
 gem "aasm"
 gem "devise"
 gem "pundit"
+gem "kaminari"
 gem "aws-sdk-s3", require: false
 gem "faker"
 

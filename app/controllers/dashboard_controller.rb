@@ -2,6 +2,8 @@ class DashboardController < ApplicationController
   skip_after_action :verify_authorized
 
   def show
+    return redirect_to admin_dashboard_path if current_user.admin?
+
     @properties_count = 0
     @open_work_orders_count = 0
     @assigned_work_orders_count = 0
@@ -20,8 +22,8 @@ class DashboardController < ApplicationController
     @tenants_count = 0
     @recent_tenant_leases = []
 
-    @conversations_count = current_user.conversations.count unless current_user.admin?
-    @unread_conversations_count = helpers.unread_conversations_count(current_user) unless current_user.admin?
+    @conversations_count = current_user.conversations.count
+    @unread_conversations_count = helpers.unread_conversations_count(current_user)
 
     case current_user.role.to_sym
     when :landlord
@@ -30,10 +32,6 @@ class DashboardController < ApplicationController
       load_tenant_dashboard
     when :contractor
       load_contractor_dashboard
-    when :admin
-      @users_count = User.count
-      @properties_count = Property.count
-      @work_orders_count = WorkOrder.count
     end
   end
 

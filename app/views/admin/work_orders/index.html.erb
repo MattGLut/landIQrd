@@ -4,30 +4,29 @@
 <%= render "admin/shared/nav" %>
 
 <% if @work_orders.any? %>
-<div class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
-  <table class="table_class">
+  <%= render "admin/shared/index_table" do %>
     <thead>
       <tr>
-        <th>Title</th>
-        <th>Property</th>
-        <th>Priority</th>
-        <th>Status</th>
+        <th class="w-[30%]">Title</th>
+        <th class="w-[30%]">Property</th>
+        <th class="w-[20%]">Priority</th>
+        <th class="w-[20%]">Status</th>
       </tr>
     </thead>
     <tbody>
       <% @work_orders.each do |wo| %>
         <tr>
           <td>
-            <%= link_to wo.title, admin_work_order_path(wo), class: "font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300" %>
+            <%= link_to wo.title, admin_work_order_path(wo), class: admin_table_link_class %>
           </td>
-          <td class="text-slate-500 dark:text-slate-400"><%= wo.unit.property.name %> · <%= wo.unit.label %></td>
+          <td class="truncate <%= admin_table_muted_class %>"><%= wo.unit.property.name %> · <%= wo.unit.label %></td>
           <td><%= status_badge wo.priority.titleize, wo.priority_color %></td>
           <td><%= status_badge wo.status.titleize.gsub("_", " "), wo.status_color %></td>
         </tr>
       <% end %>
     </tbody>
-  </table>
-</div>
+  <% end %>
+  <%= render "shared/pagination", collection: @work_orders %>
 <% else %>
   <%= render "shared/empty_state", message: "No work orders yet." %>
 <% end %>

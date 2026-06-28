@@ -4,28 +4,27 @@
 <%= render "admin/shared/nav" %>
 
 <% if @properties.any? %>
-<div class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
-  <table class="table_class">
+  <%= render "admin/shared/index_table" do %>
     <thead>
       <tr>
-        <th>Property</th>
-        <th>Landlord</th>
-        <th>Units</th>
+        <th class="w-[40%]">Property</th>
+        <th class="w-[40%]">Landlord</th>
+        <th class="w-[20%] text-right">Units</th>
       </tr>
     </thead>
     <tbody>
       <% @properties.each do |property| %>
         <tr>
           <td>
-            <%= link_to property.name, admin_property_path(property), class: "font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300" %>
+            <%= link_to property.name, admin_property_path(property), class: admin_table_link_class %>
           </td>
-          <td class="text-slate-500 dark:text-slate-400"><%= property.landlord.display_name %></td>
-          <td class="text-slate-900 dark:text-slate-100"><%= property.units.size %></td>
+          <td class="<%= admin_table_muted_class %>"><%= property.landlord.display_name %></td>
+          <td class="text-right <%= admin_table_emphasis_class %>"><%= property.units.size %></td>
         </tr>
       <% end %>
     </tbody>
-  </table>
-</div>
+  <% end %>
+  <%= render "shared/pagination", collection: @properties %>
 <% else %>
   <%= render "shared/empty_state", message: "No properties yet." %>
 <% end %>

@@ -224,14 +224,15 @@ RSpec.describe "Dashboard" do
     expect(page).to have_link("View all messages")
   end
 
-  it "shows admin console link and stats" do
+  it "redirects admins to the admin console" do
     create(:landlord)
     create(:property)
 
     sign_in_and_visit(create(:admin))
 
-    expect(page).to have_content("Users")
-    expect(page).to have_content("Properties")
-    expect(page).to have_link("Open admin console")
+    expect(page).to have_content("Admin console")
+    expect(page).to have_link("Overview")
+    expect(page).to have_link("Users")
+    expect(page).not_to have_link("Open admin console")
   end
 end

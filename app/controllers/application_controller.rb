@@ -17,6 +17,10 @@ class ApplicationController < ActionController::Base
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
+  def after_sign_in_path_for(resource)
+    resource.admin? ? admin_dashboard_path : super
+  end
+
   private
 
   # Devise controllers and personal pages don't go through Pundit.
