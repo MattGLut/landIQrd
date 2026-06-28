@@ -1,0 +1,23 @@
+<div class="flex flex-col gap-3 py-4 sm:flex-row sm:items-start sm:justify-between">
+  <div class="min-w-0 flex-1">
+    <h3 class="font-medium text-slate-900 dark:text-slate-100"><%= item.title %></h3>
+    <% if item.description.present? %>
+      <p class="mt-1 text-sm text-slate-600 dark:text-slate-300"><%= item.description %></p>
+    <% end %>
+  </div>
+
+  <% if item.photos.attached? %>
+    <div class="shrink-0 sm:text-right">
+      <div class="flex items-start justify-end gap-2">
+        <% item.photos.first(3).each do |photo| %>
+          <%= link_to rails_blob_path(photo, disposition: "inline"), class: "block h-20 w-28 shrink-0 overflow-hidden rounded-md border border-slate-200 dark:border-slate-600" do %>
+            <%= portfolio_photo_thumbnail(photo, compact: true) %>
+          <% end %>
+        <% end %>
+      </div>
+      <% if item.photos.count > 3 %>
+        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">+<%= item.photos.count - 3 %> more</p>
+      <% end %>
+    </div>
+  <% end %>
+</div>

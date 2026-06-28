@@ -26,4 +26,19 @@ RSpec.describe ContractorPolicy do
     expect(policy_for(contractor).index?).to be(false)
     expect(policy_for(contractor).show?).to be(false)
   end
+
+  describe "Scope" do
+    it "returns contractors for landlords and admins only" do
+      create(:contractor)
+      create(:tenant)
+
+      landlord_scope = described_class::Scope.new(landlord, User).resolve
+      admin_scope = described_class::Scope.new(create(:admin), User).resolve
+      tenant_scope = described_class::Scope.new(tenant, User).resolve
+
+      expect(landlord_scope.contractor.count).to eq(User.contractor.count)
+      expect(admin_scope.contractor.count).to eq(User.contractor.count)
+      expect(tenant_scope).to be_empty
+    end
+  end
 end

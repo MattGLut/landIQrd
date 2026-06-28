@@ -1,17 +1,33 @@
 <% content_for :title, @contractor.display_name %>
 
-<%= render "shared/page_header", title: @contractor.display_name, subtitle: @contractor.company_name.presence %>
+<% header_subtitle = if @contractor.company_name.present? && @contractor.display_name == @contractor.company_name
+                       @contractor.full_name if @contractor.full_name != @contractor.display_name
+                     elsif @contractor.company_name.present? && @contractor.company_name != @contractor.display_name
+                       @contractor.company_name
+                     end %>
 
-<div class="mb-8 flex flex-wrap items-start gap-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+<div class="mb-8 flex flex-wrap items-start gap-5">
   <%= render "shared/user_avatar", user: @contractor, size: :lg %>
-  <div class="min-w-0 flex-1 space-y-2 text-sm">
-    <p class="text-slate-900 dark:text-slate-100"><%= @contractor.full_name %></p>
-    <% if @contractor.phone.present? %>
-      <p class="text-slate-500 dark:text-slate-400"><%= @contractor.phone %></p>
+  <div class="min-w-0 flex-1 grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2 sm:items-start">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100"><%= @contractor.display_name %></h1>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm sm:justify-end">
+      <% if @contractor.phone.present? %>
+        <span class="text-slate-600 dark:text-slate-300"><%= @contractor.phone %></span>
+      <% end %>
+      <%= contractor_website_link(@contractor, class: "text-brand-600 hover:text-brand-800 dark:text-brand-400 dark:hover:text-brand-300") %>
+    </div>
+
+    <% if header_subtitle.present? %>
+      <div>
+        <p class="text-sm text-slate-500 dark:text-slate-400"><%= header_subtitle %></p>
+      </div>
     <% end %>
-    <%= contractor_website_link(@contractor) %>
+
     <% if @contractor.portfolio_categories.any? %>
-      <div class="flex flex-wrap gap-2 pt-2">
+      <div class="flex flex-wrap gap-2 sm:justify-end <%= "sm:col-start-2" unless header_subtitle.present? %>">
         <% @contractor.portfolio_categories.each do |category| %>
           <%= status_badge category.titleize, :indigo %>
         <% end %>
@@ -19,32 +35,25 @@
     <% end %>
   </div>
 </div>
-
 <% if @portfolio_items.any? %>
-  <div class="space-y-6">
+  <div class="space-y-4">
     <% @portfolio_items.group_by(&:category).sort.each do |category, items| %>
-      <section>
-        <h2 class="mb-3 text-lg font-semibold text-slate-900 dark:text-slate-100"><%= category.titleize %></h2>
-        <div class="space-y-4">
+      <details class="group rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800" open>
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-3 p-4 [&::-webkit-details-marker]:hidden">
+          <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">
+            <%= category.titleize %>
+            <span class="text-sm font-normal text-slate-500 dark:text-slate-400">(<%= items.size %>)</span>
+          </h2>
+          <svg class="h-5 w-5 shrink-0 text-slate-400 transition-transform group-open:rotate-180 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+          </svg>
+        </summary>
+        <div class="divide-y divide-slate-200 border-t border-slate-200 px-4 pb-4 dark:divide-slate-700 dark:border-slate-700">
           <% items.each do |item| %>
-            <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-              <h3 class="font-medium text-slate-900 dark:text-slate-100"><%= item.title %></h3>
-              <% if item.description.present? %>
-                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300"><%= item.description %></p>
-              <% end %>
-              <% if item.photos.attached? %>
-                <div class="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4">
-                  <% item.photos.each do |photo| %>
-                    <%= link_to rails_blob_path(photo, disposition: "inline"), class: "block overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700" do %>
-                      <%= portfolio_photo_thumbnail(photo) %>
-                    <% end %>
-                  <% end %>
-                </div>
-              <% end %>
-            </div>
+            <%= render "contractors/portfolio_item", item: item %>
           <% end %>
         </div>
-      </section>
+      </details>
     <% end %>
   </div>
 <% else %>

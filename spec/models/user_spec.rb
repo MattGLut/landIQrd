@@ -70,4 +70,39 @@ RSpec.describe User, type: :model do
       expect(keys).to contain_exactly(:work_order_status_changed, :contractor_assigned, :new_message)
     end
   end
+
+  describe "website_url validation" do
+    it "allows blank or valid http(s) urls" do
+      user = build(:contractor, website_url: "https://example.com")
+      expect(user).to be_valid
+
+      user.website_url = ""
+      expect(user).to be_valid
+    end
+
+    it "rejects invalid urls" do
+      user = build(:contractor, website_url: "not-a-url")
+      expect(user).not_to be_valid
+      expect(user.errors[:website_url]).to be_present
+    end
+  end
+
+  describe "portfolio helpers" do
+    let(:contractor) { create(:contractor) }
+
+    it "#matches_category? reflects portfolio items" do
+      create(:contractor_portfolio_item, contractor: contractor, category: "plumbing")
+
+      expect(contractor.matches_category?("plumbing")).to be(true)
+      expect(contractor.matches_category?("hvac")).to be(false)
+    end
+
+    it "#portfolio_categories returns distinct categories" do
+      create(:contractor_portfolio_item, contractor: contractor, category: "plumbing", title: "Job A")
+      create(:contractor_portfolio_item, contractor: contractor, category: "plumbing", title: "Job B")
+      create(:contractor_portfolio_item, contractor: contractor, category: "hvac", title: "Job C")
+
+      expect(contractor.portfolio_categories).to contain_exactly("plumbing", "hvac")
+    end
+  end
 end

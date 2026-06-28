@@ -59,12 +59,55 @@ RSpec.describe "Contractor portfolio" do
     expect(page).to have_content("1 relevant project")
     expect(page).to have_content("Pipe Pros")
 
-      within("[data-contractor-picker-row]", text: "Pipe Pros") do
-        click_button "Assign"
-      end
+    within("[data-contractor-picker-row]", text: "Pipe Pros") do
+      click_button "Assign"
+    end
 
     expect(page).to have_content("Contractor assigned.")
     expect(page).to have_content("Pipe Pros")
     expect(page).to have_content("Random Co")
+  end
+
+  it "filters the assignment picker to relevant contractors" do
+    matching = create(:contractor, company_name: "Pipe Pros")
+    create(:contractor_portfolio_item, contractor: matching, category: "plumbing", title: "Pipe job")
+    create(:contractor, company_name: "Random Co")
+    work_order = create(:work_order, unit: unit, created_by: tenant, category: :plumbing, title: "Leaky pipe")
+
+    sign_in_and_visit(landlord, work_order_path(work_order))
+    click_link "Relevant only"
+
+    expect(page).to have_content("Pipe Pros")
+    expect(page).not_to have_content("Random Co")
+  end
+
+  it "lets a contractor edit and delete a portfolio item", js: true do
+    item = create(:contractor_portfolio_item, contractor: contractor, title: "Old showcase")
+    sign_in_and_visit(contractor, contractor_portfolio_items_path)
+
+    click_link "Edit"
+    fill_in "Title", with: "Updated showcase"
+    click_button "Save changes"
+
+    expect(page).to have_content("Portfolio item updated.")
+    expect(page).to have_content("Updated showcase")
+
+    accept_confirm("Remove this portfolio item?") do
+      click_button "Delete"
+    end
+
+    expect(page).to have_content("Portfolio item removed.")
+    expect(page).not_to have_content("Updated showcase")
+    expect(ContractorPortfolioItem.exists?(item.id)).to be(false)
+  end
+
+  it "links to business profile from account settings" do
+    sign_in_and_visit(contractor, edit_account_path)
+
+    expect(page).to have_link("Business profile", href: edit_contractor_business_profile_path)
+    visit edit_contractor_business_profile_path
+
+    expect(page).to have_content("Business profile")
+    expect(page).to have_link("Manage portfolio")
   end
 end
