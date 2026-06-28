@@ -1,0 +1,33 @@
+<div class="<%= panel_card_class %> flex h-full flex-col">
+  <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Your leases</h2>
+  <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+    <%= pluralize(@leases_count, "active lease") %>.
+  </p>
+
+  <% if @recent_leases.any? %>
+    <ul class="mt-4 space-y-3">
+      <% @recent_leases.each do |lease| %>
+        <% tags = lease_dashboard_tags(lease, work_order_counts: @active_work_order_counts_by_unit_id) %>
+        <li>
+          <%= link_to lease_path(lease), class: dashboard_list_link_class do %>
+            <div class="flex flex-wrap items-start justify-between gap-2">
+              <span class="font-medium text-slate-900 line-clamp-1 dark:text-slate-100">
+                <%= lease.unit.property.name %> &middot; <%= lease.unit.label %>
+              </span>
+              <% if tags.any? %>
+                <span class="flex flex-wrap justify-end gap-1">
+                  <% tags.each do |tag| %>
+                    <%= status_badge tag[:label], tag[:color] %>
+                  <% end %>
+                </span>
+              <% end %>
+            </div>
+            <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400"><%= lease.term_description %></p>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">No active leases yet.</p>
+  <% end %>
+</div>

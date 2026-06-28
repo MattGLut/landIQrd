@@ -37,6 +37,11 @@ module SystemHelpers
   def uncheck_toggle(id)
     set_toggle(id, checked: false)
   end
+
+  def within_dashboard_panel(title, &block)
+    panel = find("h2", text: title).find(:xpath, "./ancestor::div[contains(@class, 'rounded-2xl')][1]")
+    within(panel, &block)
+  end
 end
 
 RSpec.configure do |config|

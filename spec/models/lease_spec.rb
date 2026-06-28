@@ -43,4 +43,17 @@ RSpec.describe Lease, type: :model do
       expect(Lease.expiring_within(30)).to be_empty
     end
   end
+
+  describe "#expiring_soon?" do
+    it "returns true for active leases ending within the default window" do
+      lease = create(:lease, status: :active, end_date: 2.weeks.from_now.to_date)
+
+      expect(lease.expiring_soon?).to be(true)
+    end
+
+    it "returns false for open-ended or inactive leases" do
+      expect(create(:lease, status: :active, end_date: nil).expiring_soon?).to be(false)
+      expect(create(:lease, status: :ended, end_date: 1.week.from_now.to_date).expiring_soon?).to be(false)
+    end
+  end
 end

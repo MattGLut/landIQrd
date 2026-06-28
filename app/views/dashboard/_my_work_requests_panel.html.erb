@@ -1,0 +1,39 @@
+<div class="<%= panel_card_class %> flex h-full flex-col">
+  <div class="flex flex-wrap items-baseline justify-between gap-2">
+    <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">My work requests</h2>
+    <% if @open_work_orders_count.positive? %>
+      <span class="rounded-full bg-amber-50 px-2.5 py-0.5 text-sm font-medium text-amber-900 dark:bg-amber-900/30 dark:text-amber-300">
+        <%= @open_work_orders_count %> active
+      </span>
+    <% end %>
+  </div>
+  <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Recent requests you've submitted.</p>
+
+  <% if @recent_open_work_orders.any? %>
+    <ul class="mt-4 space-y-3">
+      <% @recent_open_work_orders.each do |work_order| %>
+        <li>
+          <%= link_to work_order_path(work_order), class: dashboard_list_link_class do %>
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <span class="font-medium text-slate-900 line-clamp-1 dark:text-slate-100"><%= work_order.title %></span>
+              <span class="text-xs text-slate-500 dark:text-slate-400">
+                <%= work_order_status_label(work_order.status, creator: work_order.created_by) %>
+              </span>
+            </div>
+            <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+              <%= work_order.unit.property.name %> &middot; <%= work_order.unit.label %>
+              &middot; <%= work_order.priority.titleize %> priority
+            </p>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">No work requests right now.</p>
+  <% end %>
+
+  <div class="mt-auto flex flex-wrap items-center justify-between gap-2 pt-4">
+    <%= link_to "View all work requests", work_orders_path(status: "active"), class: "text-sm font-medium text-brand-600 hover:text-brand-800 dark:text-brand-400 dark:hover:text-brand-300" %>
+    <%= link_to "New work request", new_work_order_path, class: "text-sm font-medium text-brand-600 hover:text-brand-800 dark:text-brand-400 dark:hover:text-brand-300" %>
+  </div>
+</div>
