@@ -91,6 +91,117 @@ RSpec.describe "Dashboard" do
     expect(page).not_to have_content("Leases expiring soon")
   end
 
+  describe "tenant dashboard" do
+    it "shows empty states when the tenant has no leases, work orders, or conversations" do
+      sign_in_and_visit(create(:tenant))
+
+      expect(page).to have_content("No active leases yet")
+      expect(page).to have_content("No work requests right now")
+      expect(page).to have_content("No conversations yet")
+      expect(page).to have_link("New work request")
+    end
+
+    it "lists only active leases on the dashboard" do
+      tenant = create(:tenant)
+      active_property = create(:property, name: "Active Home")
+      active_unit = create(:unit, property: active_property, label: "1A")
+      create(:lease, unit: active_unit, tenant: tenant, status: :active)
+
+      ended_property = create(:property, name: "Former Home")
+      ended_unit = create(:unit, property: ended_property, label: "9Z")
+      create(:lease, unit: ended_unit, tenant: tenant, status: :ended)
+
+      sign_in_and_visit(tenant)
+
+      expect(page).to have_content("Active Home · 1A")
+      expect(page).not_to have_content("Former Home · 9Z")
+      expect(page).to have_content("1 active lease")
+    end
+
+    it "shows expiring soon and work order tags on the same lease" do
+      tenant = create(:tenant)
+      property = create(:property, name: "Maple Court")
+      unit = create(:unit, property: property, label: "1A")
+      create(:lease, unit: unit, tenant: tenant, status: :active, end_date: 3.weeks.from_now.to_date)
+      create(:work_order, unit: unit, created_by: tenant, status: :open)
+
+      sign_in_and_visit(tenant)
+
+      within_dashboard_panel("Your leases") do
+        within(find("a", text: /Maple Court · 1A/)) do
+          expect(page).to have_content("Expiring soon")
+          expect(page).to have_content("Work order")
+        end
+      end
+    end
+
+    it "shows no lease tags when the lease is stable with no open work orders" do
+      tenant = create(:tenant)
+      property = create(:property, name: "Stable Apts")
+      unit = create(:unit, property: property, label: "4D")
+      create(:lease, unit: unit, tenant: tenant, status: :active, end_date: 1.year.from_now.to_date)
+
+      sign_in_and_visit(tenant)
+
+      within_dashboard_panel("Your leases") do
+        within(find("a", text: /Stable Apts · 4D/)) do
+          expect(page).not_to have_content("Expiring soon")
+          expect(page).not_to have_content("Work order")
+        end
+      end
+    end
+
+    it "does not show a work order tag when only completed work orders exist on the unit" do
+      tenant = create(:tenant)
+      property = create(:property, name: "Quiet Apts")
+      unit = create(:unit, property: property, label: "2C")
+      create(:lease, unit: unit, tenant: tenant, status: :active)
+      create(:work_order, unit: unit, created_by: tenant, status: :completed, title: "Old repair")
+
+      sign_in_and_visit(tenant)
+
+      within_dashboard_panel("Your leases") do
+        within(find("a", text: /Quiet Apts · 2C/)) do
+          expect(page).not_to have_content("Work order")
+        end
+      end
+      expect(page).not_to have_content("Old repair")
+      expect(page).to have_content("No work requests right now")
+    end
+
+    it "shows work request count badge and request metadata" do
+      tenant = create(:tenant)
+      property = create(:property, name: "Oak Tower")
+      unit = create(:unit, property: property, label: "5A")
+      create(:lease, unit: unit, tenant: tenant, status: :active)
+      create(:work_order, unit: unit, created_by: tenant, status: :open, title: "No hot water", priority: :high)
+      create(:work_order, unit: unit, created_by: tenant, status: :pending_management, title: "Broken lock", priority: :low)
+
+      sign_in_and_visit(tenant)
+
+      expect(page).to have_content("2 active")
+      expect(page).to have_content("No hot water")
+      expect(page).to have_content("Broken lock")
+      expect(page).to have_content("Oak Tower · 5A")
+      expect(page).to have_content("Open")
+      expect(page).to have_content("Pending Management")
+      expect(page).to have_content("High priority")
+      expect(page).to have_content("Low priority")
+    end
+
+    it "shows an unread badge on the conversations panel" do
+      tenant = create(:tenant)
+      landlord = create(:landlord)
+      conversation = Conversation.direct_between!(tenant, landlord)
+      conversation.messages.create!(author: landlord, body: "Checking in")
+
+      sign_in_and_visit(tenant)
+
+      expect(page).to have_content("1 unread")
+      expect(page).to have_content("Checking in")
+    end
+  end
+
   it "shows contractor assigned work panel and conversations" do
     contractor = create(:contractor)
     landlord = create(:landlord)
