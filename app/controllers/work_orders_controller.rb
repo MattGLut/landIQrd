@@ -15,7 +15,7 @@ class WorkOrdersController < ApplicationController
 
   def show
     authorize @work_order
-    @contractors = User.contractor.order(:last_name, :first_name) if policy(@work_order).assign?
+    load_contractors_for_assignment if policy(@work_order).assign?
     @events = @work_order.work_order_events.includes(:user).chronological
   end
 
@@ -169,6 +169,20 @@ class WorkOrdersController < ApplicationController
       scope.joins(work_order: { unit: :property }).where(properties: { landlord_id: current_user.id })
     else
       scope
+    end
+  end
+
+  def load_contractors_for_assignment
+    @contractor_filter = params[:contractor_filter].presence || "all"
+    contractors = User.contractor
+                      .includes(:contractor_portfolio_items, avatar_attachment: :blob)
+                      .order(:last_name, :first_name)
+                      .to_a
+    contractors.sort_by! { |contractor| [ contractor.matches_category?(@work_order.category) ? 0 : 1, contractor.last_name, contractor.first_name ] }
+    @contractors = if @contractor_filter == "relevant"
+      contractors.select { |contractor| contractor.matches_category?(@work_order.category) }
+    else
+      contractors
     end
   end
 end
