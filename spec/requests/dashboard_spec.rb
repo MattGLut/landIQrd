@@ -6,12 +6,18 @@ RSpec.describe "Dashboard", type: :request do
     expect(response).to redirect_to(new_user_session_path)
   end
 
-  %i[tenant landlord contractor admin].each do |role|
+  %i[tenant landlord contractor].each do |role|
     it "renders the #{role} dashboard for a signed-in #{role}" do
       sign_in create(role)
       get dashboard_path
       expect(response).to have_http_status(:ok)
     end
+  end
+
+  it "redirects admins to the admin console" do
+    sign_in create(:admin)
+    get dashboard_path
+    expect(response).to redirect_to(admin_dashboard_path)
   end
 
   describe "tenant dashboard data" do

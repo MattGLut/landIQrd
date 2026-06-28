@@ -5,7 +5,12 @@
   data-action="keydown@window->mobile-nav#keydown">
   <div class="mx-auto max-w-6xl">
     <div class="flex items-center justify-between gap-4 px-6 py-4">
-      <%= link_to (user_signed_in? ? authenticated_root_path : root_path), class: "flex min-w-0 items-center gap-2 text-lg font-semibold tracking-tight text-navy-800 dark:text-navy-100" do %>
+      <% home_path = if user_signed_in?
+           current_user.admin? ? admin_dashboard_path : authenticated_root_path
+         else
+           root_path
+         end %>
+      <%= link_to home_path, class: "flex min-w-0 items-center gap-2 text-lg font-semibold tracking-tight text-navy-800 dark:text-navy-100" do %>
         <span>Land<span class="text-brand-600 dark:text-brand-400">IQ</span>rd</span>
       <% end %>
 

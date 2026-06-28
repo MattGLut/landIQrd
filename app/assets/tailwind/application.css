@@ -79,22 +79,26 @@
 
 @layer components {
   .table_class thead {
-    @apply bg-slate-50 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:bg-slate-800/50 dark:text-slate-400;
+    @apply border-b border-slate-200 bg-slate-50 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:border-slate-600 dark:bg-slate-800/80 dark:text-slate-400;
   }
 
   .table_class th {
-    @apply px-4 py-2;
+    @apply px-5 py-3;
   }
 
   .table_class tbody {
-    @apply divide-y divide-slate-200 dark:divide-slate-700;
+    @apply divide-y divide-slate-200 dark:divide-slate-600;
   }
 
-  .table_class tr:hover {
+  .table_class tbody tr {
+    @apply transition-colors duration-150;
+  }
+
+  .table_class tbody tr:hover {
     @apply bg-slate-50 dark:bg-slate-700/50;
   }
 
   .table_class td {
-    @apply px-4 py-2;
+    @apply px-5 py-3;
   }
 }

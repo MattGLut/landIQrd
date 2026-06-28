@@ -13,8 +13,6 @@ RSpec.describe "Admin console" do
     before { sign_in_and_visit(admin) }
 
     it "shows the admin console overview and tabs" do
-      within("header nav[aria-label='Main']") { click_link "Admin" }
-
       expect(page).to have_content("Admin console")
       expect(page).to have_link("Overview")
       expect(page).to have_link("Users")

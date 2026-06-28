@@ -85,6 +85,27 @@ module FormClassHelper
     "min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-700"
   end
 
+  def admin_table_panel_class
+    "w-full overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm " \
+      "dark:border-slate-700 dark:bg-slate-800"
+  end
+
+  def admin_table_class
+    "#{table_class} w-full table-fixed"
+  end
+
+  def admin_table_link_class
+    "font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300"
+  end
+
+  def admin_table_muted_class
+    "text-slate-500 dark:text-slate-400"
+  end
+
+  def admin_table_emphasis_class
+    "font-medium text-slate-900 dark:text-slate-100"
+  end
+
   def dashboard_list_link_class
     "block rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2 " \
       "text-sm transition hover:border-brand-200 hover:bg-white " \

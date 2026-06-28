@@ -171,14 +171,10 @@ RSpec.describe DashboardController, type: :controller do
         sign_in admin
       end
 
-      it "loads aggregate counts without conversation data" do
+      it "redirects to the admin console" do
         get :show
 
-        expect(assigns(:users_count)).to eq(User.count)
-        expect(assigns(:properties_count)).to eq(Property.count)
-        expect(assigns(:work_orders_count)).to eq(WorkOrder.count)
-        expect(assigns(:conversations_count)).to eq(0)
-        expect(assigns(:unread_conversations_count)).to eq(0)
+        expect(response).to redirect_to(admin_dashboard_path)
       end
     end
   end

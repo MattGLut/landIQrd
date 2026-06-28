@@ -1,0 +1,8 @@
+<% if collection.total_pages > 1 %>
+  <div class="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+    <p class="text-sm text-slate-500 dark:text-slate-400">
+      Showing <%= collection.offset_value + 1 %>–<%= [ collection.offset_value + collection.limit_value, collection.total_count ].min %> of <%= collection.total_count %>
+    </p>
+    <%= paginate collection %>
+  </div>
+<% end %>
