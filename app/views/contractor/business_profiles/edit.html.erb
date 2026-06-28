@@ -1,0 +1,37 @@
+<% content_for :title, "Business profile" %>
+
+<%= render layout: "accounts/layout", locals: { section_title: "Business profile" } do %>
+  <%= form_with model: @user, url: contractor_business_profile_path, method: :patch, class: "space-y-4" do |f| %>
+    <%= render "shared/form_errors", resource: @user %>
+
+    <div>
+      <%= f.label :company_name, "Company name", class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+      <%= f.text_field :company_name, class: form_input_class %>
+    </div>
+
+    <div>
+      <%= f.label :phone, "Phone", class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+      <%= f.telephone_field :phone, class: form_input_class %>
+    </div>
+
+    <div>
+      <%= f.label :website_url, "Website", class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+      <%= f.url_field :website_url, class: form_input_class, placeholder: "https://example.com" %>
+    </div>
+
+    <div class="rounded-md border border-slate-200 bg-slate-50 p-3 text-sm dark:border-slate-700 dark:bg-slate-700">
+      <p class="text-slate-500 dark:text-slate-400">Legal name</p>
+      <p class="font-medium text-slate-900 dark:text-slate-100"><%= @user.full_name %></p>
+      <p class="mt-2 text-slate-500 dark:text-slate-400">Email</p>
+      <p class="font-medium text-slate-900 dark:text-slate-100"><%= @user.email %></p>
+    </div>
+
+    <%= f.submit "Save business profile", class: button_classes(:primary), data: { turbo_submits_with: "Saving…" } %>
+  <% end %>
+
+  <div class="mt-8 border-t border-slate-200 pt-6 dark:border-slate-700">
+    <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Portfolio</h3>
+    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Show landlords examples of your work by trade.</p>
+    <%= link_to "Manage portfolio", contractor_portfolio_items_path, class: "mt-3 inline-block text-sm font-medium text-brand-600 hover:text-brand-800 dark:text-brand-400 dark:hover:text-brand-300" %>
+  </div>
+<% end %>

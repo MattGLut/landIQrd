@@ -1,6 +1,10 @@
 <nav class="space-y-1">
   <%= link_to "Profile", edit_account_path,
       class: nav_link_classes(active: current_page?(edit_account_path)) %>
+  <% if current_user.contractor? %>
+    <%= link_to "Business profile", edit_contractor_business_profile_path,
+        class: nav_link_classes(active: request.path.start_with?("/contractor/business_profile") || request.path.start_with?("/contractor/portfolio_items")) %>
+  <% end %>
   <%= link_to "Notifications", notifications_account_path,
       class: nav_link_classes(active: current_page?(notifications_account_path)) %>
   <%= link_to "Email & security", edit_user_registration_path,

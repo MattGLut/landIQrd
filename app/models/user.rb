@@ -47,6 +47,7 @@ class User < ApplicationRecord
                                 dependent: :nullify, inverse_of: :closed_by
   has_many :work_order_assignments, foreign_key: :contractor_id, dependent: :destroy, inverse_of: :contractor
   has_many :assigned_work_orders, through: :work_order_assignments, source: :work_order
+  has_many :contractor_portfolio_items, foreign_key: :contractor_id, dependent: :destroy, inverse_of: :contractor
   has_many :conversation_participants, dependent: :destroy
   has_many :conversations, through: :conversation_participants
   has_many :messages, foreign_key: :author_id, dependent: :destroy, inverse_of: :author
@@ -58,6 +59,7 @@ class User < ApplicationRecord
   validates :role, presence: true
   validates :first_name, :last_name, presence: true
   validates :preferred_name, length: { maximum: 100 }, allow_blank: true
+  validates :website_url, format: { with: URI::DEFAULT_PARSER.make_regexp(%w[http https]), allow_blank: true }
   validate :avatar_content_type
   validate :avatar_size
 
@@ -89,6 +91,20 @@ class User < ApplicationRecord
     else
       source.first(2).upcase
     end
+  end
+
+  def portfolio_categories
+    contractor_portfolio_items.distinct.pluck(:category)
+  end
+
+  def matches_category?(category)
+    return false if category.blank?
+
+    contractor_portfolio_items.exists?(category: category)
+  end
+
+  def relevant_portfolio_items_for(category)
+    contractor_portfolio_items.for_category(category).ordered
   end
 
   private

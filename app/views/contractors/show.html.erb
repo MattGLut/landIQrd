@@ -1,0 +1,56 @@
+<% content_for :title, @contractor.display_name %>
+
+<%= render "shared/page_header", title: @contractor.display_name, subtitle: @contractor.company_name.presence %>
+
+<div class="mb-8 flex flex-wrap items-start gap-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+  <%= render "shared/user_avatar", user: @contractor, size: :lg %>
+  <div class="min-w-0 flex-1 space-y-2 text-sm">
+    <p class="text-slate-900 dark:text-slate-100"><%= @contractor.full_name %></p>
+    <% if @contractor.phone.present? %>
+      <p class="text-slate-500 dark:text-slate-400"><%= @contractor.phone %></p>
+    <% end %>
+    <%= contractor_website_link(@contractor) %>
+    <% if @contractor.portfolio_categories.any? %>
+      <div class="flex flex-wrap gap-2 pt-2">
+        <% @contractor.portfolio_categories.each do |category| %>
+          <%= status_badge category.titleize, :indigo %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<% if @portfolio_items.any? %>
+  <div class="space-y-6">
+    <% @portfolio_items.group_by(&:category).sort.each do |category, items| %>
+      <section>
+        <h2 class="mb-3 text-lg font-semibold text-slate-900 dark:text-slate-100"><%= category.titleize %></h2>
+        <div class="space-y-4">
+          <% items.each do |item| %>
+            <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+              <h3 class="font-medium text-slate-900 dark:text-slate-100"><%= item.title %></h3>
+              <% if item.description.present? %>
+                <p class="mt-2 text-sm text-slate-600 dark:text-slate-300"><%= item.description %></p>
+              <% end %>
+              <% if item.photos.attached? %>
+                <div class="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4">
+                  <% item.photos.each do |photo| %>
+                    <%= link_to rails_blob_path(photo, disposition: "inline"), class: "block overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700" do %>
+                      <%= portfolio_photo_thumbnail(photo) %>
+                    <% end %>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+  </div>
+<% else %>
+  <%= render "shared/empty_state", message: "This contractor has not added portfolio items yet." %>
+<% end %>
+
+<p class="mt-6">
+  <%= link_to "Back to contractors", contractors_path, class: "text-sm font-medium text-brand-600 hover:text-brand-800 dark:text-brand-400 dark:hover:text-brand-300" %>
+</p>

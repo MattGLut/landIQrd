@@ -87,8 +87,9 @@ RSpec.describe "Work orders" do
 
       visit work_order_path(work_order)
 
-      select contractor.display_name, from: "Contractor"
-      click_button "Assign"
+      within("[data-contractor-picker-row]", text: "FixIt Co") do
+        click_button "Assign"
+      end
 
       expect(page).to have_content("Contractor assigned.")
       expect(page).to have_content("FixIt Co")

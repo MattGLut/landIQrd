@@ -121,6 +121,7 @@ module Seeds
       WorkOrderEvent.delete_all
       WorkOrderAssignment.delete_all
       WorkOrder.delete_all
+      ContractorPortfolioItem.find_each(&:destroy!)
       LeaseInvitation.delete_all
       Lease.delete_all
       Unit.delete_all
@@ -305,6 +306,7 @@ module Seeds
       puts "  Invitations:  #{LeaseInvitation.status_pending.count} pending"
       puts "  Work orders:  #{WorkOrder.count}"
       puts "  Assignments:  #{WorkOrderAssignment.count} (#{WorkOrderAssignment.where.not(scheduled_at: nil).count} scheduled)"
+      puts "  Portfolio:    #{ContractorPortfolioItem.count} contractor portfolio items"
       puts "  Conversations:#{Conversation.count}"
       puts ""
       puts "Stable logins:"

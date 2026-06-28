@@ -34,7 +34,9 @@ module Seeds
         role: :contractor,
         first_name: "Casey",
         last_name: "Contractor",
-        company_name: "FixIt Co"
+        company_name: "FixIt Co",
+        phone: "512-555-0100",
+        website_url: "https://fixitco.example.com"
       )
 
       Support.state[:admin] = admin

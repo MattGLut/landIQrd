@@ -99,20 +99,7 @@
   <% end %>
 
   <% if policy(@work_order).assign? %>
-    <div class="mt-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-      <h3 class="mb-2 text-sm font-medium text-slate-500 dark:text-slate-400">Assign a contractor</h3>
-      <%= form_with url: work_order_work_order_assignments_path(@work_order), scope: :work_order_assignment, method: :post, class: "flex flex-wrap items-end gap-3" do |f| %>
-        <div>
-          <%= f.label :contractor_id, "Contractor", class: "block text-xs text-slate-500 dark:text-slate-400" %>
-          <%= f.collection_select :contractor_id, @contractors, :id, :display_name, { include_blank: "Select" }, class: "#{form_input_class} py-2" %>
-        </div>
-        <div>
-          <%= f.label :scheduled_at, "Scheduled", class: "block text-xs text-slate-500 dark:text-slate-400" %>
-          <%= f.datetime_field :scheduled_at, class: "#{form_input_class} py-2" %>
-        </div>
-        <%= f.submit "Assign", class: button_classes(:primary), data: { turbo_submits_with: "Assigning…" } %>
-      <% end %>
-    </div>
+    <%= render "work_orders/contractor_picker", work_order: @work_order, contractors: @contractors, contractor_filter: @contractor_filter %>
   <% end %>
 </div>
 

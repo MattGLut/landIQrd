@@ -1,0 +1,50 @@
+<% content_for :title, portfolio_item.persisted? ? "Edit portfolio item" : "New portfolio item" %>
+
+<%= render "shared/page_header", title: portfolio_item.persisted? ? "Edit portfolio item" : "New portfolio item" %>
+
+<%= form_with model: portfolio_item, url: form_url, class: "space-y-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800" do |f| %>
+  <%= render "shared/form_errors", resource: portfolio_item %>
+
+  <div>
+    <%= f.label :title, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+    <%= f.text_field :title, class: form_input_class %>
+  </div>
+
+  <div>
+    <%= f.label :description, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+    <%= f.text_area :description, rows: 4, class: form_input_class %>
+  </div>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div>
+      <%= f.label :category, "Trade / category", class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+      <%= f.select :category, WorkOrder.all_category_options, {}, class: form_input_class %>
+    </div>
+    <div>
+      <%= f.label :position, "Display order", class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+      <%= f.number_field :position, min: 0, class: form_input_class %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :photos, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+    <% if portfolio_item.photos.attached? %>
+      <div class="mb-3 grid grid-cols-3 gap-3 sm:grid-cols-4">
+        <% portfolio_item.photos.each do |photo| %>
+          <%= link_to rails_blob_path(photo, disposition: "inline"), class: "block overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700" do %>
+            <%= portfolio_photo_thumbnail(photo) %>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+    <%= f.file_field :photos, multiple: true, accept: "image/*", class: "#{form_file_input_class} mt-1 block w-full" %>
+    <% unless portfolio_item.persisted? %>
+      <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">At least one photo is required.</p>
+    <% end %>
+  </div>
+
+  <div class="flex gap-2">
+    <%= f.submit submit_label, class: button_classes(:primary), data: { turbo_submits_with: "Saving…" } %>
+    <%= render "shared/button", label: "Cancel", url: cancel_url, variant: :secondary %>
+  </div>
+<% end %>

@@ -27,10 +27,12 @@ end
 
 require_relative "seeds/accounts"
 require_relative "seeds/portfolios"
+require_relative "seeds/contractor_portfolios"
 require_relative "seeds/tenancy"
 require_relative "seeds/operations"
 
 if Seeds::Support.already_seeded? && !Seeds::Support.force_reseed?
+  Seeds::ContractorPortfolios.seed!
   Seeds::Support.print_skipped_summary
   return
 end
@@ -39,6 +41,7 @@ Seeds::Support.silence_side_effects do
   Seeds::Support.prepare!
   Seeds::Accounts.seed!
   Seeds::Portfolios.seed!
+  Seeds::ContractorPortfolios.seed!
   Seeds::Tenancy.seed!
   Seeds::Operations.seed!
 end

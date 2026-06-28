@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_24_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_28_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_24_120000) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "contractor_portfolio_items", force: :cascade do |t|
+    t.string "category", null: false
+    t.bigint "contractor_id", null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.integer "position", default: 0, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contractor_id", "category"], name: "index_contractor_portfolio_items_on_contractor_id_and_category"
+    t.index ["contractor_id", "position"], name: "index_contractor_portfolio_items_on_contractor_id_and_position"
+    t.index ["contractor_id"], name: "index_contractor_portfolio_items_on_contractor_id"
   end
 
   create_table "conversation_participants", force: :cascade do |t|
@@ -272,6 +285,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_24_120000) do
     t.string "reset_password_token"
     t.integer "role", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.string "website_url"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["role"], name: "index_users_on_role"
@@ -326,6 +340,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_24_120000) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "contractor_portfolio_items", "users", column: "contractor_id"
   add_foreign_key "conversation_participants", "conversations"
   add_foreign_key "conversation_participants", "users"
   add_foreign_key "conversations", "work_orders"

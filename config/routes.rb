@@ -37,6 +37,13 @@ Rails.application.routes.draw do
     resources :messages, only: [ :create ]
   end
 
+  resources :contractors, only: [ :index, :show ]
+
+  namespace :contractor do
+    resource :business_profile, only: [ :edit, :update ]
+    resources :portfolio_items, except: [ :show ]
+  end
+
   namespace :admin do
     resource :dashboard, only: [ :show ], controller: "dashboard"
     resources :users
