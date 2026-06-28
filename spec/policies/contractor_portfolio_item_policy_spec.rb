@@ -21,4 +21,14 @@ RSpec.describe ContractorPortfolioItemPolicy do
     expect(policy_for(other_contractor).destroy?).to be(false)
     expect(policy_for(create(:landlord)).update?).to be(false)
   end
+
+  describe "Scope" do
+    it "limits contractors to their own portfolio items" do
+      own_item = create(:contractor_portfolio_item, contractor: contractor)
+      create(:contractor_portfolio_item, contractor: other_contractor)
+
+      resolved = described_class::Scope.new(contractor, ContractorPortfolioItem).resolve
+      expect(resolved).to contain_exactly(own_item)
+    end
+  end
 end

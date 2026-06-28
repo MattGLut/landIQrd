@@ -7,6 +7,7 @@ RSpec.describe "Navigation" do
 
       within("header nav[aria-label='Main']") do
         expect(page).to have_link("Properties")
+        expect(page).to have_link("Contractors")
         expect(page).to have_link("Work Orders")
         expect(page).to have_link("Messages")
         expect(page).not_to have_link("Admin")
@@ -27,8 +28,11 @@ RSpec.describe "Navigation" do
       sign_in_and_visit(create(:contractor))
 
       within("header nav[aria-label='Main']") do
-        expect(page).to have_link("Assigned Work")
+        expect(page).to have_link("Assigned Work", href: work_orders_path(status: "active"))
+        expect(page).to have_link("Portfolio", href: contractor_portfolio_items_path)
+        expect(page).to have_link("Schedule")
         expect(page).to have_link("Messages")
+        expect(page).not_to have_link("Contractors")
       end
     end
 
