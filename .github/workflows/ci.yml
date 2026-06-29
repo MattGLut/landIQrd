@@ -107,7 +107,7 @@ jobs:
       - name: Build Tailwind CSS
         run: bin/rails tailwindcss:build
 
-      - uses: browser-actions/setup-chrome@v1
+      - uses: browser-actions/setup-chrome@v2
 
       - name: Run RSpec
         run: bundle exec rspec
