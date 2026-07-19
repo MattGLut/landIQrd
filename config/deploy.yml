@@ -11,8 +11,8 @@ servers:
 
 # No SSL for now (bare IP, no domain). Enable ssl + host when a domain is ready.
 proxy:
-  ssl: false
-  host: 18.225.110.137
+  ssl: true
+  host: landiqrd.com
   healthcheck:
     interval: 3
     timeout: 120
@@ -35,7 +35,7 @@ env:
     - SENDGRID_API_KEY
     - MAILER_FROM
   clear:
-    MAILER_HOST: 18.225.110.137
+    MAILER_HOST: landiqrd.com
     AWS_REGION: us-east-2
     S3_BUCKET: landiqrd-staging
     SOLID_QUEUE_IN_PUMA: true
