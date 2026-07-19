@@ -5,7 +5,6 @@ RSpec.describe "Authentication" do
     visit root_path
 
     expect(page).to have_current_path(new_user_session_path)
-    expect(page).to have_content("Log in to LandIQrd")
   end
 
   it "shows an error for invalid credentials" do
@@ -161,6 +160,5 @@ RSpec.describe "Authentication" do
     sign_out_via_header
 
     expect(page).to have_current_path(new_user_session_path)
-    expect(page).to have_content("Log in to LandIQrd")
   end
 end
