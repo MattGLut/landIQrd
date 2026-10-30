@@ -12,6 +12,8 @@ class ContractorsController < ApplicationController
                                  .where(contractor_portfolio_items: { category: @category_filter })
                                  .distinct
     end
+
+    @contractors = @contractors.page(params[:page])
   end
 
   def show

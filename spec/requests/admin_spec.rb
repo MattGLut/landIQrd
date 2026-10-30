@@ -56,6 +56,24 @@ RSpec.describe "Admin", type: :request do
       expect(response.body).to include("Showing #{Admin::BaseController::PER_PAGE + 1}–#{WorkOrder.count} of #{WorkOrder.count}")
     end
 
+    it "paginates the main property, work order, and conversation lists" do
+      landlord = create(:landlord)
+      unit = create(:unit, property: create(:property, landlord: landlord))
+      create_list(:property, Admin::BaseController::PER_PAGE + 1, landlord: landlord)
+      create_list(:work_order, Admin::BaseController::PER_PAGE + 1, unit: unit).each do |work_order|
+        Conversation.for_work_order!(work_order)
+      end
+
+      get properties_path
+      expect(response.body).to include("Showing 1–#{Admin::BaseController::PER_PAGE} of #{Property.count}")
+
+      get work_orders_path
+      expect(response.body).to include("Showing 1–#{Admin::BaseController::PER_PAGE} of #{WorkOrder.count}")
+
+      get conversations_path
+      expect(response.body).to include("Showing 1–#{Admin::BaseController::PER_PAGE} of #{Conversation.count}")
+    end
+
     it "paginates conversations" do
       unit = create(:unit)
       create_list(:work_order, Admin::BaseController::PER_PAGE + 1, unit: unit).each do |work_order|

@@ -12,14 +12,17 @@ RSpec.describe "Admin console" do
   describe "as an admin" do
     before { sign_in_and_visit(admin) }
 
-    it "shows the admin console overview and tabs" do
+    it "shows the admin console overview without a second menu" do
       expect(page).to have_content("Admin console")
-      expect(page).to have_link("Overview")
-      expect(page).to have_link("Users")
-      expect(page).to have_link("Properties")
-      expect(page).to have_link("Work orders")
-      expect(page).to have_link("Conversations")
       expect(page).to have_content("Users by role")
+      expect(page).not_to have_link("Overview")
+
+      within("aside nav[aria-label='Main']") do
+        expect(page).to have_link("Users", href: admin_users_path)
+        expect(page).to have_link("Properties", href: properties_path)
+        expect(page).to have_link("Work Orders", href: work_orders_path)
+        expect(page).to have_link("Messages", href: conversations_path)
+      end
     end
 
     it "creates a user" do

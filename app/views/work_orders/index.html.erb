@@ -4,7 +4,7 @@
   <% if current_user.landlord? %>
     <%= render "shared/button", label: "Request proposals", url: new_job_path, variant: :secondary %>
   <% end %>
-  <% if current_user.tenant? || current_user.landlord? %>
+  <% if policy(WorkOrder).create? %>
     <%= render "shared/button", label: "New work request", url: new_work_order_path, variant: :primary %>
   <% end %>
 <% end %>
@@ -26,7 +26,8 @@
   <div class="space-y-2">
     <%= render @work_orders %>
   </div>
+  <%= render "shared/pagination", collection: @work_orders %>
 <% else %>
-  <% empty_action = (current_user.tenant? || current_user.landlord?) ? render("shared/button", label: "New work request", url: new_work_order_path, variant: :primary) : nil %>
+  <% empty_action = policy(WorkOrder).create? ? render("shared/button", label: "New work request", url: new_work_order_path, variant: :primary) : nil %>
   <%= render "shared/empty_state", message: "No work orders yet.", action: empty_action %>
 <% end %>
