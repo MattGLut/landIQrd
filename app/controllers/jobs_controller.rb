@@ -67,6 +67,7 @@ class JobsController < ApplicationController
     authorize @job, :manage?
     @slots = @job.walkthrough_slots.includes(walkthrough_bookings: :contractor)
     @bookings = booked_appointments
+    prepare_walkthrough_form
   end
 
   # Step 3: review and post.
@@ -132,6 +133,20 @@ class JobsController < ApplicationController
       state: job.property&.state,
       limit: 6
     )
+  end
+
+  # The form adds more slots. It should not look like a time is still selected
+  # after publish, and the date/duration should match the slots already saved.
+  def prepare_walkthrough_form
+    latest = @slots.max_by(&:starts_at)
+    if latest
+      @walkthrough_date = latest.starts_at.in_time_zone(@job.timezone).to_date
+      minutes = ((latest.ends_at - latest.starts_at) / 60).round
+      @walkthrough_duration = JobsHelper::WALKTHROUGH_DURATIONS.value?(minutes) ? minutes : 30
+    else
+      @walkthrough_date = Date.tomorrow
+      @walkthrough_duration = 30
+    end
   end
 
   def booked_appointments

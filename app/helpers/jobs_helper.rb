@@ -50,7 +50,7 @@ module JobsHelper
   def job_thumbnail(job, classes: "h-28 w-36")
     image = job.attachments.find(&:image?)
     if image
-      image_tag image.variant(resize_to_fill: [ 360, 280 ]), class: "#{classes} shrink-0 rounded-lg object-cover", alt: job.title
+      image_tag image, class: "#{classes} shrink-0 rounded-lg object-cover", alt: job.title
     else
       tag.div(icon_tag(:work_orders, classes: "h-8 w-8"), class: "#{classes} grid shrink-0 place-items-center rounded-lg bg-slate-100 text-slate-400 dark:bg-slate-700/50")
     end

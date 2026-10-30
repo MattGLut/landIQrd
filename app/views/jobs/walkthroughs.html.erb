@@ -22,11 +22,11 @@
         <div class="grid gap-4 sm:grid-cols-3">
           <div>
             <%= label_tag :date, "Date", class: label_class %>
-            <%= date_field_tag :date, Date.tomorrow, min: Date.current, class: form_input_class %>
+            <%= date_field_tag :date, @walkthrough_date, min: Date.current, class: form_input_class %>
           </div>
           <div>
             <%= label_tag :duration_minutes, "Duration", class: label_class %>
-            <%= select_tag :duration_minutes, options_for_select(JobsHelper::WALKTHROUGH_DURATIONS, 30), class: form_input_class %>
+            <%= select_tag :duration_minutes, options_for_select(JobsHelper::WALKTHROUGH_DURATIONS, @walkthrough_duration), class: form_input_class %>
           </div>
           <div>
             <%= label_tag :timezone, "Timezone", class: label_class %>
@@ -40,7 +40,7 @@
           <div class="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-5">
             <% JobsHelper::WALKTHROUGH_TIME_OPTIONS.each do |time| %>
               <label class="<%= trade_checkbox_label_classes %>">
-                <%= check_box_tag "times[]", time, time == "09:00", id: "times_#{time.delete(":")}", class: "h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500" %>
+                <%= check_box_tag "times[]", time, false, id: "times_#{time.delete(":")}", class: "h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500" %>
                 <span><%= walkthrough_time_label(time) %></span>
               </label>
             <% end %>

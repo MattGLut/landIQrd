@@ -91,6 +91,18 @@ RSpec.describe Job, type: :model do
     end
   end
 
+  describe ".timezone_for_state" do
+    it "uses the property's state instead of the Eastern default" do
+      job = create(:job, property: create(:property, state: "TX"))
+      expect(job.timezone).to eq("Central Time (US & Canada)")
+    end
+
+    it "keeps a timezone passed in explicitly" do
+      job = create(:job, property: create(:property, state: "TX"), timezone: "Pacific Time (US & Canada)")
+      expect(job.timezone).to eq("Pacific Time (US & Canada)")
+    end
+  end
+
   describe "#work_order_category" do
     it "uses the first trade that is a work order category" do
       expect(build(:job, trades: %w[roofing]).work_order_category).to eq("roofing")
