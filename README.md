@@ -97,6 +97,8 @@ admin console or the console.
 
 ## Features
 
+A screenshot tour of every feature, including what is not built yet, is in [docs/features](docs/features/README.md). The proposal flow has its own tour in [docs/walkthrough](docs/walkthrough/README.md).
+
 ### Properties and units
 
 Landlords create and manage properties (name, address) and units (label,
