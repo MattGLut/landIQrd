@@ -34,6 +34,26 @@ class NotificationMailer < ApplicationMailer
     mail(to: invitation.invited_by.email, subject: "#{invitation.email} accepted your lease invitation")
   end
 
+  def matching_job_posted(job, recipient)
+    @job = job
+    @recipient = recipient
+    mail(to: recipient.email, subject: "New #{job.trade_labels.to_sentence} job: #{job.title}")
+  end
+
+  def proposal_received(proposal, recipient)
+    @proposal = proposal
+    @job = proposal.job
+    @recipient = recipient
+    mail(to: recipient.email, subject: "New proposal on #{@job.title}")
+  end
+
+  def proposal_awarded(proposal)
+    @proposal = proposal
+    @job = proposal.job
+    @work_order = @job.work_order
+    mail(to: proposal.contractor.email, subject: "Your proposal was awarded: #{@job.title}")
+  end
+
   def lease_expiring(lease, recipient)
     @lease = lease
     @recipient = recipient

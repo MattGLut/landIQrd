@@ -5,7 +5,7 @@ RSpec.describe "Navigation" do
     it "shows landlord navigation" do
       sign_in_and_visit(create(:landlord))
 
-      within("header nav[aria-label='Main']") do
+      within("aside nav[aria-label='Main']") do
         expect(page).to have_link("Properties")
         expect(page).to have_link("Contractors")
         expect(page).to have_link("Work Orders")
@@ -17,7 +17,7 @@ RSpec.describe "Navigation" do
     it "shows tenant navigation" do
       sign_in_and_visit(create(:tenant))
 
-      within("header nav[aria-label='Main']") do
+      within("aside nav[aria-label='Main']") do
         expect(page).to have_link("My Requests")
         expect(page).to have_link("Messages")
         expect(page).not_to have_link("Properties")
@@ -27,7 +27,7 @@ RSpec.describe "Navigation" do
     it "shows contractor navigation" do
       sign_in_and_visit(create(:contractor))
 
-      within("header nav[aria-label='Main']") do
+      within("aside nav[aria-label='Main']") do
         expect(page).to have_link("Assigned Work", href: work_orders_path(status: "active"))
         expect(page).to have_link("Portfolio", href: contractor_portfolio_items_path)
         expect(page).to have_link("Schedule")
@@ -39,8 +39,8 @@ RSpec.describe "Navigation" do
     it "shows admin link" do
       sign_in_and_visit(create(:admin))
 
-      within("header nav[aria-label='Main']") do
-        expect(page).to have_link("Admin")
+      within("aside nav[aria-label='Main']") do
+        expect(page).to have_link("Dashboard", href: admin_dashboard_path)
       end
     end
   end
@@ -51,20 +51,20 @@ RSpec.describe "Navigation" do
     before { sign_in_and_visit(landlord) }
 
     it "navigates to properties" do
-      within("header nav[aria-label='Main']") { click_link "Properties" }
+      within("aside nav[aria-label='Main']") { click_link "Properties" }
 
       expect(page).to have_content("Properties")
       expect(page).to have_link("New property")
     end
 
     it "navigates to work orders" do
-      within("header nav[aria-label='Main']") { click_link "Work Orders" }
+      within("aside nav[aria-label='Main']") { click_link "Work Orders" }
 
       expect(page).to have_content("Work Orders")
     end
 
     it "navigates to messages" do
-      within("header nav[aria-label='Main']") { click_link "Messages" }
+      within("aside nav[aria-label='Main']") { click_link "Messages" }
 
       expect(page).to have_content("Select a conversation to view messages")
     end

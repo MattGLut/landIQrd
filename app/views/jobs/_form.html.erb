@@ -1,0 +1,87 @@
+<%# locals: (job:, properties:, matches:) %>
+<% label_class = "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
+
+<div class="grid gap-6 lg:grid-cols-3" data-controller="job-matches" data-job-matches-url-value="<%= matches_jobs_path %>">
+  <%= form_with model: job, class: "space-y-6 lg:col-span-2", multipart: true, data: { action: "change->job-matches#refresh" } do |f| %>
+    <%= render "shared/form_errors", resource: job %>
+
+    <div class="<%= panel_card_class %> space-y-5">
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <%= f.label :property_id, "Property *", class: label_class %>
+          <% if job.persisted? %>
+            <p class="mt-1 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-700/40 dark:text-slate-300"><%= job.property.name %></p>
+            <%= f.hidden_field :property_id %>
+          <% else %>
+            <%= f.collection_select :property_id, properties, :id, :name, { include_blank: properties.many? ? "Select a property" : false }, class: form_input_class, required: properties.many? %>
+          <% end %>
+        </div>
+        <div>
+          <%= f.label :title, "Job title *", class: label_class %>
+          <%= f.text_field :title, class: form_input_class, placeholder: "e.g. Clubhouse repairs", required: true, maxlength: 150 %>
+        </div>
+      </div>
+
+      <div data-controller="char-counter" data-char-counter-max-value="1000">
+        <%= f.label :description, "Description *", class: label_class %>
+        <%= f.text_area :description, rows: 5, maxlength: 1000, class: form_input_class,
+              placeholder: "Describe the work, access details, and what you need in a proposal (timeline, warranty).",
+              data: { char_counter_target: "input", action: "input->char-counter#update" } %>
+        <p class="mt-1 text-right text-xs text-slate-500 dark:text-slate-400" data-char-counter-target="count"></p>
+      </div>
+
+      <fieldset>
+        <legend class="<%= label_class %>">Select trades needed *</legend>
+        <%= hidden_field_tag "job[trades][]", "", id: nil %>
+        <div class="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <% WorkOrder.marketplace_trade_options.each do |label, key| %>
+            <label class="<%= trade_checkbox_label_classes %>">
+              <%= check_box_tag "job[trades][]", key, job.trades.include?(key), id: "job_trades_#{key}", class: "h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500" %>
+              <span><%= label %></span>
+            </label>
+          <% end %>
+        </div>
+      </fieldset>
+
+      <div data-controller="file-drop">
+        <p class="<%= label_class %>">Upload photos and scope</p>
+        <div
+          class="mt-1 rounded-xl border-2 border-dashed border-slate-300 p-6 text-center transition-colors dark:border-slate-600"
+          data-file-drop-target="zone"
+          data-action="dragover->file-drop#dragover dragleave->file-drop#dragleave drop->file-drop#drop">
+          <div class="mx-auto w-fit text-slate-400"><%= icon_tag :upload, classes: "h-8 w-8" %></div>
+          <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Drag and drop photos, documents, or scope of work</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Supports JPG, PNG, PDF (max 25 MB each)</p>
+          <button type="button" class="<%= button_classes(:secondary, size: :sm) %> mt-3" data-action="file-drop#browse">
+            <%= icon_tag :clip, classes: "mr-1.5 h-4 w-4" %> Choose files
+          </button>
+          <%= f.file_field :attachments, multiple: true, accept: "image/jpeg,image/png,application/pdf", class: "sr-only", data: { file_drop_target: "input", action: "change->file-drop#render" } %>
+          <ul class="mt-3 space-y-1 text-left text-xs text-slate-600 dark:text-slate-300" data-file-drop-target="list"></ul>
+        </div>
+        <% if job.attachments.attached? %>
+          <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">
+            <%= pluralize(job.attachments.count, "file") %> already attached: <%= job.attachments.map { |file| file.filename.to_s }.to_sentence %>
+          </p>
+        <% end %>
+      </div>
+
+      <div class="max-w-xs">
+        <%= f.label :proposal_deadline, "Proposal deadline *", class: label_class %>
+        <%= f.date_field :proposal_deadline, class: form_input_class, min: Date.current %>
+        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Contractors must submit proposals by this date.</p>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <%= link_to "Cancel", jobs_path, class: button_classes(:secondary) %>
+      <%= f.submit "Continue to walkthroughs", class: "#{button_classes(:primary)} cursor-pointer", data: { turbo_submits_with: "Saving..." } %>
+    </div>
+  <% end %>
+
+  <aside>
+    <%= turbo_frame_tag "job_matches", data: { job_matches_target: "frame" } do %>
+      <%= render "jobs/matches_panel", matches: matches, trades: job.trades %>
+    <% end %>
+  </aside>
+</div>
+

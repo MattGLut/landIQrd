@@ -39,9 +39,39 @@ Rails.application.routes.draw do
 
   resources :contractors, only: [ :index, :show ]
 
+  # Request-for-proposals (landlord side)
+  resources :jobs do
+    collection do
+      get :matches
+    end
+    member do
+      get :walkthroughs
+      get :review
+      post :publish
+      post :close
+    end
+    resources :walkthrough_slots, only: [ :create, :destroy ]
+    resources :proposals, only: [ :index, :show ] do
+      member do
+        post :award
+      end
+    end
+  end
+
   namespace :contractor do
     resource :business_profile, only: [ :edit, :update ]
     resources :portfolio_items, except: [ :show ]
+    resource :trades, only: [ :show, :update ]
+    resources :available_jobs, only: [ :index, :show ] do
+      resources :walkthrough_bookings, only: [ :create ]
+      resources :proposals, only: [ :new, :create ]
+    end
+    resources :walkthrough_bookings, only: [ :index, :destroy ]
+    resources :proposals, only: [ :index, :show, :edit, :update ] do
+      member do
+        post :withdraw
+      end
+    end
   end
 
   namespace :admin do

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html class="dark h-full bg-[var(--color-surface)]" data-controller="theme">
+<html class="h-full bg-[var(--color-surface)]" data-controller="theme">
   <head>
-    <title><%= content_for(:title) || "LandIQrd" %></title>
+    <title><%= content_for(:title) || "landIQrd" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="application-name" content="LandIQrd">
-    <meta name="theme-color" content="#339e3d">
+    <meta name="application-name" content="landIQrd">
+    <meta name="theme-color" content="#12203b">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -20,9 +20,10 @@
     <%= render "shared/flash" %>
     <div class="w-full max-w-md">
       <div class="mb-8 text-center">
-        <%= link_to root_path, class: "text-2xl font-semibold tracking-tight text-navy-800 dark:text-navy-100" do %>
-          Land<span class="text-brand-600 dark:text-brand-400">IQ</span>rd
+        <%= link_to root_path, class: "inline-block" do %>
+          <%= render "shared/wordmark", size: "text-5xl" %>
         <% end %>
+        <div class="mx-auto mt-4 h-0.5 w-12 rounded bg-brand-400"></div>
       </div>
       <%= yield %>
     </div>

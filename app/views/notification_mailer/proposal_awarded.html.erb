@@ -1,0 +1,10 @@
+<p>Hi <%= @proposal.contractor.greeting_name %>,</p>
+
+<p>
+  Good news: your <%= number_to_currency(@proposal.amount) %> proposal for
+  "<%= @job.title %>" at <%= @job.property.name %> was awarded.
+</p>
+
+<% if @work_order %>
+  <p><%= link_to "View work order", work_order_url(@work_order) %></p>
+<% end %>

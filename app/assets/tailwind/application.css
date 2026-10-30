@@ -5,17 +5,22 @@
 /* Tailwind only scans certain paths by default; class strings in Ruby helpers are not included unless listed here. */
 @source "../../helpers/**/*.rb";
 
+/*
+  Windmore palette: navy (structure), gold (accent / primary action), cream (surface).
+  `brand-*` is the gold scale so existing brand classes pick up the accent color.
+  `slate-*` neutrals are re-tinted: light steps are warm cream, dark steps are navy-tinted.
+*/
 @theme {
-  --color-brand-50:  #f0faf1;
-  --color-brand-100: #e8f5e9;
-  --color-brand-200: #c8e6c9;
-  --color-brand-300: #81c784;
-  --color-brand-400: #4caf50;
-  --color-brand-500: #3da84a;
-  --color-brand-600: #339e3d;
-  --color-brand-700: #2e8a3a;
-  --color-brand-800: #1b5e20;
-  --color-brand-900: #103a13;
+  --color-brand-50:  #fbf7ec;
+  --color-brand-100: #f5ecd2;
+  --color-brand-200: #ead7a6;
+  --color-brand-300: #dcbd78;
+  --color-brand-400: #cba24f;
+  --color-brand-500: #b58f3c;
+  --color-brand-600: #926d24;
+  --color-brand-700: #7a5a1d;
+  --color-brand-800: #5e4516;
+  --color-brand-900: #3f2e0e;
 
   --color-navy-50:  #f0f3f8;
   --color-navy-100: #d9e0ed;
@@ -23,35 +28,52 @@
   --color-navy-300: #7e91b5;
   --color-navy-400: #506894;
   --color-navy-500: #364e73;
-  --color-navy-600: #2a3d5c;
-  --color-navy-700: #1f2f48;
-  --color-navy-800: #1b2a4a;
-  --color-navy-900: #111c32;
+  --color-navy-600: #26385a;
+  --color-navy-700: #1a2a49;
+  --color-navy-800: #12203b;
+  --color-navy-900: #0b1629;
+
+  --color-cream-50:  #fdfbf6;
+  --color-cream-100: #f9f6ee;
+  --color-cream-200: #f1ecdf;
+  --color-cream-300: #e7e0cf;
+
+  --color-slate-50:  #faf7ef;
+  --color-slate-100: #f3eee1;
+  --color-slate-200: #e7e0cf;
+  --color-slate-300: #d2cab6;
+  --color-slate-400: #8d96a8;
+  --color-slate-500: #5f6b82;
+  --color-slate-600: #4a5670;
+  --color-slate-700: #33405c;
+  --color-slate-800: #1b2a4a;
+  --color-slate-900: #0f1c36;
 }
 
 @layer base {
   :root {
-    --color-surface: var(--color-slate-50);
+    --color-surface: var(--color-cream-100);
     --color-surface-card: #fff;
-    --color-surface-hover: var(--color-slate-100);
+    --color-surface-hover: var(--color-cream-200);
     --color-text-primary: var(--color-slate-900);
     --color-text-secondary: var(--color-slate-600);
     --color-text-muted: var(--color-slate-500);
     --color-border: var(--color-slate-200);
+    --color-sidebar: var(--color-navy-800);
   }
 
   .dark {
-    /* Remap slate to neutral near-blacks (Cursor-style) */
-    --color-slate-50:  #fafafa;
-    --color-slate-100: #f0f0f0;
-    --color-slate-200: #e0e0e0;
-    --color-slate-300: #b0b0b0;
-    --color-slate-400: #888888;
-    --color-slate-500: #6e6e6e;
-    --color-slate-600: #4a4a4a;
-    --color-slate-700: #2e2e2e;
-    --color-slate-800: #1e1e1e;
-    --color-slate-900: #141414;
+    /* Remap slate to navy-tinted darks */
+    --color-slate-50:  #f4f6fb;
+    --color-slate-100: #e6eaf3;
+    --color-slate-200: #cfd6e4;
+    --color-slate-300: #a9b4cb;
+    --color-slate-400: #8392af;
+    --color-slate-500: #62739a;
+    --color-slate-600: #3d4d72;
+    --color-slate-700: #243556;
+    --color-slate-800: #14233f;
+    --color-slate-900: #0b1629;
 
     --color-surface: var(--color-slate-900);
     --color-surface-card: var(--color-slate-800);
@@ -59,7 +81,8 @@
     --color-text-primary: #ffffff;
     --color-text-secondary: var(--color-slate-300);
     --color-text-muted: var(--color-slate-400);
-    --color-border: #262626;
+    --color-border: #1f2f4f;
+    --color-sidebar: var(--color-navy-900);
   }
 
   button:not(:disabled),
@@ -100,5 +123,19 @@
 
   .table_class td {
     @apply px-5 py-3;
+  }
+
+  /* Left navigation (navy sidebar) */
+  .sidebar-link {
+    @apply flex items-center gap-3 rounded-lg border-l-4 border-transparent px-3 py-2.5 text-sm font-medium text-navy-100 transition-colors hover:bg-white/10 hover:text-white;
+  }
+
+  .sidebar-link[aria-current="page"] {
+    @apply border-brand-400 bg-white/10 text-white;
+  }
+
+  /* Gold hairline used under hero headings and wordmark accents */
+  .wordmark-iq {
+    @apply text-brand-400;
   }
 }

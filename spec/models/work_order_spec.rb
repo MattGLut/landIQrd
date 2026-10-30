@@ -11,6 +11,27 @@ RSpec.describe WorkOrder, type: :model do
   it { is_expected.to have_many(:work_order_assignments).dependent(:destroy) }
   it { is_expected.to validate_presence_of(:title) }
 
+  describe "photo validation" do
+    it "accepts images" do
+      work_order = build(:work_order)
+      work_order.photos.attach(io: File.open(Rails.root.join("spec/fixtures/files/sample.png")), filename: "a.png", content_type: "image/png")
+      expect(work_order).to be_valid
+    end
+
+    it "rejects non-image uploads" do
+      work_order = build(:work_order)
+      work_order.photos.attach(io: StringIO.new("%PDF"), filename: "a.pdf", content_type: "application/pdf")
+      expect(work_order).not_to be_valid
+      expect(work_order.errors[:photos]).to be_present
+    end
+
+    it "rejects photos over 10 MB" do
+      work_order = build(:work_order)
+      work_order.photos.attach(io: StringIO.new("x" * 11.megabytes), filename: "big.png", content_type: "image/png")
+      expect(work_order).not_to be_valid
+    end
+  end
+
   it do
     is_expected.to define_enum_for(:status)
       .with_values(

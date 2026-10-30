@@ -1,6 +1,14 @@
 <% content_for :title, work_orders_nav_label %>
 
-<%= render "shared/page_header", title: work_orders_nav_label, action: (current_user.tenant? || current_user.landlord?) ? render("shared/button", label: "New work request", url: new_work_order_path, variant: :primary) : nil %>
+<% index_actions = capture do %>
+  <% if current_user.landlord? %>
+    <%= render "shared/button", label: "Request proposals", url: new_job_path, variant: :secondary %>
+  <% end %>
+  <% if current_user.tenant? || current_user.landlord? %>
+    <%= render "shared/button", label: "New work request", url: new_work_order_path, variant: :primary %>
+  <% end %>
+<% end %>
+<%= render "shared/page_header", title: work_orders_nav_label, action: index_actions.presence %>
 
 <div class="mb-4 flex flex-wrap gap-2">
   <% [

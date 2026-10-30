@@ -1,0 +1,26 @@
+<% content_for :title, "Find work" %>
+
+<%= render "shared/page_header", title: "Find work", subtitle: "Open jobs that match your trades." %>
+
+<% if current_user.trades.empty? %>
+  <div class="mb-6 rounded-xl border border-brand-200 bg-brand-50 p-4 text-sm text-brand-900 dark:border-brand-800 dark:bg-brand-900/20 dark:text-brand-100">
+    You haven't picked any trades yet. <%= link_to "Choose your trades", contractor_trades_path, class: "font-semibold underline" %> to see matching jobs.
+  </div>
+<% else %>
+  <div class="mb-4 flex flex-wrap gap-2">
+    <%= link_to "All my trades", contractor_available_jobs_path, class: "rounded-full px-3 py-1 text-sm font-medium #{@trade.nil? ? "bg-brand-100 text-brand-800 dark:bg-brand-900/30 dark:text-brand-300" : "bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400"}" %>
+    <% current_user.trades.each do |trade| %>
+      <%= link_to WorkOrder.trade_label(trade), contractor_available_jobs_path(trade: trade), class: "rounded-full px-3 py-1 text-sm font-medium #{@trade == trade ? "bg-brand-100 text-brand-800 dark:bg-brand-900/30 dark:text-brand-300" : "bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400"}" %>
+    <% end %>
+  </div>
+<% end %>
+
+<% if @jobs.any? %>
+  <div class="space-y-4">
+    <% @jobs.each do |job| %>
+      <%= render "contractor/available_jobs/job", job: job, proposed: @proposed_job_ids.include?(job.id) %>
+    <% end %>
+  </div>
+<% else %>
+  <%= render "shared/empty_state", title: "No open jobs right now", description: "New jobs that match your trades will show up here, and we'll email you." %>
+<% end %>
