@@ -5,7 +5,7 @@ class PropertiesController < ApplicationController
 
   def index
     authorize Property
-    @properties = policy_scope(Property).includes(:units).order(:name)
+    @properties = policy_scope(Property).includes(:landlord, :units).order(:name).page(params[:page])
   end
 
   def show

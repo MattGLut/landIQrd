@@ -21,12 +21,6 @@ module ApplicationHelper
     end
   end
 
-  def admin_tab_link(label, path)
-    active = current_page?(path)
-    classes = active ? "text-brand-600 dark:text-brand-400 font-medium" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
-    link_to label, path, class: "text-sm #{classes}"
-  end
-
   def status_badge(text, color)
     palette = {
       gray: "bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300",

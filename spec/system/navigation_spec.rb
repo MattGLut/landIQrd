@@ -36,11 +36,16 @@ RSpec.describe "Navigation" do
       end
     end
 
-    it "shows admin link" do
+    it "shows admin navigation" do
       sign_in_and_visit(create(:admin))
 
       within("aside nav[aria-label='Main']") do
         expect(page).to have_link("Dashboard", href: admin_dashboard_path)
+        expect(page).to have_link("Users", href: admin_users_path)
+        expect(page).to have_link("Properties", href: properties_path)
+        expect(page).to have_link("Work Orders", href: work_orders_path)
+        expect(page).to have_link("Contractors", href: contractors_path)
+        expect(page).to have_link("Messages", href: conversations_path)
       end
     end
   end
