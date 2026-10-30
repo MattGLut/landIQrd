@@ -231,8 +231,10 @@ RSpec.describe "Dashboard" do
     sign_in_and_visit(create(:admin))
 
     expect(page).to have_content("Admin console")
-    expect(page).to have_link("Overview")
-    expect(page).to have_link("Users")
+    expect(page).to have_link("Users", href: admin_users_path)
+    expect(page).to have_link("Properties", href: properties_path)
+    expect(page).to have_link("Work Orders", href: work_orders_path)
+    expect(page).not_to have_link("Overview")
     expect(page).not_to have_link("Open admin console")
   end
 end

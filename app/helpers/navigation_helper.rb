@@ -62,6 +62,8 @@ module NavigationHelper
     when "tenant"
       items << NavItem.new(label: work_orders_nav_label, path: work_orders_path, icon: :work_orders)
     when "admin"
+      items << NavItem.new(label: "Users", path: admin_users_path, icon: :profile)
+      items << NavItem.new(label: "Properties", path: properties_path, icon: :properties)
       items << NavItem.new(label: "Work Orders", path: work_orders_path, icon: :work_orders, exclude: schedule_work_orders_path)
       items << NavItem.new(label: "Contractors", path: contractors_path, icon: :contractors)
     end

@@ -36,11 +36,16 @@ RSpec.describe "Navigation" do
       end
     end
 
-    it "shows admin link" do
+    it "shows admin navigation" do
       sign_in_and_visit(create(:admin))
 
       within("aside nav[aria-label='Main']") do
         expect(page).to have_link("Dashboard", href: admin_dashboard_path)
+        expect(page).to have_link("Users", href: admin_users_path)
+        expect(page).to have_link("Properties", href: properties_path)
+        expect(page).to have_link("Work Orders", href: work_orders_path)
+        expect(page).to have_link("Contractors", href: contractors_path)
+        expect(page).to have_link("Messages", href: conversations_path)
       end
     end
   end
@@ -93,6 +98,36 @@ RSpec.describe "Navigation" do
       find("[aria-label='Close main menu']").click
 
       expect(page).to have_css("#mobile-nav-panel.hidden", visible: :all)
+    end
+  end
+
+  describe "account menu", js: true do
+    let(:landlord) { create(:landlord, first_name: "Lana") }
+
+    # iPhone Safari never applies a lasting :hover, so the menu has to open on tap.
+    it "opens on tap and stays open after hover and focus drop" do
+      sign_in_and_visit(landlord)
+      mobile_viewport
+      visit current_path
+
+      expect(page).to have_css("#account-menu.hidden", visible: :all)
+
+      find("[aria-controls='account-menu']").click
+      page.execute_script("document.activeElement.blur()")
+      find("main").hover
+
+      click_link "Account settings"
+      expect(page).to have_current_path(edit_account_path)
+    end
+
+    it "signs out from a phone" do
+      sign_in_and_visit(landlord)
+      mobile_viewport
+      visit current_path
+
+      sign_out_via_header
+
+      expect(page).to have_current_path(new_user_session_path)
     end
   end
 end

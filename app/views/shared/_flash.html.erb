@@ -5,7 +5,7 @@
       data-flash-position-offset-target-value="#application-header"
     <% end %>
     data-turbo-temporary
-    class="pointer-events-none fixed inset-x-0 z-50 flex flex-col items-center gap-2 px-4<%= local_assigns[:below_header] ? (user_signed_in? ? " md:pl-72" : "") : " top-4" %>">
+    class="pointer-events-none fixed inset-x-0 z-30 flex flex-col items-center gap-2 px-4<%= local_assigns[:below_header] ? (user_signed_in? ? " md:pl-72" : "") : " top-4" %>">
     <% if notice.present? %>
       <div
         data-controller="flash"

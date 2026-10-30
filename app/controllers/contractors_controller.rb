@@ -15,12 +15,14 @@ class ContractorsController < ApplicationController
 
     @relationship_filter = params[:relationship].presence_in(%w[mine])
     @relationships_by_contractor = {}
-    return unless current_user.landlord?
+    if current_user.landlord?
+      @relationships_by_contractor = current_user.contractor_relationships.index_by(&:contractor_id)
+      if @relationship_filter == "mine"
+        @contractors = @contractors.where(id: current_user.contractor_relationships.select(:contractor_id))
+      end
+    end
 
-    @relationships_by_contractor = current_user.contractor_relationships.index_by(&:contractor_id)
-    return unless @relationship_filter == "mine"
-
-    @contractors = @contractors.where(id: current_user.contractor_relationships.select(:contractor_id))
+    @contractors = @contractors.page(params[:page])
   end
 
   def show

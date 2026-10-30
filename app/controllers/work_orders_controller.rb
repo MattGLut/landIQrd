@@ -147,7 +147,7 @@ class WorkOrdersController < ApplicationController
 
   def filtered_work_orders
     scope = policy_scope(WorkOrder).includes(unit: :property).order(created_at: :desc)
-    case params[:status]
+    scope = case params[:status]
     when "active"
       scope.active
     when "completed"
@@ -157,6 +157,7 @@ class WorkOrdersController < ApplicationController
     else
       scope
     end
+    scope.page(params[:page])
   end
 
   def scheduled_assignments
