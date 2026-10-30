@@ -1,0 +1,65 @@
+<%# locals: (proposal:, job:, url:, method:) %>
+<% label_class = "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
+
+<%= form_with model: proposal, url: url, method: method, multipart: true, class: "space-y-5" do |f| %>
+  <%= render "shared/form_errors", resource: proposal %>
+
+  <div>
+    <%= f.label :amount, "Proposal amount *", class: label_class %>
+    <div class="relative mt-1">
+      <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-500">$</span>
+      <%= f.text_field :amount, value: proposal.amount_cents && (proposal.amount_cents / 100.0).round(2), inputmode: "decimal", required: true, placeholder: "2450", class: "#{form_input_class} !mt-0 pl-7" %>
+    </div>
+  </div>
+
+  <div data-controller="char-counter" data-char-counter-max-value="500">
+    <%= f.label :scope, "Scope of work *", class: label_class %>
+    <%= f.text_area :scope, rows: 4, maxlength: 500, required: true, class: form_input_class, data: { char_counter_target: "input", action: "input->char-counter#update" } %>
+    <p class="mt-1 text-right text-xs text-slate-500 dark:text-slate-400" data-char-counter-target="count"></p>
+  </div>
+
+  <div data-controller="char-counter" data-char-counter-max-value="500">
+    <%= f.label :exclusions, "Exclusions", class: label_class %>
+    <%= f.text_area :exclusions, rows: 2, maxlength: 500, class: form_input_class, data: { char_counter_target: "input", action: "input->char-counter#update" } %>
+    <p class="mt-1 text-right text-xs text-slate-500 dark:text-slate-400" data-char-counter-target="count"></p>
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    <div>
+      <%= f.label :earliest_start, "Earliest start *", class: label_class %>
+      <%= f.date_field :earliest_start, required: true, min: Date.current, class: form_input_class %>
+    </div>
+    <div>
+      <%= f.label :estimated_duration_days, "Estimated duration *", class: label_class %>
+      <%= f.select :estimated_duration_days, Proposal::DURATION_OPTIONS.to_a, { include_blank: "Select" }, class: form_input_class, required: true %>
+    </div>
+  </div>
+
+  <div data-controller="file-drop">
+    <p class="<%= label_class %>">Attachments</p>
+    <% if proposal.attachments.attached? %>
+      <ul class="mt-1 space-y-1 text-sm text-slate-700 dark:text-slate-300">
+        <% proposal.attachments.each do |file| %>
+          <li class="flex items-center gap-2 rounded-lg border border-[var(--color-border)] px-3 py-2">
+            <%= icon_tag :document, classes: "h-5 w-5 text-slate-400" %>
+            <span class="flex-1 truncate"><%= file.filename %></span>
+            <span class="text-xs text-slate-500"><%= number_to_human_size(file.byte_size) %></span>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+    <ul class="mt-1 space-y-1 text-xs text-slate-600 dark:text-slate-300" data-file-drop-target="list"></ul>
+    <button type="button" class="<%= button_classes(:secondary, size: :sm) %> mt-2" data-action="file-drop#browse">
+      <%= icon_tag :plus, classes: "mr-1 h-4 w-4" %> Add another file
+    </button>
+    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">PDF, JPG or PNG, up to 25 MB each.</p>
+    <div data-file-drop-target="zone">
+      <%= f.file_field :attachments, multiple: true, accept: "application/pdf,image/jpeg,image/png", class: "sr-only", data: { file_drop_target: "input", action: "change->file-drop#render" } %>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <%= link_to "Cancel", contractor_available_job_path(job), class: button_classes(:secondary) %>
+    <%= f.submit "Submit proposal", class: "#{button_classes(:primary, size: :lg)} cursor-pointer", data: { turbo_submits_with: "Submitting..." } %>
+  </div>
+<% end %>

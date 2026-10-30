@@ -1,0 +1,31 @@
+<%# locals: (job:) %>
+<%= link_to jobs_path, class: "mb-3 inline-flex items-center gap-1 text-sm text-brand-700 hover:text-brand-800 dark:text-brand-300" do %>
+  <%= icon_tag :arrow_left, classes: "h-4 w-4" %> Back to proposals
+<% end %>
+
+<div class="mb-6 flex flex-wrap items-start justify-between gap-4">
+  <div class="min-w-0">
+    <div class="flex flex-wrap items-center gap-3">
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100"><%= job.title %></h1>
+      <%= job_status_badge(job) %>
+    </div>
+    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+      <%= job.location_label %>
+      <% if job.proposal_deadline.present? %>
+        &middot; Proposals due <%= job.proposal_deadline.to_fs(:long) %>
+      <% end %>
+    </p>
+  </div>
+
+  <div class="flex shrink-0 flex-wrap items-center justify-end gap-2">
+    <% if policy(job).update? %>
+      <%= render "shared/button", label: "Edit details", url: edit_job_path(job), variant: :secondary, size: :sm %>
+    <% end %>
+    <% if policy(job).close? %>
+      <%= render "shared/button", label: "Close job", url: close_job_path(job), variant: :danger, size: :sm, method: :post, form: { data: { turbo_confirm: "Close this job to new proposals?" }, class: "inline" } %>
+    <% end %>
+    <% if policy(job).destroy? %>
+      <%= render "shared/button", label: "Delete draft", url: job_path(job), variant: :danger_link, size: :sm, method: :delete, form: { data: { turbo_confirm: "Delete this draft?" }, class: "inline" } %>
+    <% end %>
+  </div>
+</div>

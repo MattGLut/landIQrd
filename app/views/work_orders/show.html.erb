@@ -28,6 +28,20 @@
   <%= status_badge @work_order.priority.titleize, @work_order.priority_color %>
 </div>
 
+<% if @work_order.price_cents %>
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-brand-200 bg-brand-50 px-4 py-3 text-sm dark:border-brand-800 dark:bg-brand-900/20">
+    <p class="text-brand-900 dark:text-brand-100">
+      Awarded price <strong class="ml-1 text-lg"><%= format_cents(@work_order.price_cents) %></strong>
+      <% if @work_order.proposal %>
+        to <%= @work_order.proposal.contractor.display_name %>
+      <% end %>
+    </p>
+    <% if @work_order.job && policy(@work_order.job).manage? %>
+      <%= link_to "View proposals", job_proposals_path(@work_order.job), class: "font-medium text-brand-800 hover:text-brand-900 dark:text-brand-200" %>
+    <% end %>
+  </div>
+<% end %>
+
 <% show_closure = @work_order.status_cancelled? && @work_order.closure_reason.present? %>
 
 <div class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">

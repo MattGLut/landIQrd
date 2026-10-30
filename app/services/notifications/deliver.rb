@@ -53,6 +53,37 @@ module Notifications
       end
     end
 
+    # Emails every in-area contractor whose trades overlap the job and who opted in.
+    def self.matching_job_posted(job, actor: nil)
+      matches = Jobs::MatchContractors.call(
+        trades: job.trades,
+        city: job.property.city,
+        state: job.property.state
+      )
+
+      matches.each do |match|
+        contractor = match.contractor
+        next unless match.in_area? && contractor.notify_matching_jobs?
+
+        deliver_to(contractor, actor, type: :matching_job_posted) do
+          NotificationMailer.matching_job_posted(job, contractor).deliver_later
+        end
+      end
+    end
+
+    def self.proposal_received(proposal, actor:)
+      landlord = proposal.job.property.landlord
+      deliver_to(landlord, actor, type: :proposal_received) do
+        NotificationMailer.proposal_received(proposal, landlord).deliver_later
+      end
+    end
+
+    def self.proposal_awarded(proposal, actor:)
+      deliver_to(proposal.contractor, actor, type: :proposal_awarded) do
+        NotificationMailer.proposal_awarded(proposal).deliver_later
+      end
+    end
+
     def self.deliver_to(recipient, actor, type:)
       return if recipient.nil? || recipient.id == actor&.id
       return unless recipient.email_notification_enabled?(type)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_28_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_30_140300) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -74,6 +74,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_28_120000) do
     t.index ["work_order_id"], name: "index_conversations_on_work_order_id"
   end
 
+  create_table "jobs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "created_by_id", null: false
+    t.text "description"
+    t.bigint "property_id", null: false
+    t.date "proposal_deadline"
+    t.datetime "published_at"
+    t.integer "slot_capacity", default: 1, null: false
+    t.integer "status", default: 0, null: false
+    t.string "timezone", default: "Eastern Time (US & Canada)", null: false
+    t.string "title", null: false
+    t.string "trades", default: [], null: false, array: true
+    t.bigint "unit_id"
+    t.datetime "updated_at", null: false
+    t.boolean "walkthrough_required", default: false, null: false
+    t.bigint "work_order_id"
+    t.index ["created_by_id"], name: "index_jobs_on_created_by_id"
+    t.index ["property_id"], name: "index_jobs_on_property_id"
+    t.index ["status"], name: "index_jobs_on_status"
+    t.index ["trades"], name: "index_jobs_on_trades", using: :gin
+    t.index ["unit_id"], name: "index_jobs_on_unit_id"
+    t.index ["work_order_id"], name: "index_jobs_on_work_order_id"
+  end
+
   create_table "lease_invitations", force: :cascade do |t|
     t.datetime "accepted_at"
     t.datetime "created_at", null: false
@@ -133,6 +157,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_28_120000) do
     t.string "state"
     t.datetime "updated_at", null: false
     t.index ["landlord_id"], name: "index_properties_on_landlord_id"
+  end
+
+  create_table "proposals", force: :cascade do |t|
+    t.bigint "amount_cents", null: false
+    t.bigint "contractor_id", null: false
+    t.datetime "created_at", null: false
+    t.date "earliest_start"
+    t.integer "estimated_duration_days"
+    t.text "exclusions"
+    t.bigint "job_id", null: false
+    t.text "scope", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["contractor_id"], name: "index_proposals_on_contractor_id"
+    t.index ["job_id", "contractor_id"], name: "index_proposals_on_job_id_and_contractor_id", unique: true
+    t.index ["job_id"], name: "index_proposals_on_job_id"
+    t.index ["status"], name: "index_proposals_on_status"
   end
 
   create_table "solid_queue_blocked_executions", force: :cascade do |t|
@@ -278,17 +319,45 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_28_120000) do
     t.string "encrypted_password", default: "", null: false
     t.string "first_name"
     t.string "last_name"
+    t.boolean "notify_matching_jobs", default: true, null: false
     t.string "phone"
     t.string "preferred_name"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
     t.integer "role", default: 0, null: false
+    t.string "service_city"
+    t.integer "service_radius_miles", default: 30, null: false
+    t.string "service_state"
+    t.string "trades", default: [], null: false, array: true
     t.datetime "updated_at", null: false
     t.string "website_url"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["role"], name: "index_users_on_role"
+    t.index ["trades"], name: "index_users_on_trades", using: :gin
+  end
+
+  create_table "walkthrough_bookings", force: :cascade do |t|
+    t.bigint "contractor_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "walkthrough_slot_id", null: false
+    t.index ["contractor_id"], name: "index_walkthrough_bookings_on_contractor_id"
+    t.index ["walkthrough_slot_id", "contractor_id"], name: "index_walkthrough_bookings_on_slot_and_contractor", unique: true
+    t.index ["walkthrough_slot_id"], name: "index_walkthrough_bookings_on_walkthrough_slot_id"
+  end
+
+  create_table "walkthrough_slots", force: :cascade do |t|
+    t.integer "capacity", default: 1, null: false
+    t.datetime "created_at", null: false
+    t.datetime "ends_at", null: false
+    t.bigint "job_id", null: false
+    t.datetime "starts_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["job_id", "starts_at"], name: "index_walkthrough_slots_on_job_id_and_starts_at"
+    t.index ["job_id"], name: "index_walkthrough_slots_on_job_id"
   end
 
   create_table "work_order_assignments", force: :cascade do |t|
@@ -324,7 +393,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_28_120000) do
     t.bigint "created_by_id", null: false
     t.text "description"
     t.bigint "lease_id"
+    t.bigint "price_cents"
     t.integer "priority", default: 1, null: false
+    t.bigint "proposal_id"
     t.integer "status", default: 0, null: false
     t.string "title", null: false
     t.bigint "unit_id", null: false
@@ -334,6 +405,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_28_120000) do
     t.index ["created_by_id"], name: "index_work_orders_on_created_by_id"
     t.index ["lease_id"], name: "index_work_orders_on_lease_id"
     t.index ["priority"], name: "index_work_orders_on_priority"
+    t.index ["proposal_id"], name: "index_work_orders_on_proposal_id"
     t.index ["status"], name: "index_work_orders_on_status"
     t.index ["unit_id"], name: "index_work_orders_on_unit_id"
   end
@@ -344,6 +416,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_28_120000) do
   add_foreign_key "conversation_participants", "conversations"
   add_foreign_key "conversation_participants", "users"
   add_foreign_key "conversations", "work_orders"
+  add_foreign_key "jobs", "properties"
+  add_foreign_key "jobs", "units"
+  add_foreign_key "jobs", "users", column: "created_by_id"
+  add_foreign_key "jobs", "work_orders"
   add_foreign_key "lease_invitations", "leases"
   add_foreign_key "lease_invitations", "units"
   add_foreign_key "lease_invitations", "users", column: "invited_by_id"
@@ -352,6 +428,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_28_120000) do
   add_foreign_key "messages", "conversations"
   add_foreign_key "messages", "users", column: "author_id"
   add_foreign_key "properties", "users", column: "landlord_id"
+  add_foreign_key "proposals", "jobs"
+  add_foreign_key "proposals", "users", column: "contractor_id"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
@@ -359,11 +437,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_28_120000) do
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "units", "properties"
+  add_foreign_key "walkthrough_bookings", "users", column: "contractor_id"
+  add_foreign_key "walkthrough_bookings", "walkthrough_slots"
+  add_foreign_key "walkthrough_slots", "jobs"
   add_foreign_key "work_order_assignments", "users", column: "contractor_id"
   add_foreign_key "work_order_assignments", "work_orders"
   add_foreign_key "work_order_events", "users"
   add_foreign_key "work_order_events", "work_orders"
   add_foreign_key "work_orders", "leases"
+  add_foreign_key "work_orders", "proposals"
   add_foreign_key "work_orders", "units"
   add_foreign_key "work_orders", "users", column: "closed_by_id"
   add_foreign_key "work_orders", "users", column: "created_by_id"

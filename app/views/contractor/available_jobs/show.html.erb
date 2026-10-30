@@ -1,0 +1,103 @@
+<% content_for :title, @job.title %>
+<% needs_walkthrough = @job.walkthrough_required? && @booking.nil? %>
+
+<%= link_to contractor_available_jobs_path, class: "mb-3 inline-flex items-center gap-1 text-sm text-brand-700 hover:text-brand-800 dark:text-brand-300" do %>
+  <%= icon_tag :arrow_left, classes: "h-4 w-4" %> Back to Find work
+<% end %>
+
+<%= render "shared/page_header", title: @job.title, subtitle: @job.location_label %>
+
+<div class="mb-6 flex flex-wrap items-center gap-2">
+  <%= trade_badges(@job.trades) %>
+  <%= job_status_badge(@job) %>
+  <% if @job.proposal_deadline %>
+    <span class="text-sm text-slate-500 dark:text-slate-400">Proposals due <%= @job.proposal_deadline.to_fs(:long) %></span>
+  <% end %>
+</div>
+
+<div class="grid gap-6 lg:grid-cols-3">
+  <div class="space-y-6 lg:col-span-2">
+    <div class="<%= panel_card_class %>">
+      <h2 class="text-sm font-medium text-slate-500 dark:text-slate-400">Description</h2>
+      <p class="mt-1 whitespace-pre-line text-slate-900 dark:text-slate-100"><%= @job.description.presence || "No description provided." %></p>
+    </div>
+
+    <% if @job.attachments.attached? %>
+      <div class="<%= panel_card_class %>">
+        <h2 class="mb-3 text-lg font-semibold text-slate-900 dark:text-slate-100">Photos and scope documents</h2>
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <% @job.attachments.each do |file| %>
+            <%= link_to rails_blob_path(file, disposition: "inline"), target: "_blank", rel: "noopener", class: "block overflow-hidden rounded-lg border border-[var(--color-border)] text-center" do %>
+              <% if file.image? %>
+                <%= image_tag file.variant(resize_to_fill: [ 300, 300 ]), class: "aspect-square w-full object-cover", alt: file.filename.to_s %>
+              <% else %>
+                <div class="flex aspect-square flex-col items-center justify-center gap-2 bg-slate-50 p-2 text-slate-500 dark:bg-slate-700/40">
+                  <%= icon_tag :document, classes: "h-8 w-8" %>
+                  <span class="line-clamp-2 break-all text-xs"><%= file.filename %></span>
+                </div>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="<%= panel_card_class %>">
+      <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Walkthrough</h2>
+
+      <% if @booking %>
+        <p class="mt-2 flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-300">
+          <%= icon_tag :check, classes: "h-5 w-5" %>
+          Reserved: <%= format_slot_range(@booking.walkthrough_slot) %>
+        </p>
+        <% if policy(@booking).destroy? %>
+          <%= button_to "Cancel walkthrough", contractor_walkthrough_booking_path(@booking), method: :delete, class: "mt-2 cursor-pointer text-sm text-rose-600 hover:text-rose-700 dark:text-rose-400", form: { data: { turbo_confirm: "Cancel this walkthrough?" } } %>
+        <% end %>
+      <% elsif @slots.empty? %>
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">The landlord has not published walkthrough times for this job.</p>
+      <% else %>
+        <p class="text-sm text-slate-500 dark:text-slate-400">
+          Select a walkthrough time. Times are shown in <%= @job.timezone.sub(" (US & Canada)", "") %>.
+          <% if @job.walkthrough_required? %><strong class="text-slate-700 dark:text-slate-200">A walkthrough is required before you can submit a proposal.</strong><% end %>
+        </p>
+        <% @slots.group_by(&:day_label).each do |day, slots| %>
+          <p class="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400"><%= day %></p>
+          <ul class="mt-1 space-y-2">
+            <% slots.each do |slot| %>
+              <li class="flex items-center justify-between gap-3 rounded-lg border border-[var(--color-border)] px-3 py-2">
+                <span class="text-sm <%= slot.available? ? "text-slate-900 dark:text-slate-100" : "text-slate-400 line-through" %>"><%= slot.time_range_label %></span>
+                <% if slot.past? %>
+                  <span class="text-xs text-slate-500 dark:text-slate-400">Passed</span>
+                <% elsif slot.full? %>
+                  <span class="text-xs text-slate-500 dark:text-slate-400">Booked</span>
+                <% elsif policy(WalkthroughBooking.new(walkthrough_slot: slot, contractor: current_user)).create? %>
+                  <%= button_to "Reserve walkthrough", contractor_available_job_walkthrough_bookings_path(@job), params: { slot_id: slot.id }, method: :post, class: "#{button_classes(:primary, size: :sm)} cursor-pointer" %>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <aside>
+    <div class="<%= panel_card_class %> space-y-3">
+      <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Your proposal</h2>
+
+      <% if @proposal %>
+        <p class="text-sm text-slate-500 dark:text-slate-400">You submitted <%= format_cents(@proposal.amount_cents) %> on <%= @proposal.created_at.to_fs(:short) %>.</p>
+        <div><%= proposal_status_badge(@proposal) %></div>
+        <%= link_to "View proposal", contractor_proposal_path(@proposal), class: "#{button_classes(:secondary)} w-full" %>
+      <% elsif !@job.accepting_proposals? %>
+        <p class="text-sm text-slate-500 dark:text-slate-400">This job is no longer accepting proposals.</p>
+      <% elsif needs_walkthrough %>
+        <p class="text-sm text-slate-500 dark:text-slate-400">Reserve a walkthrough first. The landlord requires one before proposals.</p>
+        <span class="<%= button_classes(:primary) %> w-full cursor-not-allowed opacity-50" aria-disabled="true">Submit a proposal</span>
+      <% else %>
+        <p class="text-sm text-slate-500 dark:text-slate-400">Send your price, scope, and timeline for this job.</p>
+        <%= link_to "Submit a proposal", new_contractor_available_job_proposal_path(@job), class: "#{button_classes(:primary)} w-full" %>
+      <% end %>
+    </div>
+  </aside>
+</div>

@@ -1,0 +1,42 @@
+<% content_for :title, "Proposals" %>
+
+<%= render "shared/page_header",
+      title: "Proposals",
+      subtitle: "Request proposals from contractors and compare pricing.",
+      action: render("shared/button", label: "Request proposals", url: new_job_path, variant: :primary) %>
+
+<div class="mb-4 flex flex-wrap gap-2">
+  <% [ [ "All", nil ], [ "Draft", "draft" ], [ "Open", "open" ], [ "Awarded", "awarded" ], [ "Closed", "closed" ] ].each do |label, value| %>
+    <% active = @status_filter == value %>
+    <%= link_to label, jobs_path(status: value), class: "rounded-full px-3 py-1 text-sm font-medium #{active ? "bg-brand-100 text-brand-800 dark:bg-brand-900/30 dark:text-brand-300" : "bg-slate-100 text-slate-500 hover:text-slate-900 dark:bg-slate-700 dark:text-slate-400 dark:hover:text-slate-100"}" %>
+  <% end %>
+</div>
+
+<% if @jobs.any? %>
+  <div class="space-y-3">
+    <% @jobs.each do |job| %>
+      <% job_link = job.status_draft? ? review_job_path(job) : job_path(job) %>
+      <%= link_to job_link, class: "#{grid_card_class} flex flex-wrap items-center justify-between gap-4" do %>
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-center gap-2">
+            <p class="font-semibold text-slate-900 dark:text-slate-100"><%= job.title %></p>
+            <%= job_status_badge(job) %>
+          </div>
+          <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-400"><%= job.location_label %></p>
+          <div class="mt-2 flex flex-wrap gap-1.5"><%= trade_badges(job.trades) %></div>
+        </div>
+        <div class="text-right text-sm text-slate-500 dark:text-slate-400">
+          <p class="font-medium text-slate-900 dark:text-slate-100"><%= pluralize(job.proposals.count { |proposal| proposal.submitted? || proposal.awarded? }, "proposal") %></p>
+          <% if job.proposal_deadline %>
+            <p>Due <%= job.proposal_deadline.strftime("%b %-d") %></p>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <%= render "shared/empty_state",
+        title: "No job requests yet",
+        description: "Post a job, pick the trades you need, and contractors will send proposals.",
+        action: render("shared/button", label: "Request proposals", url: new_job_path, variant: :primary) %>
+<% end %>

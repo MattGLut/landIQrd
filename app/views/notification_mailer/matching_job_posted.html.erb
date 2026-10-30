@@ -1,0 +1,12 @@
+<p>Hi <%= @recipient.greeting_name %>,</p>
+
+<p>
+  A new <strong><%= @job.trade_labels.to_sentence %></strong> job was posted near
+  <%= @job.location_label %>: <strong><%= @job.title %></strong>.
+</p>
+
+<% if @job.proposal_deadline.present? %>
+  <p>Proposals are due <%= @job.proposal_deadline.to_fs(:long) %>.</p>
+<% end %>
+
+<p><%= link_to "View job and submit a proposal", contractor_available_job_url(@job) %></p>

@@ -36,6 +36,21 @@ class User < ApplicationRecord
       label: "Lease ended",
       description: "When an active lease reaches its end date.",
       roles: %i[tenant landlord]
+    },
+    matching_job_posted: {
+      label: "Matching jobs",
+      description: "When a landlord posts a job that matches your trades and service area.",
+      roles: %i[contractor]
+    },
+    proposal_received: {
+      label: "New proposals",
+      description: "When a contractor submits a proposal on one of your jobs.",
+      roles: %i[landlord]
+    },
+    proposal_awarded: {
+      label: "Awarded proposals",
+      description: "When a landlord awards your proposal and creates a work order.",
+      roles: %i[contractor]
     }
   }.freeze
 
@@ -48,6 +63,9 @@ class User < ApplicationRecord
   has_many :work_order_assignments, foreign_key: :contractor_id, dependent: :destroy, inverse_of: :contractor
   has_many :assigned_work_orders, through: :work_order_assignments, source: :work_order
   has_many :contractor_portfolio_items, foreign_key: :contractor_id, dependent: :destroy, inverse_of: :contractor
+  has_many :created_jobs, class_name: "Job", foreign_key: :created_by_id, dependent: :destroy, inverse_of: :created_by
+  has_many :proposals, foreign_key: :contractor_id, dependent: :destroy, inverse_of: :contractor
+  has_many :walkthrough_bookings, foreign_key: :contractor_id, dependent: :destroy, inverse_of: :contractor
   has_many :conversation_participants, dependent: :destroy
   has_many :conversations, through: :conversation_participants
   has_many :messages, foreign_key: :author_id, dependent: :destroy, inverse_of: :author
@@ -62,6 +80,11 @@ class User < ApplicationRecord
   validates :website_url, format: { with: URI::DEFAULT_PARSER.make_regexp(%w[http https]), allow_blank: true }
   validate :avatar_content_type
   validate :avatar_size
+  validates :service_radius_miles, numericality: { only_integer: true, greater_than_or_equal_to: 5, less_than_or_equal_to: 500 }
+  validates :service_state, length: { maximum: 30 }, allow_blank: true
+  validate :trades_are_known
+
+  before_validation :normalize_trades
 
   def full_name
     [ first_name, last_name ].compact_blank.join(" ").presence || email
@@ -107,7 +130,22 @@ class User < ApplicationRecord
     contractor_portfolio_items.for_category(category).ordered
   end
 
+  def service_area_label
+    place = [ service_city, service_state ].compact_blank.join(", ")
+    place.present? ? "#{place} (serves #{service_radius_miles} mi)" : "Service area not set"
+  end
+
   private
+
+  def normalize_trades
+    self.trades = Array(trades).compact_blank.map(&:to_s).uniq
+  end
+
+  def trades_are_known
+    return if (trades - WorkOrderCategory::MARKETPLACE_TRADES).empty?
+
+    errors.add(:trades, "include an unknown trade")
+  end
 
   def avatar_content_type
     return unless avatar.attached?

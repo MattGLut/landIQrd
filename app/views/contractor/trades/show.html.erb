@@ -1,0 +1,68 @@
+<% content_for :title, "My trades" %>
+<% label_class = "block text-sm font-medium text-slate-700 dark:text-slate-300" %>
+
+<%= render "shared/page_header", title: "My trades & matching work", subtitle: "Find work that matches your trades and service area." %>
+
+<div class="grid gap-6 lg:grid-cols-5">
+  <%= form_with model: @user, scope: :user, url: contractor_trades_path, method: :patch, class: "#{panel_card_class} h-fit space-y-5 lg:col-span-2" do |f| %>
+    <%= render "shared/form_errors", resource: @user %>
+
+    <fieldset>
+      <legend class="text-lg font-semibold text-slate-900 dark:text-slate-100">Choose the work you do</legend>
+      <p class="text-sm text-slate-500 dark:text-slate-400">Select all trades that apply. We'll show you matching opportunities in your service area.</p>
+      <%= hidden_field_tag "user[trades][]", "", id: nil %>
+      <div class="mt-3 grid grid-cols-2 gap-2">
+        <% WorkOrder.marketplace_trade_options.each do |label, key| %>
+          <label class="<%= trade_checkbox_label_classes %>">
+            <%= check_box_tag "user[trades][]", key, @user.trades.include?(key), id: "user_trades_#{key}", class: "h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500" %>
+            <span><%= label %></span>
+          </label>
+        <% end %>
+      </div>
+    </fieldset>
+
+    <div>
+      <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Service area</h3>
+      <p class="text-xs text-slate-500 dark:text-slate-400">Set the area where you're available to work.</p>
+      <div class="mt-2 grid grid-cols-3 gap-3">
+        <div class="col-span-2">
+          <%= f.label :service_city, "City", class: label_class %>
+          <%= f.text_field :service_city, class: form_input_class, placeholder: "Chattanooga" %>
+        </div>
+        <div>
+          <%= f.label :service_state, "State", class: label_class %>
+          <%= f.text_field :service_state, class: form_input_class, placeholder: "TN" %>
+        </div>
+      </div>
+      <div class="mt-3 max-w-xs">
+        <%= f.label :service_radius_miles, "Radius", class: label_class %>
+        <%= f.select :service_radius_miles, [ 10, 25, 30, 50, 75, 100, 200 ].map { |miles| [ "#{miles} miles", miles ] }, {}, class: form_input_class %>
+      </div>
+    </div>
+
+    <label class="flex cursor-pointer items-center justify-between gap-3 border-t border-[var(--color-border)] pt-4">
+      <span class="text-sm font-medium text-slate-900 dark:text-slate-100">Notify me about matching jobs</span>
+      <%= f.check_box :notify_matching_jobs, class: "peer sr-only" %>
+      <span class="relative h-6 w-11 shrink-0 rounded-full bg-slate-300 transition-colors after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-transform after:content-[''] peer-checked:bg-brand-500 peer-checked:after:translate-x-5 peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500 peer-focus-visible:ring-offset-2"></span>
+    </label>
+
+    <%= f.submit "Save preferences", class: "#{button_classes(:primary)} w-full cursor-pointer", data: { turbo_submits_with: "Saving..." } %>
+  <% end %>
+
+  <section class="space-y-4 lg:col-span-3">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Matching opportunities</h2>
+      <%= link_to "Browse all work", contractor_available_jobs_path, class: "text-sm font-medium text-brand-700 hover:text-brand-800 dark:text-brand-300" %>
+    </div>
+
+    <% if @user.trades.empty? %>
+      <%= render "shared/empty_state", title: "Pick your trades", description: "Choose at least one trade and save to see jobs that match." %>
+    <% elsif @opportunities.empty? %>
+      <%= render "shared/empty_state", title: "No open jobs match right now", description: "We'll email you when a job matching your trades and service area is posted." %>
+    <% else %>
+      <% @opportunities.each do |job| %>
+        <%= render "contractor/available_jobs/job", job: job, proposed: @user.proposals.exists?(job_id: job.id) %>
+      <% end %>
+    <% end %>
+  </section>
+</div>

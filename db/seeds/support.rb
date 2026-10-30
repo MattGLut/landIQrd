@@ -118,6 +118,8 @@ module Seeds
       Message.delete_all
       ConversationParticipant.delete_all
       Conversation.delete_all
+      WorkOrder.where.not(proposal_id: nil).update_all(proposal_id: nil)
+      Job.find_each(&:destroy!)
       WorkOrderEvent.delete_all
       WorkOrderAssignment.delete_all
       WorkOrder.delete_all
@@ -307,6 +309,7 @@ module Seeds
       puts "  Work orders:  #{WorkOrder.count}"
       puts "  Assignments:  #{WorkOrderAssignment.count} (#{WorkOrderAssignment.where.not(scheduled_at: nil).count} scheduled)"
       puts "  Portfolio:    #{ContractorPortfolioItem.count} contractor portfolio items"
+      puts "  Jobs (RFPs):  #{Job.count} (#{Job.status_open.count} open, #{Proposal.count} proposals)"
       puts "  Conversations:#{Conversation.count}"
       puts ""
       puts "Stable logins:"

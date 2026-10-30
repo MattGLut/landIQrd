@@ -30,9 +30,11 @@ require_relative "seeds/portfolios"
 require_relative "seeds/contractor_portfolios"
 require_relative "seeds/tenancy"
 require_relative "seeds/operations"
+require_relative "seeds/marketplace"
 
 if Seeds::Support.already_seeded? && !Seeds::Support.force_reseed?
   Seeds::ContractorPortfolios.seed!
+  Seeds::Support.silence_side_effects { Seeds::Marketplace.seed! }
   Seeds::Support.print_skipped_summary
   return
 end
@@ -44,6 +46,7 @@ Seeds::Support.silence_side_effects do
   Seeds::ContractorPortfolios.seed!
   Seeds::Tenancy.seed!
   Seeds::Operations.seed!
+  Seeds::Marketplace.seed!
 end
 
 Seeds::Support.print_summary

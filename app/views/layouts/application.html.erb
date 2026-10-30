@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html class="dark h-full bg-[var(--color-surface)]" data-controller="theme">
+<html class="h-full bg-[var(--color-surface)]" data-controller="theme">
   <head>
-    <title><%= content_for(:title) || "LandIQrd" %></title>
+    <title><%= content_for(:title) || "landIQrd" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="LandIQrd">
+    <meta name="application-name" content="landIQrd">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#339e3d">
+    <meta name="theme-color" content="#12203b">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -20,13 +20,27 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="h-full text-[var(--color-text-primary)] antialiased">
-    <%= render "shared/application_header" %>
+  <body class="min-h-full text-[var(--color-text-primary)] antialiased">
+    <% if user_signed_in? %>
+      <div class="min-h-screen" data-controller="mobile-nav" data-action="keydown@window->mobile-nav#keydown">
+        <%= render "shared/sidebar" %>
 
-    <%= render "shared/flash", below_header: true %>
+        <div class="md:pl-64">
+          <%= render "shared/application_header" %>
+          <%= render "shared/flash", below_header: true %>
 
-    <main class="mx-auto max-w-6xl px-6 py-10">
-      <%= yield %>
-    </main>
+          <main class="mx-auto max-w-6xl px-4 py-8 md:px-8 md:py-10">
+            <%= yield %>
+          </main>
+        </div>
+      </div>
+    <% else %>
+      <%= render "shared/public_header" %>
+      <%= render "shared/flash", below_header: true %>
+
+      <main class="mx-auto max-w-6xl px-6 py-10">
+        <%= yield %>
+      </main>
+    <% end %>
   </body>
 </html>

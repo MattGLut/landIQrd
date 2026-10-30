@@ -1,0 +1,44 @@
+<%# locals: (matches:, trades:) %>
+<div class="<%= panel_card_class %>">
+  <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Matching contractors</h2>
+  <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Matches use selected trades and property location.</p>
+
+  <% if trades.empty? %>
+    <p class="mt-6 rounded-lg border border-dashed border-slate-300 p-4 text-center text-sm text-slate-500 dark:border-slate-600 dark:text-slate-400">
+      Select the trades you need to see matching contractors.
+    </p>
+  <% elsif matches.empty? %>
+    <p class="mt-6 rounded-lg border border-dashed border-slate-300 p-4 text-center text-sm text-slate-500 dark:border-slate-600 dark:text-slate-400">
+      No contractors match these trades yet. You can still post the job; new contractors will see it in Find work.
+    </p>
+  <% else %>
+    <div class="mt-4 space-y-3">
+      <% matches.each do |match| %>
+        <% contractor = match.contractor %>
+        <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-card)] p-4">
+          <div class="flex items-start gap-3">
+            <%= render "shared/user_avatar", user: contractor, size: :md %>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-start justify-between gap-2">
+                <p class="truncate font-semibold text-slate-900 dark:text-slate-100"><%= contractor.display_name %></p>
+                <span class="<%= match_badge_classes %>"><%= match.percent %>% match</span>
+              </div>
+              <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                <%= match.shared_trades.map { |trade| WorkOrder.trade_label(trade) }.to_sentence %>
+              </p>
+              <p class="mt-1 flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
+                <%= icon_tag :pin, classes: "h-3.5 w-3.5" %>
+                <%= contractor.service_area_label %>
+              </p>
+            </div>
+          </div>
+          <div class="mt-3 text-right">
+            <%= link_to contractor_path(contractor), data: { turbo_frame: "_top" }, class: "inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:text-brand-800 dark:text-brand-300" do %>
+              View profile <%= icon_tag :arrow_right, classes: "h-4 w-4" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
