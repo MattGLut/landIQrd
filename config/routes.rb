@@ -38,6 +38,14 @@ Rails.application.routes.draw do
   end
 
   resources :contractors, only: [ :index, :show ]
+  resources :contractor_relationships, only: [ :index, :create, :update, :destroy ] do
+    member do
+      post :accept
+      post :decline
+      post :request_again
+    end
+  end
+  resources :quick_jobs, only: [ :new, :create ]
 
   # Request-for-proposals (landlord side)
   resources :jobs do

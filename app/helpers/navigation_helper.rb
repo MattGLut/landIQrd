@@ -54,6 +54,7 @@ module NavigationHelper
       items << NavItem.new(label: "Find work", path: contractor_available_jobs_path, icon: :search)
       items << NavItem.new(label: "Walkthroughs", path: contractor_walkthrough_bookings_path, icon: :calendar)
       items << NavItem.new(label: "Proposals", path: contractor_proposals_path, icon: :document)
+      items << NavItem.new(label: "Contacts", path: contractor_relationships_path, icon: :contractors, badge: user.landlord_relationships.status_pending.count)
       items << NavItem.new(label: work_orders_nav_label, path: work_orders_path(status: "active"), match: work_orders_path, icon: :work_orders, exclude: schedule_work_orders_path)
       items << NavItem.new(label: "Schedule", path: schedule_work_orders_path, icon: :calendar)
       items << NavItem.new(label: "Portfolio", path: contractor_portfolio_items_path, icon: :portfolio)

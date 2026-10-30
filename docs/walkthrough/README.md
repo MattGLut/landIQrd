@@ -101,7 +101,7 @@ Sign out, then sign in as `contractor@propman.test`. Sidebar → **My trades**.
 
 The contractor checks trades, sets city, state, and radius, and can turn matching-job email on or off. **Save preferences** stores it. Matching opportunities on the right are open jobs that share a trade. This account is roofing, painting, plumbing, and general, based in Austin, TX, within 50 miles.
 
-The contractor sidebar is Dashboard, My trades, Find work, Walkthroughs, Proposals, Assigned Work, Schedule, Portfolio, Company profile, and Messages.
+The contractor sidebar is Dashboard, My trades, Find work, Walkthroughs, Proposals, Contacts, Assigned Work, Schedule, Portfolio, Company profile, and Messages. Contacts is the [quick job](../features/quick-jobs.md) relationship, not part of this bid tour.
 
 ## 11. Find work
 

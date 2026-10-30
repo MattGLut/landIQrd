@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_30_140300) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_30_153000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -53,6 +53,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_30_140300) do
     t.index ["contractor_id", "category"], name: "index_contractor_portfolio_items_on_contractor_id_and_category"
     t.index ["contractor_id", "position"], name: "index_contractor_portfolio_items_on_contractor_id_and_position"
     t.index ["contractor_id"], name: "index_contractor_portfolio_items_on_contractor_id"
+  end
+
+  create_table "contractor_relationships", force: :cascade do |t|
+    t.bigint "landlord_id", null: false
+    t.bigint "contractor_id", null: false
+    t.integer "kind", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "status", default: 0, null: false
+    t.index ["contractor_id"], name: "index_contractor_relationships_on_contractor_id"
+    t.index ["landlord_id", "contractor_id"], name: "idx_on_landlord_id_contractor_id_82ce208e85", unique: true
+    t.index ["landlord_id"], name: "index_contractor_relationships_on_landlord_id"
+    t.index ["status"], name: "index_contractor_relationships_on_status"
   end
 
   create_table "conversation_participants", force: :cascade do |t|
@@ -413,6 +426,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_30_140300) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "contractor_portfolio_items", "users", column: "contractor_id"
+  add_foreign_key "contractor_relationships", "users", column: "contractor_id"
+  add_foreign_key "contractor_relationships", "users", column: "landlord_id"
   add_foreign_key "conversation_participants", "conversations"
   add_foreign_key "conversation_participants", "users"
   add_foreign_key "conversations", "work_orders"

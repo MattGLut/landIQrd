@@ -35,6 +35,10 @@
     <% end %>
   </div>
 </div>
+<% if current_user.landlord? %>
+  <%= render "contractors/relationship", contractor: @contractor, relationship: @relationship %>
+<% end %>
+
 <% if @portfolio_items.any? %>
   <div class="space-y-4">
     <% @portfolio_items.group_by(&:category).sort.each do |category, items| %>

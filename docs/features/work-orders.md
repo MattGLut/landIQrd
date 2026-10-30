@@ -8,7 +8,7 @@ Sign in as `landlord@propman.test`. Sidebar → **Work Orders**.
 
 ![Work orders](images/work-orders-index.png)
 
-Filter chips are All, Active, Completed, and Cancelled. Each row is the title, the property and unit, a priority, and a status. **New work request** starts one. **Request proposals** jumps to the bid flow instead.
+Filter chips are All, Active, Completed, and Cancelled. Each row is the title, the property and unit, a priority, and a status. **New work request** starts one. **Request proposals** jumps to the bid flow. **Quick job** assigns an accepted contact without a bid. That path is in [Quick jobs](quick-jobs.md).
 
 Open Kitchen faucet leak.
 

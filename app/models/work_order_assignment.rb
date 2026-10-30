@@ -7,7 +7,17 @@ class WorkOrderAssignment < ApplicationRecord
   validates :contractor_id, uniqueness: { scope: :work_order_id }
   validate :contractor_must_be_contractor
 
+  def status_color
+    {
+      "pending" => :yellow,
+      "accepted" => :blue,
+      "declined" => :red,
+      "completed" => :green
+    }.fetch(status, :gray)
+  end
+
   after_commit :sync_conversation_and_notify, on: :create
+  after_commit :notify_response, on: :update
   after_commit :resync_conversation, on: :destroy
 
   private
@@ -25,5 +35,12 @@ class WorkOrderAssignment < ApplicationRecord
 
   def resync_conversation
     work_order.conversation&.sync_work_order_participants!
+  end
+
+  def notify_response
+    return unless saved_change_to_status?
+    return unless status_accepted? || status_declined?
+
+    Notifications::Deliver.assignment_responded(self, actor: contractor)
   end
 end

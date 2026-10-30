@@ -60,7 +60,9 @@ RSpec.describe User, type: :model do
         :new_message,
         :lease_invitation_accepted,
         :lease_expiring,
-        :proposal_received
+        :proposal_received,
+        :relationship_responded,
+        :assignment_responded
       )
     end
 
@@ -68,7 +70,14 @@ RSpec.describe User, type: :model do
       user = build(:contractor)
       keys = user.applicable_email_notification_types.keys
 
-      expect(keys).to contain_exactly(:work_order_status_changed, :contractor_assigned, :new_message, :matching_job_posted, :proposal_awarded)
+      expect(keys).to contain_exactly(
+        :work_order_status_changed,
+        :contractor_assigned,
+        :new_message,
+        :matching_job_posted,
+        :proposal_awarded,
+        :relationship_requested
+      )
     end
   end
 

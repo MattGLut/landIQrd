@@ -12,6 +12,15 @@ class ContractorsController < ApplicationController
                                  .where(contractor_portfolio_items: { category: @category_filter })
                                  .distinct
     end
+
+    @relationship_filter = params[:relationship].presence_in(%w[mine])
+    @relationships_by_contractor = {}
+    return unless current_user.landlord?
+
+    @relationships_by_contractor = current_user.contractor_relationships.index_by(&:contractor_id)
+    return unless @relationship_filter == "mine"
+
+    @contractors = @contractors.where(id: current_user.contractor_relationships.select(:contractor_id))
   end
 
   def show
@@ -19,6 +28,7 @@ class ContractorsController < ApplicationController
     @portfolio_items = @contractor.contractor_portfolio_items
                                     .includes(photos_attachments: :blob)
                                     .ordered
+    @relationship = current_user.contractor_relationships.find_by(contractor: @contractor) if current_user.landlord?
   end
 
   private

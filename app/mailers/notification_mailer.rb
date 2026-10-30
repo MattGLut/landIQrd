@@ -14,7 +14,32 @@ class NotificationMailer < ApplicationMailer
   def contractor_assigned(assignment)
     @assignment = assignment
     @work_order = assignment.work_order
-    mail(to: assignment.contractor.email, subject: "You've been assigned: #{@work_order.title}")
+    mail(to: assignment.contractor.email, subject: "Job waiting for you: #{@work_order.title}")
+  end
+
+  def assignment_responded(assignment)
+    @assignment = assignment
+    @work_order = assignment.work_order
+    landlord = @work_order.unit.property.landlord
+    verb = assignment.status_accepted? ? "accepted" : "declined"
+    mail(to: landlord.email, subject: "#{assignment.contractor.display_name} #{verb}: #{@work_order.title}")
+  end
+
+  def relationship_requested(relationship)
+    @relationship = relationship
+    mail(
+      to: relationship.contractor.email,
+      subject: "#{relationship.landlord.display_name} wants to assign you jobs directly"
+    )
+  end
+
+  def relationship_responded(relationship)
+    @relationship = relationship
+    verb = relationship.status_accepted? ? "accepted" : "declined"
+    mail(
+      to: relationship.landlord.email,
+      subject: "#{relationship.contractor.display_name} #{verb} your contact request"
+    )
   end
 
   def new_message(message, recipient)

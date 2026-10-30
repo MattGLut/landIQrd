@@ -1,9 +1,15 @@
 <% content_for :title, "Proposals" %>
 
+<% proposal_actions = capture do %>
+  <% if current_user.landlord? %>
+    <%= render "shared/button", label: "Quick job", url: new_quick_job_path, variant: :secondary %>
+  <% end %>
+  <%= render "shared/button", label: "Request proposals", url: new_job_path, variant: :primary %>
+<% end %>
 <%= render "shared/page_header",
       title: "Proposals",
-      subtitle: "Request proposals from contractors and compare pricing.",
-      action: render("shared/button", label: "Request proposals", url: new_job_path, variant: :primary) %>
+      subtitle: "Request proposals from contractors, or assign a saved contractor directly.",
+      action: proposal_actions %>
 
 <div class="mb-4 flex flex-wrap gap-2">
   <% [ [ "All", nil ], [ "Draft", "draft" ], [ "Open", "open" ], [ "Awarded", "awarded" ], [ "Closed", "closed" ] ].each do |label, value| %>

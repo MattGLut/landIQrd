@@ -2,7 +2,20 @@
 
 <%= render "shared/page_header", title: "Contractors", subtitle: "Browse contractor portfolios and find the right trade for your work." %>
 
+<% if current_user.landlord? %>
+  <div class="mb-4 flex flex-wrap gap-2">
+    <% [
+      [ "All", nil ],
+      [ "My contractors", "mine" ]
+    ].each do |label, value| %>
+      <% active = @relationship_filter == value || (value.nil? && @relationship_filter.blank?) %>
+      <%= link_to label, contractors_path(category: @category_filter, relationship: value), class: "rounded-full px-3 py-1 text-sm font-medium #{active ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400' : 'bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'}" %>
+    <% end %>
+  </div>
+<% end %>
+
 <%= form_with url: contractors_path, method: :get, class: "mb-6 flex flex-wrap items-end gap-3" do %>
+  <%= hidden_field_tag :relationship, @relationship_filter if @relationship_filter.present? %>
   <div>
     <%= label_tag :category, "Filter by trade", class: "block text-xs text-slate-500 dark:text-slate-400" %>
     <%= select_tag :category,
@@ -26,6 +39,12 @@
             <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
               <%= pluralize(contractor.contractor_portfolio_items.size, "portfolio item") %>
             </p>
+            <% if (relationship = @relationships_by_contractor[contractor.id]) %>
+              <p class="mt-2 flex flex-wrap gap-1.5">
+                <%= status_badge relationship.label, :indigo %>
+                <%= status_badge relationship.status_label, relationship.status_color %>
+              </p>
+            <% end %>
             <% if contractor.website_url.present? %>
               <p class="mt-1 truncate text-sm text-brand-600 dark:text-brand-400"><%= contractor.website_url %></p>
             <% end %>

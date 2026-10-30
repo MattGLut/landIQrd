@@ -2,6 +2,7 @@
 
 <% index_actions = capture do %>
   <% if current_user.landlord? %>
+    <%= render "shared/button", label: "Quick job", url: new_quick_job_path, variant: :secondary %>
     <%= render "shared/button", label: "Request proposals", url: new_job_path, variant: :secondary %>
   <% end %>
   <% if current_user.tenant? || current_user.landlord? %>
