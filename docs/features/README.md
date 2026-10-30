@@ -26,6 +26,7 @@ These flows work from sign-in through the last click.
 | [Lease invitations](lease-invitations.md) | Landlord, tenant |
 | [Work orders](work-orders.md) | Landlord, tenant, contractor |
 | [Assigning a contractor](assigning-contractors.md) | Landlord, contractor |
+| [Quick jobs](quick-jobs.md) | Landlord, contractor |
 | [Messages](messages.md) | Landlord, contractor, tenant |
 | [Email notifications](notifications.md) | Landlord, contractor, tenant |
 | [Contractor directory and portfolio](contractor-directory.md) | Landlord, contractor |

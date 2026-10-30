@@ -51,6 +51,21 @@ class User < ApplicationRecord
       label: "Awarded proposals",
       description: "When a landlord awards your proposal and creates a work order.",
       roles: %i[contractor]
+    },
+    relationship_requested: {
+      label: "Direct-work requests",
+      description: "When a landlord asks to assign you jobs without a proposal.",
+      roles: %i[contractor]
+    },
+    relationship_responded: {
+      label: "Contact responses",
+      description: "When a contractor accepts or declines a direct-work request.",
+      roles: %i[landlord]
+    },
+    assignment_responded: {
+      label: "Job responses",
+      description: "When a contractor accepts or declines a job you assigned.",
+      roles: %i[landlord]
     }
   }.freeze
 
@@ -66,6 +81,10 @@ class User < ApplicationRecord
   has_many :created_jobs, class_name: "Job", foreign_key: :created_by_id, dependent: :destroy, inverse_of: :created_by
   has_many :proposals, foreign_key: :contractor_id, dependent: :destroy, inverse_of: :contractor
   has_many :walkthrough_bookings, foreign_key: :contractor_id, dependent: :destroy, inverse_of: :contractor
+  has_many :contractor_relationships, foreign_key: :landlord_id, dependent: :destroy, inverse_of: :landlord
+  has_many :related_contractors, through: :contractor_relationships, source: :contractor
+  has_many :landlord_relationships, class_name: "ContractorRelationship", foreign_key: :contractor_id,
+                                   dependent: :destroy, inverse_of: :contractor
   has_many :conversation_participants, dependent: :destroy
   has_many :conversations, through: :conversation_participants
   has_many :messages, foreign_key: :author_id, dependent: :destroy, inverse_of: :author

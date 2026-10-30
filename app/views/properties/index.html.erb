@@ -1,6 +1,7 @@
 <% content_for :title, "Properties" %>
 
 <% new_property = policy(Property).create? ? render("shared/button", label: "New property", url: new_property_path, variant: :primary) : nil %>
+<% add_property = policy(Property).create? ? render("shared/button", label: "Add property", url: new_property_path, variant: :primary) : nil %>
 <%= render "shared/page_header", title: "Properties", action: new_property %>
 
 <% if @properties.any? %>
@@ -9,5 +10,5 @@
   </div>
   <%= render "shared/pagination", collection: @properties %>
 <% else %>
-  <%= render "shared/empty_state", message: "No properties yet. Add your first one to get started.", action: new_property %>
+  <%= render "shared/empty_state", message: "No properties yet. Add your first one to get started.", action: add_property %>
 <% end %>

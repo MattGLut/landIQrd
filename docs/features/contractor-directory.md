@@ -12,7 +12,7 @@ Sign in as `landlord@propman.test`. Sidebar → **Contractors**.
 
 Filter by trade. Each card is the company, how many portfolio items they have, and a website.
 
-Open FixIt Co.
+Open FixIt Co. **Direct assignment** on that page is how a landlord asks to save them for [quick jobs](quick-jobs.md).
 
 ![FixIt Co](images/contractor-profile.png)
 

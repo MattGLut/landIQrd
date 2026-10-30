@@ -37,6 +37,16 @@ RSpec.describe WorkOrderEvent, type: :model do
       expect(event.description).to include("Fixed it myself")
     end
 
+    it "describes a direct assignment" do
+      event = described_class.create!(
+        work_order: work_order,
+        user: user,
+        action: "assigned",
+        metadata: { "contractor_name" => "FixIt Co", "relationship" => "business" }
+      )
+      expect(event.description).to eq("Toni Tenant sent this job directly to FixIt Co (business contact) and is waiting for them to accept.")
+    end
+
     it "describes field updates" do
       event = described_class.create!(
         work_order: work_order,

@@ -27,6 +27,25 @@ module Notifications
       end
     end
 
+    def self.assignment_responded(assignment, actor:)
+      landlord = assignment.work_order.unit.property.landlord
+      deliver_to(landlord, actor, type: :assignment_responded) do
+        NotificationMailer.assignment_responded(assignment).deliver_later
+      end
+    end
+
+    def self.relationship_requested(relationship, actor:)
+      deliver_to(relationship.contractor, actor, type: :relationship_requested) do
+        NotificationMailer.relationship_requested(relationship).deliver_later
+      end
+    end
+
+    def self.relationship_responded(relationship, actor:)
+      deliver_to(relationship.landlord, actor, type: :relationship_responded) do
+        NotificationMailer.relationship_responded(relationship).deliver_later
+      end
+    end
+
     def self.new_message(message, actor:)
       message.conversation.participants.where.not(id: actor.id).find_each do |recipient|
         deliver_to(recipient, actor, type: :new_message) do

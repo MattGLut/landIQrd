@@ -2,7 +2,7 @@ class WorkOrderEvent < ApplicationRecord
   belongs_to :work_order
   belongs_to :user, optional: true
 
-  ACTIONS = %w[created updated status_changed closed cancelled].freeze
+  ACTIONS = %w[created updated status_changed closed cancelled assigned].freeze
 
   validates :action, presence: true, inclusion: { in: ACTIONS }
 
@@ -24,6 +24,11 @@ class WorkOrderEvent < ApplicationRecord
       reason = metadata["closure_reason"].presence
       base = "#{actor_label} cancelled this request."
       reason ? "#{base} Reason: #{reason}" : base
+    when "assigned"
+      name = metadata["contractor_name"].presence || "a contractor"
+      kind = metadata["relationship"].presence
+      relation = kind ? " (#{kind} contact)" : ""
+      "#{actor_label} sent this job directly to #{name}#{relation} and is waiting for them to accept."
     else
       action.humanize
     end

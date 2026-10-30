@@ -15,7 +15,7 @@ class WorkOrderAssignmentsController < ApplicationController
     @assignment = @work_order.work_order_assignments.find(params[:id])
     authorize @assignment
     if @assignment.update(update_params)
-      redirect_to @work_order, notice: "Assignment updated."
+      redirect_to @work_order, notice: assignment_notice
     else
       redirect_to @work_order, alert: @assignment.errors.full_messages.to_sentence
     end
@@ -40,5 +40,13 @@ class WorkOrderAssignmentsController < ApplicationController
 
   def update_params
     params.require(:work_order_assignment).permit(:status, :scheduled_at)
+  end
+
+  def assignment_notice
+    case @assignment.status
+    when "accepted" then "Job accepted."
+    when "declined" then "Job declined."
+    else "Assignment updated."
+    end
   end
 end

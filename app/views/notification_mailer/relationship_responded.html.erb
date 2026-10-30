@@ -1,0 +1,5 @@
+Hi <%= @relationship.landlord.greeting_name %>,
+
+<%= @relationship.contractor.display_name %> <%= @relationship.status_accepted? ? "accepted" : "declined" %> your <%= @relationship.kind %> contact request.
+
+<%= link_to "View contractor", contractor_url(@relationship.contractor) %>

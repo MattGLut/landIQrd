@@ -8,7 +8,7 @@ Sign in as `landlord@propman.test`. Sidebar → **Proposals**.
 
 ![Proposals](../walkthrough/03-proposals-index.png)
 
-Every request, with status (draft, open, awarded, closed), trades, a proposal count, and a deadline. **Request proposals** starts one. Filter chips limit the list.
+Every request, with status (draft, open, awarded, closed), trades, a proposal count, and a deadline. **Request proposals** starts one. **Quick job** skips this list and assigns a saved contractor. That path is in [Quick jobs](quick-jobs.md). Filter chips limit the list.
 
 ![New job](../walkthrough/04-new-job.png)
 

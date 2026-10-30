@@ -1,0 +1,80 @@
+<% content_for :title, "Quick job" %>
+
+<div class="mx-auto max-w-2xl">
+  <%= render "shared/page_header",
+        title: "Quick job",
+        subtitle: "Assign work to a contractor you already work with. This skips proposals and walkthroughs." %>
+
+  <%= render "shared/form_errors", resource: @quick_job if @quick_job.errors.any? %>
+
+  <% if @relationships.any? %>
+    <% unit_types = @units.index_with { |unit| unit.effective_type }.transform_keys(&:id) %>
+    <%= form_with model: @quick_job, url: quick_jobs_path, class: "space-y-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800", data: { controller: "work-order-category", work_order_category_unit_types_value: unit_types.to_json } do |f| %>
+      <%= render "shared/form_errors", resource: @quick_job %>
+
+      <div>
+        <%= f.label :contractor_id, "Contractor", class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+        <%= f.collection_select :contractor_id, @relationships, :contractor_id, :contractor_option_label, { include_blank: "Select a contractor" }, class: form_input_class %>
+        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Only contacts who have accepted are listed. They still accept each job after you send it.</p>
+      </div>
+
+      <div>
+        <%= f.label :unit_id, "Unit", class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+        <%= f.collection_select :unit_id, @units, :id, :full_label, { include_blank: "Select a unit" }, class: form_input_class, data: { work_order_category_target: "unitSelect" } %>
+      </div>
+
+      <div>
+        <%= f.label :title, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+        <%= f.text_field :title, class: form_input_class %>
+      </div>
+
+      <div>
+        <%= f.label :description, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+        <%= f.text_area :description, rows: 4, class: form_input_class %>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <%= f.label :category, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+          <%= f.select :category, WorkOrder.categories.keys.map { |category| [ category.titleize, category ] }, {}, class: form_input_class, data: { work_order_category_target: "categorySelect" } %>
+        </div>
+        <div>
+          <%= f.label :priority, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+          <%= f.select :priority, WorkOrder.priorities.keys.map { |priority| [ priority.titleize, priority ] }, {}, class: form_input_class %>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <%= f.label :price, "Agreed price", class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+          <%= f.text_field :price, class: form_input_class, placeholder: "250.00", inputmode: "decimal" %>
+          <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Optional. Leave blank if you have not settled a price.</p>
+        </div>
+        <div>
+          <%= f.label :scheduled_at, "Scheduled", class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+          <%= f.datetime_field :scheduled_at, class: form_input_class %>
+        </div>
+      </div>
+
+      <div>
+        <%= f.label :photos, class: "block text-sm font-medium text-slate-500 dark:text-slate-400" %>
+        <%= f.file_field :photos, multiple: true, accept: "image/*", class: "#{form_file_input_class} mt-1 block w-full" %>
+      </div>
+
+      <div class="flex gap-2">
+        <%= f.submit "Assign job", class: button_classes(:primary), data: { turbo_submits_with: "Assigning…" } %>
+        <%= render "shared/button", label: "Cancel", url: work_orders_path, variant: :secondary %>
+      </div>
+    <% end %>
+  <% elsif @pending_count.positive? %>
+    <%= render "shared/empty_state",
+          title: "Waiting for acceptance",
+          description: "Your contact request is with the contractor. They have to accept before you can assign a quick job.",
+          action: render("shared/button", label: "Browse contractors", url: contractors_path(relationship: "mine"), variant: :secondary) %>
+  <% else %>
+    <%= render "shared/empty_state",
+          title: "No accepted contractors yet",
+          description: "Open a contractor and send a personal or business contact request. After they accept, you can assign jobs directly.",
+          action: render("shared/button", label: "Browse contractors", url: contractors_path, variant: :primary) %>
+  <% end %>
+</div>

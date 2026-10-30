@@ -31,7 +31,7 @@
 <% if @work_order.price_cents %>
   <div class="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-brand-200 bg-brand-50 px-4 py-3 text-sm dark:border-brand-800 dark:bg-brand-900/20">
     <p class="text-brand-900 dark:text-brand-100">
-      Awarded price <strong class="ml-1 text-lg"><%= format_cents(@work_order.price_cents) %></strong>
+      <%= @work_order.proposal ? "Awarded price" : "Agreed price" %> <strong class="ml-1 text-lg"><%= format_cents(@work_order.price_cents) %></strong>
       <% if @work_order.proposal %>
         to <%= @work_order.proposal.contractor.display_name %>
       <% end %>
@@ -92,9 +92,12 @@
             </p>
           </div>
           <div class="flex items-center gap-3">
-            <%= status_badge assignment.status.titleize, assignment.status_completed? ? :green : :gray %>
+            <%= status_badge assignment.status.titleize, assignment.status_color %>
 
-            <% if assignment.contractor_id == current_user.id %>
+            <% if assignment.contractor_id == current_user.id && assignment.status_pending? %>
+              <%= button_to "Accept job", work_order_work_order_assignment_path(@work_order, assignment), method: :patch, params: { work_order_assignment: { status: "accepted" } }, class: button_classes(:primary, size: :sm) %>
+              <%= button_to "Decline job", work_order_work_order_assignment_path(@work_order, assignment), method: :patch, params: { work_order_assignment: { status: "declined" } }, class: button_classes(:secondary, size: :sm) %>
+            <% elsif assignment.contractor_id == current_user.id %>
               <%= form_with model: [ @work_order, assignment ], method: :patch, class: "flex items-center gap-2" do |f| %>
                 <%= f.select :status, WorkOrderAssignment.statuses.keys.map { |s| [ s.titleize, s ] }, {}, class: "#{form_input_class} py-1" %>
                 <%= f.submit "Update", class: button_classes(:primary, size: :sm), data: { turbo_submits_with: "Updating…" } %>

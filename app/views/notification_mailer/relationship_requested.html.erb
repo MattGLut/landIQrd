@@ -1,0 +1,5 @@
+Hi <%= @relationship.contractor.greeting_name %>,
+
+<%= @relationship.landlord.display_name %> asked to save you as a <%= @relationship.kind %> contact so they can assign jobs without requesting proposals.
+
+<%= link_to "Review the request", contractor_relationships_url %>
