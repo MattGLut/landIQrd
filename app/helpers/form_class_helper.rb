@@ -8,6 +8,13 @@ module FormClassHelper
       "px-3 py-2 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm"
   end
 
+  # Same outer height as button_classes(..., size: :sm): text-xs line plus py-1.5.
+  def form_compact_select_class
+    "mt-1 block h-7 w-full rounded-md border border-slate-300 bg-white px-3 py-0 text-xs leading-4 shadow-sm " \
+      "focus:border-brand-500 focus:ring-brand-500 " \
+      "dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+  end
+
   def form_input_lg_class
     "mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 " \
       "text-sm shadow-sm focus:border-brand-500 focus:outline-none " \
