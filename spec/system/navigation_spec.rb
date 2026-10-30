@@ -95,4 +95,34 @@ RSpec.describe "Navigation" do
       expect(page).to have_css("#mobile-nav-panel.hidden", visible: :all)
     end
   end
+
+  describe "account menu", js: true do
+    let(:landlord) { create(:landlord, first_name: "Lana") }
+
+    # iPhone Safari never applies a lasting :hover, so the menu has to open on tap.
+    it "opens on tap and stays open after hover and focus drop" do
+      sign_in_and_visit(landlord)
+      mobile_viewport
+      visit current_path
+
+      expect(page).to have_css("#account-menu.hidden", visible: :all)
+
+      find("[aria-controls='account-menu']").click
+      page.execute_script("document.activeElement.blur()")
+      find("main").hover
+
+      click_link "Account settings"
+      expect(page).to have_current_path(edit_account_path)
+    end
+
+    it "signs out from a phone" do
+      sign_in_and_visit(landlord)
+      mobile_viewport
+      visit current_path
+
+      sign_out_via_header
+
+      expect(page).to have_current_path(new_user_session_path)
+    end
+  end
 end
