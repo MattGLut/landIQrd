@@ -1,5 +1,7 @@
 # Marketplace and design walkthrough
 
+This is the proposal-flow tour only. The rest of the product, feature by feature, is in [the feature set](../features/README.md).
+
 Guided tour of the request-for-proposals flow and the navy, gold, and cream layout. Screenshots are from a fresh demo database (`password123` on every account below). The app in these shots is running at `http://localhost:3000`.
 
 | Role | Email |
