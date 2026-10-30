@@ -1,6 +1,6 @@
 <header
   id="application-header"
-  class="sticky top-0 z-20 border-b border-[var(--color-border)] bg-[var(--color-surface-card)]">
+  class="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-surface-card)]">
   <div class="flex items-center justify-between gap-4 px-4 py-3 md:px-8">
     <div class="flex min-w-0 items-center gap-3 md:hidden">
       <button
@@ -39,20 +39,32 @@
         <% end %>
       <% end %>
 
-      <div class="group relative">
-        <button type="button" class="flex cursor-pointer items-center gap-2 rounded-full py-1 pl-1 pr-2 text-left text-sm text-[var(--color-text-primary)] hover:bg-[var(--color-surface-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+      <div
+        class="relative"
+        data-controller="account-menu"
+        data-action="click@window->account-menu#closeIfOutside keydown@window->account-menu#keydown turbo:before-visit@document->account-menu#close turbo:before-cache@document->account-menu#close">
+        <button
+          type="button"
+          class="account-menu-trigger flex cursor-pointer items-center gap-2 rounded-full py-1 pl-1 pr-2 text-left text-sm text-[var(--color-text-primary)] hover:bg-[var(--color-surface-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+          data-account-menu-target="button"
+          data-action="click->account-menu#toggle"
+          aria-haspopup="menu"
+          aria-expanded="false"
+          aria-controls="account-menu">
           <%= render "shared/user_avatar", user: current_user, size: :sm %>
           <span class="hidden leading-tight sm:block">
             <span class="block text-sm font-medium"><%= current_user.display_name %></span>
             <span class="block text-xs text-[var(--color-text-muted)]"><%= current_user.role.humanize %></span>
           </span>
         </button>
-        <div class="invisible absolute right-0 top-full z-30 w-48 pt-1 group-focus-within:visible group-hover:visible">
-          <div class="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-card)] py-1 shadow-lg">
-            <%= link_to "Account settings", edit_account_path, class: "block px-4 py-2 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]" %>
-            <hr class="my-1 border-[var(--color-border)]">
-            <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "block w-full cursor-pointer px-4 py-2 text-left text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]" %>
-          </div>
+        <div
+          id="account-menu"
+          role="menu"
+          data-account-menu-target="menu"
+          class="absolute right-0 top-full z-30 mt-1 hidden w-48 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-card)] py-1 shadow-lg">
+          <%= link_to "Account settings", edit_account_path, role: "menuitem", class: "block px-4 py-2 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]" %>
+          <hr class="my-1 border-[var(--color-border)]">
+          <%= button_to "Sign out", destroy_user_session_path, method: :delete, form_class: "block w-full", role: "menuitem", class: "block w-full cursor-pointer px-4 py-2 text-left text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]" %>
         </div>
       </div>
     </div>

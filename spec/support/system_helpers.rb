@@ -10,7 +10,8 @@ module SystemHelpers
 
   def sign_out_via_header
     within("header") do
-      click_button "Sign out", match: :first
+      find("[aria-controls='account-menu']").click
+      click_button "Sign out"
     end
   end
   def desktop_viewport
