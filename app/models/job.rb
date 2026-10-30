@@ -11,6 +11,24 @@ class Job < ApplicationRecord
     "Pacific Time (US & Canada)"
   ].freeze
 
+  # Dominant US time zone for a property's state. Used when a job is created
+  # so walkthrough times are not stuck on the Eastern column default.
+  STATE_TIMEZONES = {
+    "CT" => TIMEZONES[0], "DE" => TIMEZONES[0], "DC" => TIMEZONES[0], "FL" => TIMEZONES[0],
+    "GA" => TIMEZONES[0], "IN" => TIMEZONES[0], "KY" => TIMEZONES[0], "ME" => TIMEZONES[0],
+    "MD" => TIMEZONES[0], "MA" => TIMEZONES[0], "MI" => TIMEZONES[0], "NH" => TIMEZONES[0],
+    "NJ" => TIMEZONES[0], "NY" => TIMEZONES[0], "NC" => TIMEZONES[0], "OH" => TIMEZONES[0],
+    "PA" => TIMEZONES[0], "RI" => TIMEZONES[0], "SC" => TIMEZONES[0], "VT" => TIMEZONES[0],
+    "VA" => TIMEZONES[0], "WV" => TIMEZONES[0],
+    "AL" => TIMEZONES[1], "AR" => TIMEZONES[1], "IL" => TIMEZONES[1], "IA" => TIMEZONES[1],
+    "KS" => TIMEZONES[1], "LA" => TIMEZONES[1], "MN" => TIMEZONES[1], "MS" => TIMEZONES[1],
+    "MO" => TIMEZONES[1], "NE" => TIMEZONES[1], "ND" => TIMEZONES[1], "OK" => TIMEZONES[1],
+    "SD" => TIMEZONES[1], "TN" => TIMEZONES[1], "TX" => TIMEZONES[1], "WI" => TIMEZONES[1],
+    "AZ" => TIMEZONES[2], "CO" => TIMEZONES[2], "ID" => TIMEZONES[2], "MT" => TIMEZONES[2],
+    "NM" => TIMEZONES[2], "UT" => TIMEZONES[2], "WY" => TIMEZONES[2],
+    "CA" => TIMEZONES[3], "NV" => TIMEZONES[3], "OR" => TIMEZONES[3], "WA" => TIMEZONES[3]
+  }.freeze
+
   MAX_ATTACHMENT_SIZE = 25.megabytes
   ATTACHMENT_TYPES = (AttachmentValidation::IMAGE_TYPES + AttachmentValidation::DOCUMENT_TYPES).freeze
 
@@ -28,6 +46,7 @@ class Job < ApplicationRecord
   enum :status, { draft: 0, open: 1, awarded: 2, closed: 3 }, prefix: true
 
   before_validation :normalize_trades
+  before_validation :set_timezone_from_property, on: :create
 
   validates :title, presence: true, length: { maximum: 150 }
   validates :description, length: { maximum: 1000 }
@@ -106,10 +125,21 @@ class Job < ApplicationRecord
     proposals.find_by(contractor_id: contractor.id)
   end
 
+  def self.timezone_for_state(state)
+    STATE_TIMEZONES.fetch(state.to_s.strip.upcase, TIMEZONES.first)
+  end
+
   private
 
   def normalize_trades
     self.trades = Array(trades).compact_blank.map(&:to_s).uniq
+  end
+
+  def set_timezone_from_property
+    return if property&.state.blank?
+    return if timezone.present? && timezone != self.class.columns_hash["timezone"].default
+
+    self.timezone = self.class.timezone_for_state(property.state)
   end
 
   def trades_are_known

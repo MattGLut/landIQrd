@@ -52,6 +52,19 @@ RSpec.describe "Jobs", type: :request do
       expect(job.slot_capacity).to eq(2)
     end
 
+    it "leaves the walkthrough form ready to add another slot" do
+      job = create(:job, property: property, timezone: "Central Time (US & Canada)")
+      zone = ActiveSupport::TimeZone["Central Time (US & Canada)"]
+      start = zone.local(2026, 11, 3, 9)
+      create(:walkthrough_slot, job: job, starts_at: start, ends_at: start + 1.hour)
+
+      get walkthroughs_job_path(job)
+
+      expect(response.body).to include('value="2026-11-03"')
+      expect(response.body).to match(/value="60"[^>]*selected|selected[^>]*value="60"/)
+      expect(response.body).not_to match(/id="times_0900"[^>]*checked/)
+    end
+
     it "refuses to publish an incomplete job" do
       job = create(:job, property: property, description: nil)
       post publish_job_path(job)
