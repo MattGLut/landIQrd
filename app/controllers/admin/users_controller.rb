@@ -16,6 +16,7 @@ module Admin
     def create
       @user = User.new(user_params)
       assign_role(@user)
+      @user.skip_confirmation!
       if @user.save
         redirect_to admin_user_path(@user), notice: "User created."
       else

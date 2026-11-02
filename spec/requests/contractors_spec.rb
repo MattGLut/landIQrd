@@ -91,11 +91,12 @@ RSpec.describe "Contractor portfolio", type: :request do
     it "updates business profile fields" do
       sign_in contractor
       patch contractor_business_profile_path, params: {
-        user: { company_name: "Pro Plumbing", phone: "555-0100", website_url: "https://pro.example.com" }
+        user: { company_name: "Pro Plumbing", phone: "512-555-0100", website_url: "https://pro.example.com" }
       }
 
       expect(response).to redirect_to(edit_contractor_business_profile_path)
       expect(contractor.reload.company_name).to eq("Pro Plumbing")
+      expect(contractor.phone).to eq("+15125550100")
       expect(contractor.website_url).to eq("https://pro.example.com")
     end
 

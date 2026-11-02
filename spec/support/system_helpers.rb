@@ -17,6 +17,13 @@ module SystemHelpers
     page.driver.browser.manage.window.resize_to(1400, 900) if page.driver.respond_to?(:browser)
   end
 
+  def confirm_account_from_last_email
+    body = ActionMailer::Base.deliveries.last.body.encoded
+    href = CGI.unescapeHTML(body[/href="([^"]+)"/, 1])
+    uri = URI.parse(href)
+    visit "#{uri.path}?#{uri.query}"
+  end
+
   def set_reset_password_token(user)
     raw, enc = Devise.token_generator.generate(User, :reset_password_token)
     user.update!(reset_password_token: enc, reset_password_sent_at: Time.current)

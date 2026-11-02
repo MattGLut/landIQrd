@@ -43,8 +43,18 @@ RSpec.describe "Authentication" do
     fill_in "Password confirmation", with: "password123"
     click_button "Sign up"
 
-    expect(page).to have_content("Welcome back, Ada")
+    expect(page).to have_content("A message with a confirmation link has been sent to your email address")
     expect(User.last).to be_landlord
+    expect(User.last).not_to be_confirmed
+
+    confirm_account_from_last_email
+    expect(page).to have_content("Your email address has been successfully confirmed")
+    fill_in "Email", with: "ada@example.com"
+    fill_in "Password", with: "password123"
+    click_button "Log in"
+
+    expect(page).to have_content("Welcome back, Ada")
+    expect(User.last).to be_confirmed
   end
 
   it "prevents signing up as admin through the UI" do
@@ -75,8 +85,9 @@ RSpec.describe "Authentication" do
     fill_in "Password confirmation", with: "password123"
     click_button "Sign up"
 
-    expect(page).to have_content("Welcome back, Toni")
+    expect(page).to have_content("A message with a confirmation link has been sent to your email address")
     expect(User.last).to be_tenant
+    expect(User.last).not_to be_confirmed
   end
 
   it "signs up as a contractor" do
@@ -91,8 +102,9 @@ RSpec.describe "Authentication" do
     fill_in "Password confirmation", with: "password123"
     click_button "Sign up"
 
-    expect(page).to have_content("Welcome back, Casey")
+    expect(page).to have_content("A message with a confirmation link has been sent to your email address")
     expect(User.last).to be_contractor
+    expect(User.last).not_to be_confirmed
   end
 
   it "submits a forgot password request" do
@@ -150,8 +162,9 @@ RSpec.describe "Authentication" do
     fill_in "Current password", with: "password123"
     click_button "Update"
 
-    expect(page).to have_content("Your account has been updated successfully")
-    expect(user.reload.email).to eq("lana.updated@example.com")
+    expect(page).to have_content("we need to verify your new email address")
+    expect(user.reload.email).to eq("lana@example.com")
+    expect(user.unconfirmed_email).to eq("lana.updated@example.com")
   end
 
   it "signs out" do

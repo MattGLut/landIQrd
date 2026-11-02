@@ -36,4 +36,4 @@ Properties belong to a single landlord user. There is no property manager, leasi
 
 ## Stronger sign-in
 
-Password reset works. A new account can sign in immediately. Email confirmation is not required. Failed logins do not lock the account. There is no second factor and no third-party sign-in.
+Password reset works. A new public account must confirm its email before signing in. An invited tenant, an admin-created user, and accounts that already exist are confirmed without that extra email. Failed logins do not lock the account. There is no second factor and no third-party sign-in.

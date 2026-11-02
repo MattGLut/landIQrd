@@ -30,6 +30,35 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe "phone" do
+    it "stores a possible number as E.164" do
+      user = create(:tenant, phone: "512-555-0199")
+      expect(user.reload.phone).to eq("+15125550199")
+      expect(user.formatted_phone).to eq("(512) 555-0199")
+    end
+
+    it "rejects a number that is too short" do
+      user = build(:tenant, phone: "555-1234")
+      expect(user).not_to be_valid
+      expect(user.errors[:phone]).to include("must be a valid phone number")
+    end
+  end
+
+  describe "#sms_notification_enabled?" do
+    it "stays off until the flag, verification, consent, and the type are all on" do
+      user = build(:tenant, phone: "+15125550100", sms_notification_preferences: { "new_message" => true })
+      expect(user.sms_notification_enabled?(:new_message)).to be(false)
+
+      user.phone_verified_at = Time.current
+      user.sms_consent_at = Time.current
+      with_sms_enabled do
+        expect(user.sms_notification_enabled?(:new_message)).to be(true)
+        user.sms_opted_out_at = Time.current
+        expect(user.sms_notification_enabled?(:new_message)).to be(false)
+      end
+    end
+  end
+
   describe "#email_notification_enabled?" do
     it "defaults to enabled when preference is unset" do
       user = build(:tenant, email_notification_preferences: {})

@@ -7,7 +7,7 @@ RSpec.describe "Registrations", type: :request do
         first_name: "Ada",
         last_name: "Lovelace",
         email: "ada@example.com",
-        phone: "555-1234",
+        phone: "512-555-0148",
         password: "password123",
         password_confirmation: "password123"
       }
@@ -18,6 +18,8 @@ RSpec.describe "Registrations", type: :request do
     params = base_params.deep_merge(user: { role: "landlord", company_name: "Acme Realty" })
     expect { post user_registration_path, params: params }.to change(User, :count).by(1)
     expect(User.last.role).to eq("landlord")
+    expect(User.last).not_to be_confirmed
+    expect(User.last.phone).to eq("+15125550148")
   end
 
   it "prevents privilege escalation to admin at sign up" do
@@ -42,6 +44,7 @@ RSpec.describe "Registrations", type: :request do
       .and change(Lease, :count).by(1)
 
     expect(User.last.role).to eq("tenant")
+    expect(User.last).to be_confirmed
     expect(invitation.reload).to be_status_accepted
   end
 end

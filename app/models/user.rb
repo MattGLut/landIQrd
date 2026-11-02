@@ -1,8 +1,8 @@
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  # :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+         :recoverable, :rememberable, :validatable, :confirmable
 
   enum :role, { tenant: 0, landlord: 1, contractor: 2, admin: 3 }
 
@@ -83,8 +83,11 @@ class User < ApplicationRecord
   validates :service_radius_miles, numericality: { only_integer: true, greater_than_or_equal_to: 5, less_than_or_equal_to: 500 }
   validates :service_state, length: { maximum: 30 }, allow_blank: true
   validate :trades_are_known
+  validate :phone_is_possible
 
   before_validation :normalize_trades
+  before_validation :normalize_phone
+  before_save :clear_sms_state_when_phone_changes
 
   def full_name
     [ first_name, last_name ].compact_blank.join(" ").presence || email
@@ -104,6 +107,31 @@ class User < ApplicationRecord
 
   def applicable_email_notification_types
     EMAIL_NOTIFICATION_TYPES.select { |_, config| config[:roles].include?(role.to_sym) }
+  end
+
+  def sms_notification_enabled?(type)
+    sms_deliverable? && sms_notification_preferences.fetch(type.to_s, false)
+  end
+
+  def sms_deliverable?
+    Notifications::Sms.enabled? &&
+      phone.present? &&
+      phone_verified_at.present? &&
+      sms_consent_at.present? &&
+      sms_opted_out_at.blank?
+  end
+
+  def phone_verification_pending?
+    phone_verification_digest.present? &&
+      phone_verification_sent_at.present? &&
+      phone_verification_sent_at >= 10.minutes.ago
+  end
+
+  def formatted_phone
+    return if phone.blank?
+
+    parsed = Phonelib.parse(phone)
+    parsed.possible? ? parsed.national : phone
   end
 
   def initials
@@ -139,6 +167,33 @@ class User < ApplicationRecord
 
   def normalize_trades
     self.trades = Array(trades).compact_blank.map(&:to_s).uniq
+  end
+
+  def normalize_phone
+    return if phone.blank?
+
+    parsed = Phonelib.parse(phone)
+    self.phone = parsed.e164 if parsed.possible? && parsed.e164.present?
+  end
+
+  def phone_is_possible
+    return if phone.blank?
+
+    parsed = Phonelib.parse(phone)
+    return if parsed.possible? && parsed.e164.present?
+
+    errors.add(:phone, "must be a valid phone number")
+  end
+
+  def clear_sms_state_when_phone_changes
+    return unless persisted? && will_save_change_to_phone?
+
+    self.phone_verified_at = nil unless will_save_change_to_phone_verified_at?
+    self.sms_notification_preferences = {} unless will_save_change_to_sms_notification_preferences?
+    self.sms_opted_out_at = nil unless will_save_change_to_sms_opted_out_at?
+    self.sms_consent_at = nil unless will_save_change_to_sms_consent_at?
+    self.phone_verification_digest = nil unless will_save_change_to_phone_verification_digest?
+    self.phone_verification_sent_at = nil unless will_save_change_to_phone_verification_sent_at?
   end
 
   def trades_are_known

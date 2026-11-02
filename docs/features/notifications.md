@@ -13,3 +13,5 @@ Landlords can hear about new work requests, status changes, messages, accepted i
 Contractors, on their own account page, can hear about status changes, assignments, messages, matching jobs, and awarded proposals. **All email notifications** turns the whole set off.
 
 Tenants can hear about status changes, messages, and an ended lease.
+
+Text messages use the same twelve types, and each one starts off. The phone form and the text toggles stay hidden until `SMS_ENABLED` is turned on. Lease invitations stay email-only.

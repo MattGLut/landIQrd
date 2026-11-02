@@ -48,4 +48,4 @@ The screen is there. The note on each page is the part a partner will notice.
 
 No screen and no table. Listed in [Not built yet](not-yet.md) so a walkthrough does not imply them.
 
-Payments, a pricing page, listings and applications, screening and e-sign, inspections, accounting, reviews, staff seats under a landlord, and stricter sign-in (email confirmation, lockout, a second factor).
+Payments, a pricing page, listings and applications, screening and e-sign, inspections, accounting, reviews, staff seats under a landlord, and stricter sign-in (lockout and a second factor).

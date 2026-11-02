@@ -343,12 +343,9 @@ MAILER_FROM=LandIQrd <noreply@landiqrd.com>
 ```
 
 Store `MAILER_FROM` as a GitHub secret. `ApplicationMailer` reads this for
-notification emails.
-
-**Devise emails** (password reset, etc.) use a separate sender in
-[`config/initializers/devise.rb`](config/initializers/devise.rb). Before going
-live, update `config.mailer_sender` to the same address (or wire it to
-`ENV["MAILER_FROM"]`) so all mail comes from your domain.
+notification emails. Devise uses that same mailer, so password reset, email
+confirmation, and the password-changed and email-changed notices come from
+`MAILER_FROM` as well.
 
 ### 4. Set mail host
 
@@ -370,6 +367,35 @@ After deploy, trigger a password reset from the login page and confirm:
 - The email arrives (check SendGrid **Activity** if it does not)
 - Links point to `https://your-domain/...` not `example.com`
 - The from-address matches your authenticated domain
+
+---
+
+## Text messages (Twilio)
+
+Text notifications are implemented and turned off. Nothing in the app calls
+Twilio, shows the phone verification form, or accepts the inbound webhook
+until `SMS_ENABLED` is the string `true`. Leave it unset until a Twilio
+account is paid for and a phone number is attached to a Messaging Service.
+US carriers also have to approve an A2P 10DLC brand and campaign before
+texts to real numbers are delivered. Until that approval, leave the flag off.
+
+When you are ready to turn texts on:
+
+1. In Twilio, create a Messaging Service and attach a phone number.
+2. Set the inbound webhook to `https://landiqrd.com/twilio/messages` (POST).
+3. Register the A2P 10DLC brand and a low-volume transactional campaign.
+   Sample messages should match the work-order, message, lease, and proposal
+   notifications. This is not a marketing campaign.
+4. Add `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, and
+   `TWILIO_MESSAGING_SERVICE_SID` to GitHub secrets, `.kamal/secrets`, and
+   `env.secret` in [`config/deploy.yml`](config/deploy.yml). They are omitted
+   from the deploy config until then, because Kamal fails a deploy when a
+   listed secret is missing.
+5. Set `SMS_ENABLED: "true"` under `env.clear` in `config/deploy.yml` and
+   redeploy.
+
+Users still have to verify a mobile number and turn on each text type. Email
+is unchanged and does not depend on this flag.
 
 ---
 

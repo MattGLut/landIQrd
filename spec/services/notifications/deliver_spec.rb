@@ -26,6 +26,34 @@ RSpec.describe Notifications::Deliver do
         described_class.work_order_created(work_order, actor: tenant)
       }.not_to have_enqueued_mail(NotificationMailer, :work_order_created)
     end
+
+    it "does not text anyone while SMS is disabled" do
+      landlord.update!(
+        phone: "+15125550100",
+        phone_verified_at: Time.current,
+        sms_consent_at: Time.current,
+        sms_notification_preferences: { "work_order_created" => true }
+      )
+
+      expect {
+        described_class.work_order_created(work_order, actor: tenant)
+      }.not_to have_enqueued_job(Notifications::SendSmsJob)
+    end
+
+    it "texts a verified landlord who opted in when SMS is enabled" do
+      landlord.update!(
+        phone: "+15125550100",
+        phone_verified_at: Time.current,
+        sms_consent_at: Time.current,
+        sms_notification_preferences: { "work_order_created" => true }
+      )
+
+      with_sms_enabled do
+        expect {
+          described_class.work_order_created(work_order, actor: tenant)
+        }.to have_enqueued_job(Notifications::SendSmsJob).with(landlord.id, a_string_including(work_order.title))
+      end
+    end
   end
 
   describe ".work_order_status_changed" do
@@ -93,9 +121,12 @@ RSpec.describe Notifications::Deliver do
     it "emails the invitee" do
       invitation = create(:lease_invitation, unit: unit, invited_by: landlord)
 
-      expect {
-        described_class.lease_invitation(invitation)
-      }.to have_enqueued_mail(NotificationMailer, :lease_invitation).with(invitation)
+      with_sms_enabled do
+        expect {
+          described_class.lease_invitation(invitation)
+        }.to have_enqueued_mail(NotificationMailer, :lease_invitation).with(invitation)
+          .and have_enqueued_job(Notifications::SendSmsJob).exactly(0).times
+      end
     end
   end
 

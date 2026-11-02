@@ -17,6 +17,7 @@ module Users
     def create
       build_resource(sign_up_params)
       resource.role = "tenant" if invite_token.present?
+      resource.skip_confirmation! if invite_confirms_email?
 
       if resource.save
         accept_invitation_if_present(resource)
@@ -61,10 +62,19 @@ module Users
       params.dig(:user, :invite_token) || params[:invite_token]
     end
 
-    def accept_invitation_if_present(user)
+    def invite_confirms_email?
+      invitation = usable_invitation
+      invitation.present? && invitation.email.to_s.casecmp(resource.email.to_s).zero?
+    end
+
+    def usable_invitation
       return if invite_token.blank?
 
-      invitation = LeaseInvitation.usable.find_by(token: invite_token)
+      LeaseInvitation.usable.find_by(token: invite_token)
+    end
+
+    def accept_invitation_if_present(user)
+      invitation = usable_invitation
       return unless invitation
 
       invitation.accept!(user)

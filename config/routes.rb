@@ -8,7 +8,12 @@ Rails.application.routes.draw do
   resource :account, only: [ :show, :edit, :update ], controller: "accounts" do
     get :notifications
     patch :notifications, action: :update_notifications
+    patch :sms_notifications, action: :update_sms_notifications
+    post :phone_verification, action: :send_phone_verification
+    patch :phone_verification, action: :confirm_phone_verification
   end
+
+  post "twilio/messages", to: "webhooks/twilio_messages#create"
 
   get "invites/:token", to: "lease_invitations#show", as: :invite
 

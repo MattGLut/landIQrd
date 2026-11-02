@@ -137,6 +137,7 @@ module Seeds
       user.password = "password123"
       user.password_confirmation = "password123"
       user.assign_attributes(attrs)
+      user.skip_confirmation!
       user.save!
       user
     end

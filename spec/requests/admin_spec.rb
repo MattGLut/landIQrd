@@ -78,7 +78,9 @@ RSpec.describe "Admin", type: :request do
           }
         }
       }.to change(User, :count).by(1)
-      expect(User.find_by(email: "newadmin@example.com").role).to eq("admin")
+      created = User.find_by(email: "newadmin@example.com")
+      expect(created.role).to eq("admin")
+      expect(created).to be_confirmed
     end
 
     it "updates a user" do

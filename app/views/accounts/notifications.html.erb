@@ -39,4 +39,74 @@
       <% end %>
     </div>
   <% end %>
+
+  <% if Notifications::Sms.enabled? %>
+    <div class="mt-8 border-t border-slate-200 pt-8 dark:border-slate-700">
+      <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Text messages</h3>
+      <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Message and data rates may apply. Reply STOP to opt out. Texts stay off until you turn a type on.</p>
+
+      <%= form_with url: phone_verification_account_path, method: :post, class: "mt-4 space-y-3" do %>
+        <%= render "shared/form_errors", resource: @user %>
+        <div>
+          <label for="user_phone" class="block text-sm font-medium text-slate-500 dark:text-slate-400">Mobile number</label>
+          <%= telephone_field_tag "user[phone]", (@user.errors[:phone].any? ? @user.phone : @user.formatted_phone), id: "user_phone", autocomplete: "tel", class: form_input_class %>
+        </div>
+        <label class="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-300">
+          <%= check_box_tag :sms_consent, "1", @user.sms_consent_at.present?, class: "mt-0.5 rounded border-slate-200 dark:border-slate-700" %>
+          <span>I agree to receive text messages from LandIQrd about the notifications I turn on.</span>
+        </label>
+        <%= submit_tag "Send code", class: button_classes(:secondary), data: { turbo_submits_with: "Sending…" } %>
+      <% end %>
+
+      <% if @user.phone_verification_pending? %>
+        <%= form_with url: phone_verification_account_path, method: :patch, class: "mt-4 flex items-end gap-3" do %>
+          <div class="min-w-0 flex-1">
+            <label for="verification_code" class="block text-sm font-medium text-slate-500 dark:text-slate-400">Verification code</label>
+            <%= text_field_tag :verification_code, nil, id: "verification_code", autocomplete: "one-time-code", inputmode: "numeric", class: form_input_class %>
+          </div>
+          <%= submit_tag "Confirm", class: button_classes(:primary), data: { turbo_submits_with: "Confirming…" } %>
+        <% end %>
+      <% elsif @user.sms_opted_out_at.present? %>
+        <p class="mt-4 text-sm text-slate-600 dark:text-slate-300">You opted out of texts. Reply START to the LandIQrd number to turn them back on.</p>
+      <% elsif @user.phone_verified_at.present? %>
+        <p class="mt-4 text-sm text-slate-600 dark:text-slate-300">Verified <%= @user.formatted_phone %>.</p>
+        <%= form_with model: @user, url: sms_notifications_account_path, method: :patch, class: "mt-3 space-y-3",
+            data: { controller: "notification-preferences", turbo: true } do %>
+          <div class="flex items-center justify-between gap-3 rounded-md border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 px-3 py-2.5">
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-slate-900 dark:text-slate-100">All text notifications</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Turn all text types on or off at once.</p>
+            </div>
+            <label for="sms_notification_preference_all" class="relative inline-flex shrink-0 cursor-pointer items-center">
+              <%= check_box_tag nil, "1", @user.applicable_email_notification_types.keys.all? { |key| @user.sms_notification_enabled?(key) },
+                  id: "sms_notification_preference_all",
+                  class: "peer sr-only",
+                  data: { notification_preferences_target: "master", action: "change->notification-preferences#toggleAll" } %>
+              <span class="h-5 w-9 rounded-full bg-slate-200 dark:bg-slate-600 peer-checked:bg-brand-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-brand-500/50 after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-slate-200 dark:border-slate-700 after:bg-white dark:bg-slate-800 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-brand-600"></span>
+            </label>
+          </div>
+
+          <div class="divide-y divide-slate-200 dark:divide-slate-700 rounded-md border border-slate-200 dark:border-slate-700">
+            <% @user.applicable_email_notification_types.each do |key, config| %>
+              <div class="flex items-center justify-between gap-3 px-3 py-2.5">
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-slate-900 dark:text-slate-100"><%= config[:label] %></p>
+                  <p class="text-xs text-slate-500 dark:text-slate-400"><%= config[:description] %></p>
+                </div>
+                <label for="sms_notification_preference_<%= key %>" class="relative inline-flex shrink-0 cursor-pointer items-center">
+                  <%= check_box_tag "user[sms_notification_preferences][#{key}]",
+                      "1",
+                      @user.sms_notification_preferences.fetch(key.to_s, false),
+                      id: "sms_notification_preference_#{key}",
+                      class: "peer sr-only",
+                      data: { notification_preferences_target: "type", action: "change->notification-preferences#typeChanged" } %>
+                  <span class="h-5 w-9 rounded-full bg-slate-200 dark:bg-slate-600 peer-checked:bg-brand-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-brand-500/50 after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-slate-200 dark:border-slate-700 after:bg-white dark:bg-slate-800 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-brand-600"></span>
+                </label>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
 <% end %>
