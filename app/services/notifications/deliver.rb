@@ -27,6 +27,25 @@ module Notifications
       end
     end
 
+    def self.assignment_responded(assignment, actor:)
+      landlord = assignment.work_order.unit.property.landlord
+      deliver_to(landlord, actor, type: :assignment_responded) do
+        NotificationMailer.assignment_responded(assignment).deliver_later
+      end
+    end
+
+    def self.relationship_requested(relationship, actor:)
+      deliver_to(relationship.contractor, actor, type: :relationship_requested) do
+        NotificationMailer.relationship_requested(relationship).deliver_later
+      end
+    end
+
+    def self.relationship_responded(relationship, actor:)
+      deliver_to(relationship.landlord, actor, type: :relationship_responded) do
+        NotificationMailer.relationship_responded(relationship).deliver_later
+      end
+    end
+
     def self.new_message(message, actor:)
       message.conversation.participants.where.not(id: actor.id).find_each do |recipient|
         deliver_to(recipient, actor, type: :new_message) do
@@ -50,6 +69,37 @@ module Notifications
     def self.lease_invitation_accepted(invitation, actor:)
       deliver_to(invitation.invited_by, actor, type: :lease_invitation_accepted) do
         NotificationMailer.lease_invitation_accepted(invitation).deliver_later
+      end
+    end
+
+    # Emails every in-area contractor whose trades overlap the job and who opted in.
+    def self.matching_job_posted(job, actor: nil)
+      matches = Jobs::MatchContractors.call(
+        trades: job.trades,
+        city: job.property.city,
+        state: job.property.state
+      )
+
+      matches.each do |match|
+        contractor = match.contractor
+        next unless match.in_area? && contractor.notify_matching_jobs?
+
+        deliver_to(contractor, actor, type: :matching_job_posted) do
+          NotificationMailer.matching_job_posted(job, contractor).deliver_later
+        end
+      end
+    end
+
+    def self.proposal_received(proposal, actor:)
+      landlord = proposal.job.property.landlord
+      deliver_to(landlord, actor, type: :proposal_received) do
+        NotificationMailer.proposal_received(proposal, landlord).deliver_later
+      end
+    end
+
+    def self.proposal_awarded(proposal, actor:)
+      deliver_to(proposal.contractor, actor, type: :proposal_awarded) do
+        NotificationMailer.proposal_awarded(proposal).deliver_later
       end
     end
 

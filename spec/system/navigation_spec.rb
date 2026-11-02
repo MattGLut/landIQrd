@@ -5,7 +5,7 @@ RSpec.describe "Navigation" do
     it "shows landlord navigation" do
       sign_in_and_visit(create(:landlord))
 
-      within("header nav[aria-label='Main']") do
+      within("aside nav[aria-label='Main']") do
         expect(page).to have_link("Properties")
         expect(page).to have_link("Contractors")
         expect(page).to have_link("Work Orders")
@@ -17,7 +17,7 @@ RSpec.describe "Navigation" do
     it "shows tenant navigation" do
       sign_in_and_visit(create(:tenant))
 
-      within("header nav[aria-label='Main']") do
+      within("aside nav[aria-label='Main']") do
         expect(page).to have_link("My Requests")
         expect(page).to have_link("Messages")
         expect(page).not_to have_link("Properties")
@@ -27,7 +27,7 @@ RSpec.describe "Navigation" do
     it "shows contractor navigation" do
       sign_in_and_visit(create(:contractor))
 
-      within("header nav[aria-label='Main']") do
+      within("aside nav[aria-label='Main']") do
         expect(page).to have_link("Assigned Work", href: work_orders_path(status: "active"))
         expect(page).to have_link("Portfolio", href: contractor_portfolio_items_path)
         expect(page).to have_link("Schedule")
@@ -36,11 +36,16 @@ RSpec.describe "Navigation" do
       end
     end
 
-    it "shows admin link" do
+    it "shows admin navigation" do
       sign_in_and_visit(create(:admin))
 
-      within("header nav[aria-label='Main']") do
-        expect(page).to have_link("Admin")
+      within("aside nav[aria-label='Main']") do
+        expect(page).to have_link("Dashboard", href: admin_dashboard_path)
+        expect(page).to have_link("Users", href: admin_users_path)
+        expect(page).to have_link("Properties", href: properties_path)
+        expect(page).to have_link("Work Orders", href: work_orders_path)
+        expect(page).to have_link("Contractors", href: contractors_path)
+        expect(page).to have_link("Messages", href: conversations_path)
       end
     end
   end
@@ -51,20 +56,20 @@ RSpec.describe "Navigation" do
     before { sign_in_and_visit(landlord) }
 
     it "navigates to properties" do
-      within("header nav[aria-label='Main']") { click_link "Properties" }
+      within("aside nav[aria-label='Main']") { click_link "Properties" }
 
       expect(page).to have_content("Properties")
       expect(page).to have_link("New property")
     end
 
     it "navigates to work orders" do
-      within("header nav[aria-label='Main']") { click_link "Work Orders" }
+      within("aside nav[aria-label='Main']") { click_link "Work Orders" }
 
       expect(page).to have_content("Work Orders")
     end
 
     it "navigates to messages" do
-      within("header nav[aria-label='Main']") { click_link "Messages" }
+      within("aside nav[aria-label='Main']") { click_link "Messages" }
 
       expect(page).to have_content("Select a conversation to view messages")
     end
@@ -93,6 +98,36 @@ RSpec.describe "Navigation" do
       find("[aria-label='Close main menu']").click
 
       expect(page).to have_css("#mobile-nav-panel.hidden", visible: :all)
+    end
+  end
+
+  describe "account menu", js: true do
+    let(:landlord) { create(:landlord, first_name: "Lana") }
+
+    # iPhone Safari never applies a lasting :hover, so the menu has to open on tap.
+    it "opens on tap and stays open after hover and focus drop" do
+      sign_in_and_visit(landlord)
+      mobile_viewport
+      visit current_path
+
+      expect(page).to have_css("#account-menu.hidden", visible: :all)
+
+      find("[aria-controls='account-menu']").click
+      page.execute_script("document.activeElement.blur()")
+      find("main").hover
+
+      click_link "Account settings"
+      expect(page).to have_current_path(edit_account_path)
+    end
+
+    it "signs out from a phone" do
+      sign_in_and_visit(landlord)
+      mobile_viewport
+      visit current_path
+
+      sign_out_via_header
+
+      expect(page).to have_current_path(new_user_session_path)
     end
   end
 end

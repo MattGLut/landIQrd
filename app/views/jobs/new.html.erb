@@ -1,0 +1,6 @@
+<% content_for :title, "Find the right contractor" %>
+
+<%= render "jobs/steps", current: 1, job: nil %>
+<%= render "shared/page_header", title: "Find the right contractor", subtitle: "Describe the work and pick the trades. We'll show matching contractors as you go." %>
+
+<%= render "jobs/form", job: @job, properties: @properties, matches: @matches %>

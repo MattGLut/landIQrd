@@ -1,14 +1,14 @@
 import { Controller } from "@hotwired/stimulus"
 
 // Manages dark-mode toggling on <html>.
-// Persists explicit choice in localStorage; absent key = dark (default).
+// Persists explicit choice in localStorage; absent key = light (cream) default.
 export default class extends Controller {
   static targets = ["modeButton"]
 
   connect() {
     this._mql = window.matchMedia("(prefers-color-scheme: dark)")
     this._onSystemChange = () => {
-      if (!this._explicit()) this._apply()
+      if (this._storedMode() === "system") this._apply()
     }
     this._mql.addEventListener("change", this._onSystemChange)
     this._apply()
@@ -20,19 +20,15 @@ export default class extends Controller {
 
   setMode(event) {
     const mode = event.params.mode
-    if (mode === "system") {
-      localStorage.setItem("theme", "system")
-    } else {
-      localStorage.setItem("theme", mode)
-    }
+    localStorage.setItem("theme", mode)
     this._apply()
   }
 
   toggle() {
     const mode = this._storedMode()
-    if (mode === null || mode === "dark") {
-      localStorage.setItem("theme", "light")
-    } else if (mode === "light") {
+    if (mode === null || mode === "light") {
+      localStorage.setItem("theme", "dark")
+    } else if (mode === "dark") {
       localStorage.setItem("theme", "system")
     } else {
       localStorage.removeItem("theme")
@@ -44,23 +40,18 @@ export default class extends Controller {
     return localStorage.getItem("theme")
   }
 
-  _explicit() {
-    return this._storedMode() !== null
-  }
-
   _shouldBeDark() {
     const mode = this._storedMode()
     if (mode === "dark") return true
-    if (mode === "light") return false
     if (mode === "system") return this._mql.matches
-    return true
+    return false
   }
 
   _apply() {
     const dark = this._shouldBeDark()
     document.documentElement.classList.toggle("dark", dark)
 
-    const mode = this._storedMode() ?? "dark"
+    const mode = this._storedMode() ?? "light"
     this._highlightActiveButton(mode)
     document.dispatchEvent(new CustomEvent("theme:changed", { detail: { dark } }))
   }

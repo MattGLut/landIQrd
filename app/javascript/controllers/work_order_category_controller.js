@@ -1,7 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
 
+// Keep in sync with app/models/concerns/work_order_category.rb
 const BASE_CATEGORIES = [
-  "plumbing", "electrical", "hvac", "appliance", "pest", "general", "other"
+  "plumbing", "electrical", "hvac", "appliance", "pest", "general", "other",
+  "roofing", "painting", "landscaping", "concrete"
 ]
 const COMMERCIAL_CATEGORIES = [
   "fire_safety", "signage", "accessibility", "structural"

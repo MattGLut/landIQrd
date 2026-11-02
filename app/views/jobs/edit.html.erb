@@ -1,0 +1,6 @@
+<% content_for :title, "Edit #{@job.title}" %>
+
+<%= render "jobs/steps", current: 1, job: @job %>
+<%= render "shared/page_header", title: "Edit job details", subtitle: @job.location_label %>
+
+<%= render "jobs/form", job: @job, properties: @properties, matches: @matches %>

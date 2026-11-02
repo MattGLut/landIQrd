@@ -1,0 +1,11 @@
+<header id="application-header" class="bg-navy-800 text-white">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
+    <%= link_to root_path do %>
+      <%= render "shared/wordmark", tone: :light, size: "text-2xl" %>
+    <% end %>
+    <nav class="flex items-center gap-3 text-sm" aria-label="Main">
+      <%= link_to "Sign in", new_user_session_path, class: "rounded-md border border-white/30 px-3 py-1.5 text-white hover:bg-white/10" %>
+      <%= link_to "Sign up", new_user_registration_path, class: "rounded-md bg-brand-400 px-3 py-1.5 font-semibold text-navy-900 hover:bg-brand-300" %>
+    </nav>
+  </div>
+</header>

@@ -24,6 +24,7 @@
           <% end %>
         <% end %>
       </div>
+      <%= render "shared/pagination", collection: @conversations %>
     <% else %>
       <%= render "shared/empty_state", message: "No conversations yet." %>
     <% end %>

@@ -1,5 +1,7 @@
 Hi <%= @assignment.contractor.greeting_name %>,
 
-You have been assigned to "<%= @work_order.title %>" at <%= @work_order.unit.property.name %>.
+<%= @work_order.unit.property.landlord.display_name %> assigned you "<%= @work_order.title %>" at <%= @work_order.unit.property.name %>.
+
+Accept or decline it on the work order.
 
 <%= link_to "View work order", work_order_url(@work_order) %>

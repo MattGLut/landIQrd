@@ -1,6 +1,7 @@
 class WorkOrder < ApplicationRecord
   include AASM
   include WorkOrderCategory
+  include AttachmentValidation
 
   class InvalidTransition < StandardError; end
 
@@ -8,7 +9,9 @@ class WorkOrder < ApplicationRecord
   belongs_to :lease, optional: true
   belongs_to :created_by, class_name: "User", inverse_of: :created_work_orders
   belongs_to :closed_by, class_name: "User", optional: true
+  belongs_to :proposal, optional: true
 
+  has_one :job, dependent: :nullify
   has_many :work_order_assignments, dependent: :destroy
   has_many :contractors, through: :work_order_assignments, source: :contractor
   has_many :work_order_events, dependent: :destroy
@@ -28,6 +31,7 @@ class WorkOrder < ApplicationRecord
   enum :category, CATEGORIES, prefix: true
 
   validates :title, presence: true
+  validates_attachments :photos, content_types: AttachmentValidation::IMAGE_TYPES, max_size: 10.megabytes
   validate :category_allowed_for_unit
 
   scope :active, -> { where.not(status: %i[completed cancelled]) }
@@ -96,6 +100,10 @@ class WorkOrder < ApplicationRecord
 
   def active?
     !status_completed? && !status_cancelled?
+  end
+
+  def price
+    price_cents && price_cents / 100.0
   end
 
   def status_color

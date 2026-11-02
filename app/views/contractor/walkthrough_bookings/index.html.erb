@@ -1,0 +1,43 @@
+<% content_for :title, "Walkthroughs" %>
+
+<%= render "shared/page_header", title: "Walkthroughs", subtitle: "Site visits you have reserved." %>
+
+<h2 class="mb-3 text-lg font-semibold text-slate-900 dark:text-slate-100">Upcoming</h2>
+<% if @upcoming.any? %>
+  <div class="space-y-3">
+    <% @upcoming.each do |booking| %>
+      <% slot = booking.walkthrough_slot %>
+      <div class="<%= content_card_class %> flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p class="font-semibold text-slate-900 dark:text-slate-100"><%= format_slot_range(slot) %></p>
+          <p class="text-sm text-slate-500 dark:text-slate-400"><%= slot.job.title %> &middot; <%= slot.job.location_label %></p>
+        </div>
+        <div class="flex items-center gap-3">
+          <%= status_badge "Confirmed", :green %>
+          <%= link_to "View job", contractor_available_job_path(slot.job), class: button_classes(:secondary, size: :sm) %>
+          <% if policy(booking).destroy? %>
+            <%= button_to "Cancel", contractor_walkthrough_booking_path(booking), method: :delete, class: button_classes(:danger_link, size: :sm), form: { data: { turbo_confirm: "Cancel this walkthrough?" } } %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <%= render "shared/empty_state", title: "No upcoming walkthroughs", description: "Find a job with walkthrough times and reserve a slot.",
+        action: render("shared/button", label: "Find work", url: contractor_available_jobs_path, variant: :primary) %>
+<% end %>
+
+<% if @past.any? %>
+  <h2 class="mb-3 mt-8 text-lg font-semibold text-slate-900 dark:text-slate-100">Past</h2>
+  <div class="space-y-2">
+    <% @past.each do |booking| %>
+      <div class="<%= content_card_class %> flex flex-wrap items-center justify-between gap-3 opacity-80">
+        <div>
+          <p class="font-medium text-slate-900 dark:text-slate-100"><%= format_slot_range(booking.walkthrough_slot) %></p>
+          <p class="text-sm text-slate-500 dark:text-slate-400"><%= booking.walkthrough_slot.job.title %></p>
+        </div>
+        <%= link_to "View job", contractor_available_job_path(booking.walkthrough_slot.job), class: button_classes(:secondary, size: :sm) %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

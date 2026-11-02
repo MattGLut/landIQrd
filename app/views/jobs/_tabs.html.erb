@@ -1,0 +1,8 @@
+<%# locals: (job:, active:) %>
+<nav class="mb-6 flex gap-6 border-b border-[var(--color-border)]" aria-label="Job sections">
+  <%= link_to "Overview", job_path(job), class: tab_link_classes(active == :overview) %>
+  <%= link_to "Walkthroughs", walkthroughs_job_path(job), class: tab_link_classes(active == :walkthroughs) %>
+  <%= link_to job_proposals_path(job), class: tab_link_classes(active == :proposals) do %>
+    Proposals<span class="ml-1 text-xs text-slate-500 dark:text-slate-400">(<%= job.proposals.active.size %>)</span>
+  <% end %>
+</nav>

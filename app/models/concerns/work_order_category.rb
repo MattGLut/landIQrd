@@ -9,6 +9,10 @@ module WorkOrderCategory
     pest: "pest",
     general: "general",
     other: "other",
+    roofing: "roofing",
+    painting: "painting",
+    landscaping: "landscaping",
+    concrete: "concrete",
     fire_safety: "fire_safety",
     signage: "signage",
     accessibility: "accessibility",
@@ -20,9 +24,17 @@ module WorkOrderCategory
     environmental: "environmental"
   }.freeze
 
-  BASE_CATEGORIES = %w[plumbing electrical hvac appliance pest general other].freeze
+  # Keep in sync with app/javascript/controllers/work_order_category_controller.js
+  BASE_CATEGORIES = %w[
+    plumbing electrical hvac appliance pest general other roofing painting landscaping concrete
+  ].freeze
   COMMERCIAL_CATEGORIES = %w[fire_safety signage accessibility structural].freeze
   UNDEVELOPED_CATEGORIES = %w[site_maintenance fencing utilities grading environmental].freeze
+
+  # Trades offered in the proposal marketplace (job posting and contractor profile pickers).
+  MARKETPLACE_TRADES = %w[roofing painting electrical plumbing hvac landscaping concrete general].freeze
+
+  TRADE_LABELS = { "general" => "General contractor", "hvac" => "HVAC" }.freeze
 
   class_methods do
     def categories_for(unit)
@@ -42,6 +54,14 @@ module WorkOrderCategory
 
     def all_category_options
       CATEGORIES.keys.map { |key| [ key.to_s.titleize, key.to_s ] }
+    end
+
+    def trade_label(key)
+      TRADE_LABELS.fetch(key.to_s) { key.to_s.titleize }
+    end
+
+    def marketplace_trade_options
+      MARKETPLACE_TRADES.map { |key| [ trade_label(key), key ] }
     end
   end
 end

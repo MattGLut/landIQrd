@@ -1,0 +1,27 @@
+<%# locals: (current:, job: nil) %>
+<% steps = [
+  [ 1, "Job details", job&.persisted? ? edit_job_path(job) : nil ],
+  [ 2, "Walkthroughs", job&.persisted? ? walkthroughs_job_path(job) : nil ],
+  [ 3, "Review & post", job&.persisted? ? review_job_path(job) : nil ]
+] %>
+<ol class="mb-8 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm" aria-label="Progress">
+  <% steps.each_with_index do |(number, label, path), index| %>
+    <% state = number == current ? :current : (number < current ? :done : :todo) %>
+    <% circle = {
+      current: "bg-brand-500 text-white",
+      done: "bg-brand-200 text-brand-800",
+      todo: "border border-slate-300 text-slate-500 dark:border-slate-600 dark:text-slate-400"
+    }.fetch(state) %>
+    <%= tag.li class: "flex items-center gap-2", "aria-current": (state == :current ? "step" : nil) do %>
+      <span class="grid h-7 w-7 place-items-center rounded-full text-xs font-semibold <%= circle %>"><%= number %></span>
+      <% if path && state != :current %>
+        <%= link_to label, path, class: "text-slate-600 hover:text-brand-700 dark:text-slate-300" %>
+      <% else %>
+        <span class="<%= state == :current ? "font-semibold text-slate-900 dark:text-slate-100" : "text-slate-500 dark:text-slate-400" %>"><%= label %></span>
+      <% end %>
+    <% end %>
+    <% if index < steps.length - 1 %>
+      <li aria-hidden="true" class="hidden h-px w-12 bg-slate-300 dark:bg-slate-600 sm:block"></li>
+    <% end %>
+  <% end %>
+</ol>

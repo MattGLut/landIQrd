@@ -1,0 +1,20 @@
+<aside
+  class="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col bg-[var(--color-sidebar)] md:flex"
+  aria-label="Sidebar">
+  <div class="px-6 pb-8 pt-7">
+    <%= link_to dashboard_path_for(current_user), class: "inline-block focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400" do %>
+      <%= render "shared/wordmark", tone: :light, size: "text-3xl" %>
+    <% end %>
+  </div>
+
+  <nav class="flex-1 space-y-1 overflow-y-auto px-3" aria-label="Main">
+    <% sidebar_items_for(current_user).each do |item| %>
+      <%= sidebar_link(item) %>
+    <% end %>
+  </nav>
+
+  <div class="border-t border-white/10 px-6 py-5">
+    <p class="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-brand-400">Windmore</p>
+    <p class="mt-1 text-xs text-navy-200">Property operations, simplified.</p>
+  </div>
+</aside>

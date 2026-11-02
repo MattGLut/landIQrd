@@ -1,0 +1,29 @@
+<%# locals: (job:, proposed: false) %>
+<article class="<%= content_card_class %> flex flex-wrap items-center gap-4 sm:flex-nowrap">
+  <%= job_thumbnail(job) %>
+
+  <div class="min-w-0 flex-1">
+    <div class="flex flex-wrap items-center gap-2">
+      <h3 class="font-semibold text-slate-900 dark:text-slate-100"><%= job.title %></h3>
+      <%= trade_badges(job.trades) %>
+    </div>
+    <p class="mt-1 flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400">
+      <%= icon_tag :pin, classes: "h-4 w-4 shrink-0" %> <%= job.location_label %>
+    </p>
+    <div class="mt-3 space-y-1 border-t border-[var(--color-border)] pt-3 text-sm">
+      <% if job.walkthrough_available? %>
+        <p class="flex items-center gap-2 font-medium text-emerald-700 dark:text-emerald-300"><%= icon_tag :calendar, classes: "h-4 w-4" %> Walkthrough available<%= job.walkthrough_required? ? " (required)" : "" %></p>
+      <% end %>
+      <% if job.proposal_deadline %>
+        <p class="flex items-center gap-2 text-slate-500 dark:text-slate-400"><%= icon_tag :clock, classes: "h-4 w-4" %> Proposals due <%= job.proposal_deadline.strftime("%b %-d") %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="flex shrink-0 flex-col items-end gap-2">
+    <% if proposed %>
+      <%= status_badge "Proposal submitted", :blue %>
+    <% end %>
+    <%= link_to "View job", contractor_available_job_path(job), class: button_classes(:primary) %>
+  </div>
+</article>

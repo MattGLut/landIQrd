@@ -8,6 +8,13 @@ module FormClassHelper
       "px-3 py-2 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm"
   end
 
+  # Same outer height as button_classes(..., size: :sm): text-xs line plus py-1.5.
+  def form_compact_select_class
+    "mt-1 block h-7 w-full rounded-md border border-slate-300 bg-white px-3 py-0 text-xs leading-4 shadow-sm " \
+      "focus:border-brand-500 focus:ring-brand-500 " \
+      "dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+  end
+
   def form_input_lg_class
     "mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 " \
       "text-sm shadow-sm focus:border-brand-500 focus:outline-none " \
@@ -46,21 +53,21 @@ module FormClassHelper
       "transition-colors hover:bg-slate-100 " \
       "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 " \
       "focus-visible:ring-offset-2 " \
-      "aria-pressed:border-brand-600 aria-pressed:bg-brand-600 aria-pressed:text-white " \
+      "aria-pressed:border-navy-800 aria-pressed:bg-navy-800 aria-pressed:text-white " \
       "dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 " \
       "dark:aria-pressed:border-brand-600 dark:aria-pressed:bg-brand-600 " \
       "dark:aria-pressed:text-white"
   end
 
   def devise_form_submit_class
-    "rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm " \
-      "hover:bg-brand-700 focus:outline-none focus:ring-2 " \
+    "rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-semibold text-navy-900 shadow-sm " \
+      "hover:bg-brand-400 focus:outline-none focus:ring-2 " \
       "focus:ring-brand-500 focus:ring-offset-2 cursor-pointer"
   end
 
   def devise_wfull_submit_class
-    "w-full rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm " \
-      "hover:bg-brand-700 focus:outline-none focus:ring-2 " \
+    "w-full rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-semibold text-navy-900 shadow-sm " \
+      "hover:bg-brand-400 focus:outline-none focus:ring-2 " \
       "focus:ring-brand-500 focus:ring-offset-2 cursor-pointer"
   end
 

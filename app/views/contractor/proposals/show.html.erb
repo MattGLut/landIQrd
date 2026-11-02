@@ -1,0 +1,63 @@
+<% content_for :title, "Proposal for #{@proposal.job.title}" %>
+<% job = @proposal.job %>
+
+<%= link_to contractor_proposals_path, class: "mb-3 inline-flex items-center gap-1 text-sm text-brand-700 hover:text-brand-800 dark:text-brand-300" do %>
+  <%= icon_tag :arrow_left, classes: "h-4 w-4" %> Back to proposals
+<% end %>
+
+<% header_actions = capture do %>
+  <% if policy(@proposal).update? %>
+    <%= render "shared/button", label: "Edit", url: edit_contractor_proposal_path(@proposal), variant: :secondary, size: :sm %>
+  <% end %>
+  <% if policy(@proposal).withdraw? %>
+    <%= render "shared/button", label: "Withdraw", url: withdraw_contractor_proposal_path(@proposal), variant: :danger, size: :sm, method: :post, form: { data: { turbo_confirm: "Withdraw this proposal?" }, class: "inline" } %>
+  <% end %>
+<% end %>
+
+<%= render "shared/page_header", title: job.title, subtitle: job.location_label, action: header_actions.presence %>
+
+<div class="<%= panel_card_class %> space-y-5">
+  <div class="flex flex-wrap items-center gap-3">
+    <%= proposal_status_badge(@proposal) %>
+    <span class="text-2xl font-bold text-slate-900 dark:text-slate-100"><%= format_cents(@proposal.amount_cents) %></span>
+  </div>
+
+  <% if @proposal.awarded? && job.work_order %>
+    <div class="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-300">
+      Awarded.
+      <%= link_to "Open the work order", work_order_path(job.work_order), class: "font-semibold underline" %>
+    </div>
+  <% end %>
+
+  <div>
+    <h2 class="text-sm font-medium text-slate-500 dark:text-slate-400">Scope of work</h2>
+    <p class="mt-1 whitespace-pre-line text-slate-900 dark:text-slate-100"><%= @proposal.scope %></p>
+  </div>
+
+  <% if @proposal.exclusions.present? %>
+    <div>
+      <h2 class="text-sm font-medium text-slate-500 dark:text-slate-400">Exclusions</h2>
+      <p class="mt-1 whitespace-pre-line text-slate-900 dark:text-slate-100"><%= @proposal.exclusions %></p>
+    </div>
+  <% end %>
+
+  <dl class="grid gap-4 sm:grid-cols-2">
+    <div><dt class="text-sm font-medium text-slate-500 dark:text-slate-400">Earliest start</dt><dd class="mt-1 text-slate-900 dark:text-slate-100"><%= @proposal.earliest_start.to_fs(:long) %></dd></div>
+    <div><dt class="text-sm font-medium text-slate-500 dark:text-slate-400">Estimated duration</dt><dd class="mt-1 text-slate-900 dark:text-slate-100"><%= @proposal.duration_label %></dd></div>
+  </dl>
+
+  <% if @proposal.attachments.attached? %>
+    <div>
+      <h2 class="text-sm font-medium text-slate-500 dark:text-slate-400">Attachments</h2>
+      <ul class="mt-1 space-y-1 text-sm">
+        <% @proposal.attachments.each do |file| %>
+          <li class="flex items-center gap-2"><%= icon_tag :clip, classes: "h-4 w-4 text-slate-400" %><%= link_to file.filename.to_s, rails_blob_path(file, disposition: "attachment"), class: "text-brand-700 hover:text-brand-800 dark:text-brand-300" %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="border-t border-[var(--color-border)] pt-4">
+    <%= link_to "View job", contractor_available_job_path(job), class: "text-sm font-medium text-brand-700 hover:text-brand-800 dark:text-brand-300" %>
+  </div>
+</div>

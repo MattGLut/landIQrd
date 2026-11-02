@@ -3,7 +3,6 @@
 <%= render "shared/page_header",
            title: "Users",
            action: render("shared/button", label: "New user", url: new_admin_user_path, variant: :primary) %>
-<%= render "admin/shared/nav" %>
 
 <% if @users.any? %>
   <%= render "admin/shared/index_table" do %>

@@ -1,7 +1,6 @@
 <% content_for :title, @conversation.title %>
 
-<%= render "shared/page_header", title: "Admin console" %>
-<%= render "admin/shared/nav" %>
+<%= render "shared/page_header", title: @conversation.title %>
 
 <div class="mb-4">
   <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100"><%= @conversation.title %></h2>

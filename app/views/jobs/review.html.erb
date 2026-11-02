@@ -1,0 +1,73 @@
+<% content_for :title, "Review and post" %>
+
+<%= render "jobs/steps", current: 3, job: @job %>
+<%= render "shared/page_header", title: "Review & post", subtitle: "Check the details below. Matching contractors are notified when you post." %>
+
+<% if @job.errors.any? %>
+  <div class="mb-6">
+    <%= render "shared/form_errors", resource: @job %>
+  </div>
+<% end %>
+
+<div class="grid gap-6 lg:grid-cols-3">
+  <div class="space-y-6 lg:col-span-2">
+    <div class="<%= panel_card_class %> space-y-5">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100"><%= @job.title %></h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400"><%= @job.location_label %></p>
+        </div>
+        <%= link_to "Edit", edit_job_path(@job), class: button_classes(:secondary, size: :sm) %>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400">Description</h3>
+        <p class="mt-1 whitespace-pre-line text-slate-900 dark:text-slate-100"><%= @job.description.presence || "No description yet." %></p>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400">Trades</h3>
+        <div class="mt-1 flex flex-wrap gap-2"><%= @job.trades.any? ? trade_badges(@job.trades) : tag.span("None selected", class: "text-sm text-slate-500") %></div>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400">Proposal deadline</h3>
+          <p class="mt-1 text-slate-900 dark:text-slate-100"><%= @job.proposal_deadline&.to_fs(:long) || "Not set" %></p>
+        </div>
+        <div>
+          <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400">Walkthroughs</h3>
+          <p class="mt-1 text-slate-900 dark:text-slate-100">
+            <% if @job.walkthrough_slots.any? %>
+              <%= pluralize(@job.walkthrough_slots.size, "time slot") %><%= @job.walkthrough_required? ? ", required before proposing" : ", optional" %>
+            <% else %>
+              None scheduled
+            <% end %>
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400">Photos and scope documents</h3>
+        <% if @job.attachments.attached? %>
+          <ul class="mt-1 space-y-1 text-sm text-slate-900 dark:text-slate-100">
+            <% @job.attachments.each do |file| %>
+              <li class="flex items-center gap-2"><%= icon_tag :clip, classes: "h-4 w-4 text-slate-400" %><%= file.filename %> <span class="text-xs text-slate-500">(<%= number_to_human_size(file.byte_size) %>)</span></li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">No files attached.</p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <%= link_to "Back", walkthroughs_job_path(@job), class: button_classes(:secondary) %>
+      <%= button_to "Post job", publish_job_path(@job), method: :post, class: "#{button_classes(:primary, size: :lg)} cursor-pointer", form: { data: { turbo_confirm: "Post this job and notify matching contractors?" } } %>
+    </div>
+  </div>
+
+  <aside>
+    <%= render "jobs/matches_panel", matches: @matches, trades: @job.trades %>
+  </aside>
+</div>

@@ -21,12 +21,6 @@ module ApplicationHelper
     end
   end
 
-  def admin_tab_link(label, path)
-    active = current_page?(path)
-    classes = active ? "text-brand-600 dark:text-brand-400 font-medium" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
-    link_to label, path, class: "text-sm #{classes}"
-  end
-
   def status_badge(text, color)
     palette = {
       gray: "bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300",
@@ -43,7 +37,7 @@ module ApplicationHelper
     base = "inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50"
     sizes = { sm: "px-3 py-1.5 text-xs", md: "px-4 py-2 text-sm", lg: "px-5 py-2.5 text-base" }
     variants = {
-      primary: "bg-brand-600 text-white hover:bg-brand-700",
+      primary: "bg-brand-500 text-navy-900 shadow-sm hover:bg-brand-400 dark:bg-brand-400 dark:hover:bg-brand-300",
       secondary: "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700",
       danger: "border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 dark:border-rose-800 dark:bg-rose-900/30 dark:text-rose-300 dark:hover:bg-rose-900/50",
       danger_link: "text-rose-600 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300",

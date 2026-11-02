@@ -1,0 +1,8 @@
+<p>Hi <%= @recipient.greeting_name %>,</p>
+
+<p>
+  <strong><%= @proposal.contractor.display_name %></strong> submitted a proposal of
+  <strong><%= number_to_currency(@proposal.amount) %></strong> for "<%= @job.title %>".
+</p>
+
+<p><%= link_to "Compare proposals", job_proposals_url(@job) %></p>

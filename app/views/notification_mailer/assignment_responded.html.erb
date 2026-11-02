@@ -1,0 +1,5 @@
+Hi <%= @work_order.unit.property.landlord.greeting_name %>,
+
+<%= @assignment.contractor.display_name %> <%= @assignment.status_accepted? ? "accepted" : "declined" %> "<%= @work_order.title %>".
+
+<%= link_to "View work order", work_order_url(@work_order) %>

@@ -1,8 +1,6 @@
 <% content_for :title, "Admin - Work orders" %>
 
 <%= render "shared/page_header", title: "Work orders" %>
-<%= render "admin/shared/nav" %>
-
 <% if @work_orders.any? %>
   <%= render "admin/shared/index_table" do %>
     <thead>

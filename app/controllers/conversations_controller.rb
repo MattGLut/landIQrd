@@ -37,6 +37,7 @@ class ConversationsController < ApplicationController
     @conversations = policy_scope(Conversation)
                        .includes(:participants, :work_order, :messages, :conversation_participants)
                        .order(updated_at: :desc)
+                       .page(params[:page])
   end
 
   def load_selected_conversation

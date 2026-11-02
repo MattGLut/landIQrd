@@ -1,8 +1,6 @@
 <% content_for :title, "Admin - Properties" %>
 
 <%= render "shared/page_header", title: "Properties" %>
-<%= render "admin/shared/nav" %>
-
 <% if @properties.any? %>
   <%= render "admin/shared/index_table" do %>
     <thead>
